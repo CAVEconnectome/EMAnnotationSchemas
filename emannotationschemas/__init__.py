@@ -1,6 +1,6 @@
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 type_mapping = {
     'synapse': SynapseSchema
