@@ -7,10 +7,30 @@ class IdSchema(mm.Schema):
                                     'unique in type')
 
 
+def flatten_dict(d, root=None, sep='.'):
+    if root is None:
+        root = ""
+    else:
+        root += sep
+    for k in d.keys():
+        v = d.pop(k)
+        if type(v) is dict:
+            fd = flatten_dict(v, root=root + k, sep=sep)
+            d.update(fd)
+        else:
+            d[root + k] = d
+    return
+
+
 class AnnotationSchema(mm.Schema):
     '''schema with the type of annotation'''
     type = mm.fields.Str(
         required=True, description='type of annotation')
+
+    @mm.post_load
+    def flatten_schema(self, item):
+        if self.context.get('flatten', False):
+            flatten_dict(item)
 
 
 class IdAnnotationSchema(IdSchema, AnnotationSchema):
