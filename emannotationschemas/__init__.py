@@ -1,6 +1,8 @@
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
-__version__ = '0.0.3'
+from emannotationschemas.flatten import create_flattened_schema
+
+__version__ = '0.1.0'
 
 type_mapping = {
     'synapse': SynapseSchema
@@ -17,3 +19,13 @@ def get_schema(type):
     except KeyError:
         msg = 'type {} is not a known annotation type'.format(type)
         raise UnknownAnnotationTypeException(msg)
+
+def get_flat_schema(type):
+    try:
+        Schema=type_mapping[type]
+        FlatSchema = create_flattened_schema(Schema)
+        return FlatSchema
+    except KeyError:
+        msg = 'type {} is not a known annotation type'.format(type)
+        raise UnknownAnnotationTypeException(msg)
+

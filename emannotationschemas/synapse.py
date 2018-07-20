@@ -12,6 +12,7 @@ class SynapseSchema(AnnotationSchema):
                               description="central point")
     post_pt = mm.fields.Nested(BoundSpatialPoint, required=True,
                                description="presynaptic point")
+    size = mm.fields.Float(description="size of synapse")
 
     @mm.post_load
     def validate_type(self, item):
