@@ -1,6 +1,4 @@
-from datetime import date, datetime
-from sqlalchemy import create_engine, Column, String, Integer, DateTime, Float, ForeignKey, func
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, Integer, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import AbstractConcreteBase
 from geoalchemy2 import Geometry

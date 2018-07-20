@@ -1,6 +1,5 @@
 import marshmallow as mm
-from geoalchemy2.shape import from_shape, to_shape
-from shapely import geometry
+from geoalchemy2.shape import to_shape
 
 
 class IdSchema(mm.Schema):
@@ -15,7 +14,7 @@ def flatten_dict(d, root=None, sep='_'):
     else:
         root += sep
     d_out = {}
-    for k,v in d.items():
+    for k, v in d.items():
         if type(v) is dict:
             fd = flatten_dict(v, root=root + k, sep=sep)
             d_out.update(fd)
@@ -58,25 +57,6 @@ class ReferenceTagAnnotation(ReferenceAnnotation, TagAnnotation):
     '''A tag attached to another annotation'''
 
 
-# class PointZ(mm.fields.List):
-#     def _deserialize(self, value, attr, obj):
-#         try:
-            
-#         except IndexError as e:
-#             raise mm.ValidationError(
-#                 'Cannot create pointz'.format(
-#                     self.dtype))
-
-#     def _serialize(self, value, attr, obj):
-#         if value is None:
-#             return None
-#         list_ = list(to_shape(value).coords[0])
-#         return mm.fields.List._serialize(self,
-#                                          list_,
-#                                          attr,
-#                                          obj)
-
-#     def _validate()
 class SpatialPoint(mm.Schema):
     '''a position in the segmented volume '''
     position = mm.fields.Method('dump_geom',
@@ -85,7 +65,7 @@ class SpatialPoint(mm.Schema):
                                 description='spatial position in voxels of'
                                             'x,y,z of annotation',
                                 postgis_geometry='POINTZ')
-    
+
     def dump_geom(self, obj):
         return to_shape(obj).coords[0]
 

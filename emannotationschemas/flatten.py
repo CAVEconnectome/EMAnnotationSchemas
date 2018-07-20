@@ -27,5 +27,5 @@ def create_flattened_schema(BaseSchema, sep="_"):
     FlatSchema = type('Flat{}'.format(BaseSchema.__name__),
                       (mm.Schema,),
                       new_fields)
-    
+
     return FlatSchema

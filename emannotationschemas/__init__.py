@@ -20,12 +20,12 @@ def get_schema(type):
         msg = 'type {} is not a known annotation type'.format(type)
         raise UnknownAnnotationTypeException(msg)
 
+
 def get_flat_schema(type):
     try:
-        Schema=type_mapping[type]
+        Schema = type_mapping[type]
         FlatSchema = create_flattened_schema(Schema)
         return FlatSchema
     except KeyError:
         msg = 'type {} is not a known annotation type'.format(type)
         raise UnknownAnnotationTypeException(msg)
-
