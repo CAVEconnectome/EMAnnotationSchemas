@@ -1,6 +1,4 @@
 import marshmallow as mm
-from geoalchemy2.shape import to_shape
-
 
 class IdSchema(mm.Schema):
     '''schema with a unique identifier'''
