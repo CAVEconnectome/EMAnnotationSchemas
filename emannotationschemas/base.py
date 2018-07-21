@@ -34,7 +34,7 @@ class AnnotationSchema(mm.Schema):
     def flatten_schema(self, item):
         if self.context.get('flatten', False):
             flatten_dict(item)
-
+        return item
 
 class IdAnnotationSchema(IdSchema, AnnotationSchema):
     '''base schema for annotations'''
@@ -59,23 +59,20 @@ class ReferenceTagAnnotation(ReferenceAnnotation, TagAnnotation):
 
 class SpatialPoint(mm.Schema):
     '''a position in the segmented volume '''
-    position = mm.fields.Method('dump_geom',
-                                deserialize='load_geom',
-                                required=True,
-                                description='spatial position in voxels of'
-                                            'x,y,z of annotation',
-                                postgis_geometry='POINTZ')
+    position = mm.fields.List(mm.fields.Int,
+                              validate=mm.validate.Length(equal=3),
+                              required=True,
+                              description='spatial position in voxels of'
+                                          'x,y,z of annotation',
+                              postgis_geometry='POINTZ')
 
-    def dump_geom(self, obj):
-        return to_shape(obj).coords[0]
-
-    def load_geom(self, value):
-        if type(value) is not list:
-            raise mm.ValidationError("only lists")
-        if len(value) != 3:
-            raise mm.ValidationError("not a pointz")
-
-        return "POINTZ({} {} {})".format(value[0], value[1], value[2])
+    @mm.post_load
+    def transform_position(self, item):
+        if self.context.get('postgis', False):
+            item['position'] = "POINTZ({} {} {})".format(item['position'][0],
+                                                         item['position'][1],
+                                                         item['position'][2])
+        return item
 
 
 class BoundSpatialPoint(SpatialPoint):
@@ -87,6 +84,8 @@ class BoundSpatialPoint(SpatialPoint):
 
     @mm.post_load
     def convert_point(self, item):
+        print('bsp.context',self.context)
         bsp_fn = self.context.get('bsp_fn', None)
         if bsp_fn is not None:
             bsp_fn(item)
+        return item
