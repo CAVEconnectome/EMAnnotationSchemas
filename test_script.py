@@ -38,10 +38,11 @@ synapse_d = {
 }
 # get the schema to deserialize the test data
 SynapseSchema = get_schema('synapse')
-schema = SynapseSchema()
+schema = SynapseSchema(context={'postgis':True})
 
 # use the schema to deserialize the schema
 d = schema.load(synapse_d).data
+print(d)
 d = flatten_dict(d)
 
 # get the appropriate sqlalchemy model
@@ -51,10 +52,10 @@ SynapseModel = model_dict['test']['synapse']
 # remove the type field because we don't want it as a column
 d.pop('type', None)
 
-# create a new model instance with data
+# # create a new model instance with data
 synapse = SynapseModel(**d)
 
-# create a new db session
+# # create a new db session
 session = Session()
 # add this synapse to database
 session.add(synapse)

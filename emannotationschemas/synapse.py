@@ -17,9 +17,8 @@ class SynapseSchema(AnnotationSchema):
                                order=2)
     size = mm.fields.Float(description="size of synapse")
 
-    @mm.validates_schema
+    @mm.post_load
     def validate_type(self, item):
-        print(self.context)
         assert item['type'] == 'synapse'
 
 

@@ -44,7 +44,7 @@ def add_column(attrd, k, field):
         if isinstance(field, mm.fields.Nested):
             if field.many:
                 raise InvalidSchemaField("Nested(many=True) not supported")
-            for sub_k, sub_field in field.schema._declared_fields.items():
+            for sub_k, sub_field in field.nested._declared_fields.items():
                 do_sub_index = sub_field.metadata.get('index', False)
                 postgis_geom = sub_field.metadata.get('postgis_geometry',
                                                       None)
