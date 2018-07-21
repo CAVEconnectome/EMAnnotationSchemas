@@ -45,7 +45,9 @@ class ReferenceAnnotation(mm.Schema):
     '''a annoation that references another annotation'''
     target_id = mm.fields.Int(
         required=True, description='annotation this references')
-
+    reference_type = mm.fields.Str(
+        required=True, description='annotation_type that this annotation references'
+    )
 
 class TagAnnotation(mm.Schema):
     '''a simple tagged annotation'''
