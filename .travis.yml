@@ -13,3 +13,5 @@ script:
 - python setup.py pytest
 cache:
 - pip: true
+after_success:
+- codecov
