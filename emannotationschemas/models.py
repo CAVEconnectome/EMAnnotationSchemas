@@ -61,8 +61,7 @@ def add_column(attrd, k, field):
     return attrd
 
 
-def make_annotation_model(dataset, annotation_type):
-    Schema = get_schema(annotation_type)
+def make_annotation_model_from_schema(dataset, annotation_type, Schema):
     attrd = {
         '__tablename__': dataset + '_' + annotation_type,
         '__mapper_args__': {'polymorphic_identity': dataset, 'concrete': True}
@@ -75,3 +74,8 @@ def make_annotation_model(dataset, annotation_type):
     return type(model_name,
                 (TSBase,),
                 attrd)
+
+
+def make_annotation_model(dataset, annotation_type):
+    Schema = get_schema(annotation_type)
+    return make_annotation_model_from_schema(dataset, annotation_type, Schema)
