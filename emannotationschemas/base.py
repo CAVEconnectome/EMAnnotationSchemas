@@ -1,5 +1,6 @@
 import marshmallow as mm
 
+
 class IdSchema(mm.Schema):
     '''schema with a unique identifier'''
     oid = mm.fields.Int(description='identifier for annotation, '
@@ -33,6 +34,7 @@ class AnnotationSchema(mm.Schema):
         if self.context.get('flatten', False):
             flatten_dict(item)
         return item
+
 
 class IdAnnotationSchema(IdSchema, AnnotationSchema):
     '''base schema for annotations'''
@@ -82,7 +84,7 @@ class BoundSpatialPoint(SpatialPoint):
 
     @mm.post_load
     def convert_point(self, item):
-        print('bsp.context',self.context)
+        print('bsp.context', self.context)
         bsp_fn = self.context.get('bsp_fn', None)
         if bsp_fn is not None:
             bsp_fn(item)
