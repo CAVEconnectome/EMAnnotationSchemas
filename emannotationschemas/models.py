@@ -70,11 +70,6 @@ def add_column(attrd, k, field):
 
 
 def make_annotation_model_from_schema(dataset, annotation_type, Schema):
-    model_name = dataset.capitalize() + annotation_type.capitalize()
-
-    if model_name in annotation_models:
-        return annotation_models[model_name]
-
     attrd = {
         '__tablename__': dataset + '_' + annotation_type,
         '__mapper_args__': {'polymorphic_identity': dataset, 'concrete': True}
@@ -83,9 +78,10 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
         if (not field.metadata.get('drop_column', False)):
             attrd = add_column(attrd, k, field)
 
-    annotation_models[model_name] = type(model_name, (TSBase,), attrd)
-
-    return annotation_models[model_name]
+    model_name = dataset.capitalize() + annotation_type.capitalize()
+    return type(model_name,
+                (TSBase,),
+                attrd)
 
 
 def make_annotation_model(dataset, annotation_type):
