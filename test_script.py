@@ -5,8 +5,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # example of initializing mapping of database
-SQLALCHEMY_DATABASE_URI = "postgres://postgres:synapsedb@localhost:5432/postgres"
-engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
+DATABASE_URI = "postgres://postgres:synapsedb@localhost:5432/postgres"
+engine = create_engine(DATABASE_URI, echo=True)
 model_dict = make_all_models(['test', 'test2'])
 # assures that all the tables are created
 # would be done as a db management task in general
@@ -38,11 +38,10 @@ synapse_d = {
 }
 # get the schema to deserialize the test data
 SynapseSchema = get_schema('synapse')
-schema = SynapseSchema(context={'postgis':True})
+schema = SynapseSchema(context={'postgis': True})
 
 # use the schema to deserialize the schema
 d = schema.load(synapse_d).data
-print(d)
 d = flatten_dict(d)
 
 # get the appropriate sqlalchemy model
