@@ -9,7 +9,7 @@ def flatten_fields(schema, root=None, sep="_"):
         root = root + sep
     for k, field in schema._declared_fields.items():
         if isinstance(field, mm.fields.Nested):
-            fields.update(flatten_fields(field.schema, root=root + k))
+            fields.update(flatten_fields(field.nested, root=root + k))
         else:
             fields[root + k] = field
     return fields

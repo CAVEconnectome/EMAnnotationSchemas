@@ -1,4 +1,7 @@
 from emannotationschemas.synapse import SynapseSchema
+from emannotationschemas.base import flatten_dict
+from emannotationschemas import get_flat_schema
+
 
 good_synapse = {
     'type': 'synapse',
@@ -40,3 +43,29 @@ def test_synapse_validation():
     result = schema.load(supervoxel_rootId_synapse)
     assert(result.data['pre_pt']['supervoxel_id'] == 5)
     assert('rootId' not in result.data['pre_pt'].keys())
+
+
+def test_synapse_flatten():
+    schema = SynapseSchema()
+    result = schema.load(good_synapse)
+    d = flatten_dict(result.data)
+    print(d)
+    assert(d['pre_pt_position'] == [31, 31, 0])
+
+    result = schema.load(supervoxel_synapse)
+    assert(d['pre_pt_position'] == [31, 31, 0])
+
+    result = schema.load(supervoxel_rootId_synapse)
+    assert(d['pre_pt_position'] == [31, 31, 0])
+
+    FlatSynapseSchema = get_flat_schema('synapse')
+    schema = FlatSynapseSchema()
+    result = schema.load(d)
+    assert(len(result.errors) == 0)
+
+
+def test_synapse_postgis():
+    schema = SynapseSchema(context={'postgis': True})
+    result = schema.load(good_synapse)
+    d = flatten_dict(result.data)
+    assert(d['pre_pt_position'] == 'POINTZ(31 31 0)')

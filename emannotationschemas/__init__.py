@@ -2,7 +2,7 @@ from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 type_mapping = {
     'synapse': SynapseSchema
