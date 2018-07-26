@@ -6,6 +6,8 @@ from emannotationschemas import get_schema, get_types
 import marshmallow as mm
 Base = declarative_base()
 
+annotation_models = {}
+
 
 class InvalidSchemaField(Exception):
     '''Exception raised if a schema can't be translated to a model'''
@@ -62,6 +64,11 @@ def add_column(attrd, k, field):
 
 
 def make_annotation_model(dataset, annotation_type):
+    model_name = dataset.capitalize() + annotation_type.capitalize()
+
+    if model_name in annotation_models:
+        return annotation_models[model_name]
+
     Schema = get_schema(annotation_type)
     attrd = {
         '__tablename__': dataset + '_' + annotation_type,
@@ -71,7 +78,6 @@ def make_annotation_model(dataset, annotation_type):
         if (not field.metadata.get('drop_column', False)):
             attrd = add_column(attrd, k, field)
 
-    model_name = dataset.capitalize() + annotation_type.capitalize()
-    return type(model_name,
-                (TSBase,),
-                attrd)
+    annotation_models[model_name] = type(model_name, (TSBase,), attrd)
+
+    return annotation_models[model_name]
