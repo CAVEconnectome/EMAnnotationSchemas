@@ -1,6 +1,10 @@
 import marshmallow as mm
 
 
+class NumericField(mm.fields.Int):
+    pass
+
+
 class IdSchema(mm.Schema):
     '''schema with a unique identifier'''
     oid = mm.fields.Int(description='identifier for annotation, '
@@ -75,10 +79,10 @@ class SpatialPoint(mm.Schema):
 
 class BoundSpatialPoint(SpatialPoint):
     ''' a position in the segmented volume that is associated with an object'''
-    supervoxel_id = mm.fields.Int(missing=mm.missing,
-                                  description="supervoxel id of this point")
-    root_id = mm.fields.Int(description="root id of the bound point",
-                            index=True)
+    supervoxel_id = NumericField(missing=mm.missing,
+                                 description="supervoxel id of this point")
+    root_id = NumericField(description="root id of the bound point",
+                           index=True)
 
     @mm.post_load
     def convert_point(self, item):
