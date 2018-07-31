@@ -22,14 +22,14 @@ synapse_d = {
     "pre_pt":
     {
         "position": [5, 5, 10],
-        "root_id": 3,
-        "supervoxel_id": 5
+        "root_id": 9223372036854775899,
+        "supervoxel_id": 89851029364932800
     },
     "post_pt":
     {
         "position": [10, 5, 10],
-        "root_id": 4,
-        "supervoxel_id": 10
+        "root_id": 9223372036854775898,
+        "supervoxel_id": 106205165316472881
     },
     "ctr_pt": {
         "position": [7, 5, 10]
