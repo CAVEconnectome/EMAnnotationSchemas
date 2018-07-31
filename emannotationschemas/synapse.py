@@ -24,8 +24,10 @@ class SynapseSchema(AnnotationSchema):
         pre_id = item['pre_pt'].get('root_id', None)
         post_id = item['post_pt'].get('root_id', None)
 
-        # if the root_id is present we should set the valid flag depending up on this rule
-        # when the root_id is not present (i.e. when posting new annotations with no root_id's in mind)
+        # if the root_id is present
+        # we should set the valid flag depending up on this rule
+        # when the root_id is not present
+        # (i.e. when posting new annotations with no root_id's in mind)
         # then the valid flag should be not present
         if pre_id is not None:
             if (pre_id == post_id):
