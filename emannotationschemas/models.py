@@ -1,8 +1,9 @@
-from sqlalchemy import Column, String, Integer, Float, BigInteger, Numeric
+from sqlalchemy import Column, String, Integer, Float, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import AbstractConcreteBase
 from geoalchemy2 import Geometry
 from emannotationschemas import get_schema, get_types
+from emannotationschemas.base import NumericField
 import marshmallow as mm
 Base = declarative_base()
 
@@ -31,7 +32,8 @@ def make_all_models(datasets):
 
 
 field_column_map = {
-    mm.fields.Int: Numeric,
+    NumericField: Numeric,
+    mm.fields.Int: Integer,
     mm.fields.Float: Float,
     mm.fields.Str: String
 }
