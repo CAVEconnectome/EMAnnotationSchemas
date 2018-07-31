@@ -16,14 +16,23 @@ incomplete_type = {
     'post_pt': {'position': [33, 33, 0]}
 }
 supervoxel_synapse = {
+    'type': 'synapse',
     'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95},
     'ctr_pt': {'position': [32, 32, 0], 'supervoxel_id': 105},
     'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101}
 }
 supervoxel_rootId_synapse = {
-    'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95, 'rootId': 4},
-    'ctr_pt': {'position': [32, 32, 0], 'supervoxel_id': 105, 'rootId': 5},
-    'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101, 'rootId': 5}
+    'type': 'synapse',
+    'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95, 'root_id': 4},
+    'ctr_pt': {'position': [32, 32, 0], 'supervoxel_id': 105, 'root_id': 5},
+    'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101, 'root_id': 5}
+}
+
+supervoxel_rootId_invalid_synapse = {
+    'type': 'synapse',
+    'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95, 'root_id': 5},
+    'ctr_pt': {'position': [32, 32, 0], 'supervoxel_id': 105, 'root_id': 5},
+    'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101, 'root_id': 5}
 }
 
 
@@ -69,3 +78,19 @@ def test_synapse_postgis():
     result = schema.load(good_synapse)
     d = flatten_dict(result.data)
     assert(d['pre_pt_position'] == 'POINTZ(31 31 0)')
+
+
+def test_synapse_validity():
+    schema = SynapseSchema()
+    result = schema.load(supervoxel_rootId_synapse)
+    print('valid test', result.data)
+    assert result.data['valid']
+    result = schema.load(good_synapse)
+    assert 'valid' not in result.data.keys()
+
+
+def test_synapse_invalid():
+    schema = SynapseSchema()
+    result = schema.load(supervoxel_rootId_invalid_synapse)
+    print('test', result.data, result.errors)
+    assert not result.data['valid']
