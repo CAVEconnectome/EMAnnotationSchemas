@@ -2,7 +2,10 @@ import marshmallow as mm
 
 
 class NumericField(mm.fields.Int):
-    pass
+    def _jsonschema_type_mapping(self):
+        return {
+            'type': 'int',
+        }
 
 
 class IdSchema(mm.Schema):
@@ -48,10 +51,6 @@ class ReferenceAnnotation(mm.Schema):
     '''a annoation that references another annotation'''
     target_id = mm.fields.Int(
         required=True, description='annotation this references')
-    reference_type = mm.fields.Str(
-        required=True,
-        description='annotation_type that this annotation references'
-    )
 
 
 class TagAnnotation(mm.Schema):

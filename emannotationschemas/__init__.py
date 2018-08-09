@@ -1,11 +1,13 @@
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
+from emannotationschemas.bouton_shape import BoutonShape
 
-__version__ = '0.1.3'
+__version__ = '0.2.0'
 
 type_mapping = {
-    'synapse': SynapseSchema
+    'synapse': SynapseSchema,
+    'bouton_shape': BoutonShape
 }
 
 
