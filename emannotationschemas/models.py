@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Float, Numeric
+from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import AbstractConcreteBase
 from geoalchemy2 import Geometry
@@ -32,8 +32,12 @@ def make_all_models(datasets):
 field_column_map = {
     NumericField: Numeric,
     mm.fields.Int: Integer,
+    mm.fields.Integer: Integer,
     mm.fields.Float: Float,
-    mm.fields.Str: String
+    mm.fields.Str: String,
+    mm.fields.String: String,
+    mm.fields.Bool: Boolean,
+    mm.fields.Boolean: Boolean
 }
 
 

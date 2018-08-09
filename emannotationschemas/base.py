@@ -33,6 +33,11 @@ class AnnotationSchema(mm.Schema):
         description='type of annotation',
         drop_column=True)
 
+    valid = mm.fields.Bool(
+        required=False,
+        description="is this annotation valid"
+    )
+
 
 class IdAnnotationSchema(IdSchema, AnnotationSchema):
     '''base schema for annotations'''
