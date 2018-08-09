@@ -42,12 +42,7 @@ class AnnotationSchema(mm.Schema):
     )
 
 
-class IdAnnotationSchema(IdSchema, AnnotationSchema):
-    '''base schema for annotations'''
-    pass
-
-
-class ReferenceAnnotation(mm.Schema):
+class ReferenceAnnotation(AnnotationSchema):
     '''a annoation that references another annotation'''
     target_id = mm.fields.Int(
         required=True, description='annotation this references')
