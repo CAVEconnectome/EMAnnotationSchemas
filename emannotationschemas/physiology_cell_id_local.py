@@ -9,4 +9,4 @@ class PhysiologyCellIDLocal( AnnotationSchema, BoundSpatialPoint ):
 
     @mm.post_load
     def validate_type( self, item):
-        assert item['type'] = 'physiology_cell_id_local'
+        assert item['type'] = 'physiology_cell_id'

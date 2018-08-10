@@ -14,11 +14,11 @@ allowed_bouton_categories = ['pancake',
                             'unknown',
                             ]
 
-class PresynapticBoutonType( ReferenceAnnotation ):
+class PresynapticBoutonClass( ReferenceAnnotation ):
 
     target_id = mm.fields.Int(
         required=True,
-        description='Synapse Annotation Id Referenced',
+        description='Synapse annotation id reference',
         reference_type='synapse')
 
     bouton_type = mm.fields.Str(
@@ -28,4 +28,4 @@ class PresynapticBoutonType( ReferenceAnnotation ):
 
     @mm.post_load
     def validate_type(self, item):
-        assert item['type'] == 'presynaptic_bouton_type'
+        assert item['type'] == 'presynaptic_bouton_class'

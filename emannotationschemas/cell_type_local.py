@@ -3,7 +3,9 @@ import marshmallow as mm
 from marshmallow.validate import Range, OneOf
 
 allowed_systems = ['ivscc',
-                   'valence']
+                   'valence',
+                   'classical',
+                   'freeform']
 
 allowed_types = dict(
                     valence=['E',
@@ -13,7 +15,7 @@ allowed_types = dict(
                     ivscc=[ 'spiny_{}'.format(i) for i in range(1,15) ] + \
                           [ 'aspiny_s_{}'.format(i) for i in range(1,17) ] + \
                           [ 'unknown' ],
-                    classic=['chandelier',
+                    classical=['chandelier',
                              'pyramidal',
                              'martinotti',
                              'pv',
@@ -24,6 +26,7 @@ allowed_types = dict(
                              'astrocyte',
                              'microglia-perivascular',
                              'microglia-perineuronal',
+                             'unknown'
                              ]
                     )
 
@@ -46,8 +49,11 @@ class CellTypeLocal( AnnotationSchema, BoundSpatialPoint ):
         assert item['type'] == 'cell_type_local'
 
         system = item['classification_system']
-        if item['cell_type'] not in allowed_types[system]:
-            item['valid'] = False
+        if system in allowed_types.keys(): 
+            if item['cell_type'] not in allowed_types[system]:
+                item['valid'] = False
+            else:
+                item['valid'] = True
         else:
             item['valid'] = True
 
