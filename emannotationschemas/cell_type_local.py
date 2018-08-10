@@ -2,10 +2,10 @@ from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
 from marshmallow.validate import Range, OneOf
 
-allowed_systems = ['ivscc',
-                   'valence',
-                   'classical',
-                   'freeform']
+allowed_classification_systems = ['ivscc',
+                             'valence',
+                             'classical',
+                             'freeform']
 
 allowed_types = dict(
                     valence=['E',
@@ -30,12 +30,12 @@ allowed_types = dict(
                              ]
                     )
 
-class CellTypeLocal( AnnotationSchema, BoundSpatialPoint ):
+class CellTypeLocal( AnnotationSchema ):
 
     classification_system = mm.fields.String(
                             required=True,
                             description='Classification system followed',
-                            validate=OneOf( allowed_systems ))
+                            validate=OneOf( allowed_classification_systems ))
     cell_type = mm.fields.String(
                             required=True,
                             description='Cell type name')
@@ -43,10 +43,12 @@ class CellTypeLocal( AnnotationSchema, BoundSpatialPoint ):
                             required=False,
                             description='Confidence in assignment, between 0-1',
                             validate=Range(min=0,max=1) )
-
+    pt = mm.fields.Nested( BoundSpatialPoint, 
+                            required=True,
+                            description='Location associated with classification')
     @mm.post_load
     def validate_type( self, item):
-        assert item['type'] == 'cell_type_local'
+        assert item['type'] == 'cell_type'
 
         system = item['classification_system']
         if system in allowed_types.keys(): 

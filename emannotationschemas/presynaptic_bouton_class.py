@@ -14,14 +14,14 @@ allowed_bouton_categories = ['pancake',
                             'unknown',
                             ]
 
-class PresynapticBoutonClass( ReferenceAnnotation ):
+class PresynapticBoutonType( ReferenceAnnotation ):
 
     target_id = mm.fields.Int(
         required=True,
         description='Synapse annotation id reference',
         reference_type='synapse')
 
-    bouton_type = mm.fields.Str(
+    bouton_class = mm.fields.Str(
         required=True,
         validate=OneOf( allowed_bouton_categories ),
         description='Presynaptic type based on bouton')
