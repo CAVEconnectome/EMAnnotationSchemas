@@ -1,9 +1,10 @@
 from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean
+from sqlalchemy import ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import AbstractConcreteBase
 from geoalchemy2 import Geometry
 from emannotationschemas import get_schema, get_types
-from emannotationschemas.base import NumericField
+from emannotationschemas.base import NumericField, ReferenceAnnotation
 import marshmallow as mm
 Base = declarative_base()
 
@@ -75,6 +76,11 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
     for k, field in Schema._declared_fields.items():
         if (not field.metadata.get('drop_column', False)):
             attrd = add_column(attrd, k, field)
+    if issubclass(Schema, ReferenceAnnotation):
+        target_field = Schema._declared_fields['target_id']
+        reference_type = target_field.metadata['reference_type']
+        attrd['target_id'] = Column(Integer, ForeignKey(
+            dataset + '_' + reference_type + '.id'))
 
     model_name = dataset.capitalize() + annotation_type.capitalize()
     return type(model_name,
