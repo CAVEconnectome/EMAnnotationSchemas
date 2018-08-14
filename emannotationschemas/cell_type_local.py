@@ -8,9 +8,9 @@ allowed_classification_systems = ['ivscc',
                              'freeform']
 
 allowed_types = dict(
-                    valence=['E',
-                             'I',
-                             'G',
+                    valence=['e',
+                             'i',
+                             'g',
                              'unknown'],
                     ivscc=[ 'spiny_{}'.format(i) for i in range(1,15) ] + \
                           [ 'aspiny_s_{}'.format(i) for i in range(1,17) ] + \
