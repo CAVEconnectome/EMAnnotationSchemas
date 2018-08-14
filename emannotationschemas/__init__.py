@@ -2,12 +2,13 @@ from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.bouton_shape import BoutonShape
-
+from emannotationschemas.functional_coregistration import FunctionalCorregistration
 __version__ = '0.2.0'
 
 type_mapping = {
     'synapse': SynapseSchema,
-    'bouton_shape': BoutonShape
+    'bouton_shape': BoutonShape,
+    'functional_coregistration': FunctionalCorregistration
 }
 
 
