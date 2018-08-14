@@ -7,6 +7,8 @@ from emannotationschemas.base import NumericField
 import marshmallow as mm
 Base = declarative_base()
 
+annotation_models = {}
+
 
 class InvalidSchemaField(Exception):
     '''Exception raised if a schema can't be translated to a model'''
@@ -68,18 +70,20 @@ def add_column(attrd, k, field):
 
 
 def make_annotation_model_from_schema(dataset, annotation_type, Schema):
-    attrd = {
-        '__tablename__': dataset + '_' + annotation_type,
-        '__mapper_args__': {'polymorphic_identity': dataset, 'concrete': True}
-    }
-    for k, field in Schema._declared_fields.items():
-        if (not field.metadata.get('drop_column', False)):
-            attrd = add_column(attrd, k, field)
-
     model_name = dataset.capitalize() + annotation_type.capitalize()
-    return type(model_name,
-                (TSBase,),
-                attrd)
+
+    if model_name not in annotation_models:
+        attrd = {
+            '__tablename__': dataset + '_' + annotation_type,
+            '__mapper_args__': {'polymorphic_identity': dataset, 'concrete': True}
+        }
+        for k, field in Schema._declared_fields.items():
+            if (not field.metadata.get('drop_column', False)):
+                attrd = add_column(attrd, k, field)
+
+        annotation_models[model_name] = type(model_name, (TSBase,), attrd)
+
+    return annotation_models[model_name]
 
 
 def make_annotation_model(dataset, annotation_type):
