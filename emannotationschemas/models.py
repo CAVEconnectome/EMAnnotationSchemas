@@ -21,13 +21,15 @@ class TSBase(AbstractConcreteBase, Base):
     #     return Column(String(50), ForeignKey('locations.table_name'))
 
 
-def make_all_models(datasets):
+def make_all_models(datasets, materialize=True):
     model_dict = {}
     types = get_types()
     for dataset in datasets:
         model_dict[dataset] = {}
         for type_ in types:
             model_dict[dataset][type_] = make_annotation_model(dataset, type_)
+        if materialize:
+            model_dict[dataset]['cellsegment'] = make_annotation_model_from_schema(dataset, 'cellsegment', Schema)
     return model_dict
 
 
