@@ -17,11 +17,17 @@ class Contact(AnnotationSchema):
                               description='spatial position in voxels of'
                                           'x,y,z of side b of contact',
                               postgis_geometry='POINTZ')
+    ctr_pt = mm.fields.List(mm.fields.Int,
+                              validate=mm.validate.Length(equal=3),
+                              required=True,
+                              description='spatial position in voxels of'
+                                          'x,y,z of contact',
+                              postgis_geometry='POINTZ')
     sidea_supervoxel_ids = mm.fields.List(mm.fields.Int,
                                           description = "list of supervoxel ids on sidea")
     sideb_supervoxel_ids = mm.fields.List(mm.fields.List,
                                           description ="list of superevoxel ids assocaited with sideb")
-                                          
+
 
     @mm.post_load
     def validate_type(self, item):
