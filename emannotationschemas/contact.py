@@ -22,11 +22,11 @@ class Contact(AnnotationSchema):
                               required=True,
                               description='spatial position in voxels of'
                                           'x,y,z of contact',
-                              postgis_geometry='POINTZ')
+                              postgis_geometry='POINTZ')ad
     sidea_supervoxel_ids = mm.fields.List(mm.fields.Int,
                                           description = "list of supervoxel ids on sidea")
     sideb_supervoxel_ids = mm.fields.List(mm.fields.List,
-                                          description ="list of superevoxel ids assocaited with sideb")
+                                          description ="list of superevoxel ids on sideb")
 
 
     @mm.post_load
