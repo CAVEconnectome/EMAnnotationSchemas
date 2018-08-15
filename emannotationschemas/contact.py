@@ -5,7 +5,7 @@ import marshmallow as mm
 
 
 class Contact(AnnotationSchema):
-    area = mm.fields.Float(description="contact area")
+    size = mm.fields.Int(description="contact area (in units of voxel count)")
     sidea_pt = mm.fields.Nested(BoundSpatialPoint,
                                 required=True,
                                 description='point on sidea of contact')
@@ -14,10 +14,7 @@ class Contact(AnnotationSchema):
                                 description='point on sideb of contact')
     ctr_pt = mm.fields.Nested(SpatialPoint,
                               description='point on contact interface')
-    sidea_supervoxel_ids = mm.fields.List(mm.fields.Int,
-                                          description="supervoxels on sidea")
-    sideb_supervoxel_ids = mm.fields.List(mm.fields.Int,
-                                          description="supervoxels on sideb")
+
 
     @mm.post_load
     def validate_type(self, item):
