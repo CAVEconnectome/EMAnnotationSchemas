@@ -1,11 +1,9 @@
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
-from emannotationschemas.bouton_shape import BoutonShape
 from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.cell_type_local import CellTypeLocal
-from emannotationschemas.physiology_cell_id_local import PhysiologyCellIdLocal
 __version__ = '0.2.0'
 
 type_mapping = {
@@ -13,9 +11,7 @@ type_mapping = {
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
     'cell_type': CellTypeLocal,
-    'physiology_cell_id': PhysiologyCellIdLocal,
 }
-
 
 def get_types():
     return [k for k in type_mapping.keys()]
