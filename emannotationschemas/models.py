@@ -11,7 +11,8 @@ Base = declarative_base()
 
 annotation_models = {}
 
-root_id_model_name = "CellSegment"
+# TODO decide what to call this for real
+root_model_name = "CellSegment"
 
 
 class InvalidSchemaField(Exception):
@@ -25,7 +26,6 @@ class TSBase(AbstractConcreteBase, Base):
     #     return Column(String(50), ForeignKey('locations.table_name'))
 
 
-# TODO do we want the option of excluding pychunkedgraph related models?
 def make_all_models(datasets, include_pychunkedgraph=False):
     model_dict = {}
     types = get_types()
@@ -35,7 +35,7 @@ def make_all_models(datasets, include_pychunkedgraph=False):
             model_dict[dataset][type_] = make_annotation_model(dataset, type_)
         if include_pychunkedgraph:
             cell_segment_model = make_cell_segment_model(dataset)
-            model_dict[dataset]['cellsegment'] = cell_segment_model
+            model_dict[dataset][root_model_name.lower()] = cell_segment_model
             contact_model = make_annotation_model_from_schema(dataset,
                                                               'contact',
                                                               Contact)
@@ -74,7 +74,7 @@ def add_column(attrd, k, field, dataset):
                 else:
                     dyn_args = [field_column_map[type(sub_field)]]
                     if sub_k == 'root_id':
-                        fk = dataset + "_" + root_id_model_name + ".id"
+                        fk = dataset + "_" + root_model_name + ".id"
                         dyn_args.append(ForeignKey(fk))
                     attrd[k + "_" +
                           sub_k] = Column(*dyn_args,
@@ -87,9 +87,9 @@ def add_column(attrd, k, field, dataset):
 
 def make_cell_segment_model(dataset):
     attr_dict = {
-        '__tablename__': dataset + '_' + root_id_model_name
+        '__tablename__': dataset + '_' + root_model_name
     }
-    model_name = dataset.capitalize() + root_id_model_name
+    model_name = dataset.capitalize() + root_model_name
     if model_name not in annotation_models:
         annotation_models[model_name] = type(model_name, (TSBase,), attr_dict)
     return annotation_models[model_name]
