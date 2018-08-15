@@ -43,7 +43,7 @@ class AnnotationSchema(mm.Schema):
 
 
 class ReferenceAnnotation(AnnotationSchema):
-    '''a annoation that references another annotation'''
+    '''a annotation that references another annotation'''
     target_id = mm.fields.Int(
         required=True, description='annotation this references')
 
@@ -51,12 +51,13 @@ class ReferenceAnnotation(AnnotationSchema):
 class TagAnnotation(mm.Schema):
     '''a simple tagged annotation'''
     tag = mm.fields.Str(
-        required=True, description="tag to attach to annoation")
-
+        required=True, description="tag to attach to annotation")
 
 class ReferenceTagAnnotation(ReferenceAnnotation, TagAnnotation):
     '''A tag attached to another annotation'''
 
+class BoundTagAnnotation( BoundSpatialPoint, TagAnnotation ):
+    '''A tag attached to a point in space.'''
 
 class SpatialPoint(mm.Schema):
     '''a position in the segmented volume '''
