@@ -11,6 +11,8 @@ Base = declarative_base()
 
 annotation_models = {}
 
+root_id_model_name = "CellSegment"
+
 
 class InvalidSchemaField(Exception):
     '''Exception raised if a schema can't be translated to a model'''
@@ -53,7 +55,7 @@ field_column_map = {
 }
 
 
-def add_column(attrd, k, field):
+def add_column(attrd, k, field, dataset):
     field_type = type(field)
     do_index = field.metadata.get('index', False)
     if field_type in field_column_map:
@@ -70,8 +72,12 @@ def add_column(attrd, k, field):
                     attrd[k + "_" + sub_k] = Column(Geometry(postgis_geom,
                                                              dimension=3))
                 else:
+                    dyn_args = [field_column_map[type(sub_field)]]
+                    if sub_k == 'root_id':
+                        fk = dataset + "_" + root_id_model_name + ".id"
+                        dyn_args.append(ForeignKey(fk))
                     attrd[k + "_" +
-                          sub_k] = Column(field_column_map[type(sub_field)],
+                          sub_k] = Column(*dyn_args,
                                           index=do_sub_index)
         else:
             raise InvalidSchemaField(
@@ -81,11 +87,11 @@ def add_column(attrd, k, field):
 
 def make_cell_segment_model(dataset):
     attr_dict = {
-        '__tablename__': dataset + '_' + "CellSegment"
+        '__tablename__': dataset + '_' + root_id_model_name
     }
-    model_name = dataset.capitalize() + "CellSegment"
+    model_name = dataset.capitalize() + root_id_model_name
     if model_name not in annotation_models:
-        annotation_models[model_name] = type(model_name, (TSBase,), attrd)
+        annotation_models[model_name] = type(model_name, (TSBase,), attr_dict)
     return annotation_models[model_name]
 
 
@@ -103,7 +109,7 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
         }
         for k, field in Schema._declared_fields.items():
             if (not field.metadata.get('drop_column', False)):
-                attrd = add_column(attrd, k, field)
+                attrd = add_column(attrd, k, field, dataset)
         if issubclass(Schema, ReferenceAnnotation):
             target_field = Schema._declared_fields['target_id']
             reference_type = target_field.metadata['reference_type']
