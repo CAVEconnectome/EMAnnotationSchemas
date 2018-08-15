@@ -3,12 +3,12 @@ from emannotationschemas.base import BoundSpatialPoint, \
 import marshmallow as mm
 
 
-class FunctionalCorregistration(AnnotationSchema):
+class FunctionalCoregistration(AnnotationSchema):
     pt = mm.fields.Nested(BoundSpatialPoint, required=True,
                           description="location of cell body of functional cell")
-    size = mm.fields.Int(required=True, description="functional cell ID")
+    func_id = mm.fields.Int(required=True, description="functional cell ID")
 
     @mm.post_load
     def validate_type(self, item):
-        # check that the annotation type is present in the object as 'synapse'
+        # check that the annotation type is present in the object as 'functional_coregistration'
         assert item['type'] == 'functional_coregistration'
