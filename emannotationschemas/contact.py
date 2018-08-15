@@ -15,9 +15,9 @@ class Contact(AnnotationSchema):
     ctr_pt = mm.fields.Nested(SpatialPoint,
                               description='point on contact interface')
     sidea_supervoxel_ids = mm.fields.List(mm.fields.Int,
-                                          description="list of supervoxel ids on sidea")
+                                          description="supervoxels on sidea")
     sideb_supervoxel_ids = mm.fields.List(mm.fields.Int,
-                                          description="list of superevoxel ids on sideb")
+                                          description="supervoxels on sideb")
 
     @mm.post_load
     def validate_type(self, item):
