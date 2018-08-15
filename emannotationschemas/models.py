@@ -9,6 +9,7 @@ import marshmallow as mm
 Base = declarative_base()
 
 annotation_models = {}
+pychunkedgraph_models = {}
 
 
 class InvalidSchemaField(Exception):
@@ -30,7 +31,8 @@ def make_all_models(datasets, materialize=True):
         for type_ in types:
             model_dict[dataset][type_] = make_annotation_model(dataset, type_)
         if materialize:
-            model_dict[dataset]['cellsegment'] = make_annotation_model_from_schema(dataset, 'cellsegment', Schema)
+            cell_segment_model = make_cell_segment_model(dataset)
+            model_dict[dataset]['cellsegment'] = cell_segment_model
     return model_dict
 
 
@@ -72,6 +74,16 @@ def add_column(attrd, k, field):
     return attrd
 
 
+def make_cell_segment_model(dataset):
+    attr_dict = {
+        '__tablename__': dataset + '_' + "CellSegment"
+    }
+    model_name = dataset.capitalize() + "CellSegment"
+    if model_name not in pychunkedgraph_models:
+        pychunkedgraph_models[model_name] = type(model_name, (TSBase,), attrd)
+    return pychunkedgraph_models[model_name]
+
+
 def make_annotation_model_from_schema(dataset, annotation_type, Schema):
 
     model_name = dataset.capitalize() + annotation_type.capitalize()
@@ -79,7 +91,10 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
     if model_name not in annotation_models:
         attrd = {
             '__tablename__': dataset + '_' + annotation_type,
-            '__mapper_args__': {'polymorphic_identity': dataset, 'concrete': True}
+            '__mapper_args__': {
+                'polymorphic_identity': dataset,
+                'concrete': True
+            }
         }
         for k, field in Schema._declared_fields.items():
             if (not field.metadata.get('drop_column', False)):
