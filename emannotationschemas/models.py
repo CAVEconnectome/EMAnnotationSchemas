@@ -6,6 +6,7 @@ from geoalchemy2 import Geometry
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.base import NumericField, ReferenceAnnotation
 from emannotationschemas.contact import Contact
+from emannotationschemas.errors import UnknownAnnotationTypeException
 import marshmallow as mm
 Base = declarative_base()
 
@@ -26,20 +27,103 @@ class TSBase(AbstractConcreteBase, Base):
     #     return Column(String(50), ForeignKey('locations.table_name'))
 
 
-def make_all_models(datasets, include_pychunkedgraph=False):
+def fix_types(types):
+    '''normalize a list of desired annotation types
+    if passed None returns all types, otherwise checks that types exist
+    Parameters
+    ----------
+    types: list[str] or None
+
+    Returns
+    -------
+    list[str]
+        list of types
+
+    Raises
+    ------
+    UnknownAnnotationTypeException
+        If types contains an invalid type
+    '''
+
+    all_types = get_types()
+    if types is None:
+        types = all_types
+    else:
+        if not (all(type_ in all_types for type_ in types)):
+            msg = '{} contains invalid type'.format(types)
+            raise UnknownAnnotationTypeException(msg)
+
+    return types
+
+
+def make_dataset_models(dataset, types=None, include_contacts=False):
+    """make all the models for a dataset
+
+    Parameters
+    ----------
+    dataset: str
+        name of dataset
+    types: list[str]
+        list of types to make (default=None falls back to all types)
+    include_contacts:
+        option to include the model for cell contacts
+
+    Returns
+    -------
+    dict
+        dictionary where keys are types and values are sqlalchemy Models
+
+    Raises
+    ------
+    UnknownAnnotationTypeException
+        If a type is not a valid annotation type
+    """
+
+    types = fix_types(types)
+    dataset_dict = {}
+    cell_segment_model = make_cell_segment_model(dataset)
+    dataset_dict[root_model_name.lower()] = cell_segment_model
+    for type_ in types:
+        dataset_dict[type_] = make_annotation_model(dataset, type_)
+    if include_contacts:
+        contact_model = make_annotation_model_from_schema(dataset,
+                                                          'contact',
+                                                          Contact)
+        dataset_dict['contact'] = contact_model
+    return dataset_dict
+
+
+def make_all_models(datasets, types=None, include_contacts=False):
+    """make all the models for a dataset
+
+    Parameters
+    ----------
+    datasets: list[str]
+        list of datasets to make models for
+    types: list[str]
+        list of types to make (default=None falls back to all types)
+    include_contacts:
+        option to include the model for cell contacts
+
+    Returns
+    -------
+    dict
+        2 level nested dictionary where first key is dataset, and second key is types
+        and values are sqlalchemy Models
+
+
+    Raises
+    ------
+    UnknownAnnotationTypeException
+        If a type is not a valid annotation type
+    """
+
     model_dict = {}
-    types = get_types()
+    types = fix_types(types)
     for dataset in datasets:
-        model_dict[dataset] = {}
-        for type_ in types:
-            model_dict[dataset][type_] = make_annotation_model(dataset, type_)
-        if include_pychunkedgraph:
-            cell_segment_model = make_cell_segment_model(dataset)
-            model_dict[dataset][root_model_name.lower()] = cell_segment_model
-            contact_model = make_annotation_model_from_schema(dataset,
-                                                              'contact',
-                                                              Contact)
-            model_dict[dataset]['contact'] = contact_model
+        model_dict[dataset] = make_dataset_models(dataset,
+                                                  types,
+                                                  include_contacts)
     return model_dict
 
 
