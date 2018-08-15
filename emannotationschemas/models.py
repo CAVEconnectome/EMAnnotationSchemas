@@ -74,7 +74,7 @@ def add_column(attrd, k, field, dataset):
                 else:
                     dyn_args = [field_column_map[type(sub_field)]]
                     if sub_k == 'root_id':
-                        fk = dataset + "_" + root_model_name + ".id"
+                        fk = dataset + "_" + root_model_name.lower() + ".id"
                         dyn_args.append(ForeignKey(fk))
                     attrd[k + "_" +
                           sub_k] = Column(*dyn_args,
@@ -87,7 +87,7 @@ def add_column(attrd, k, field, dataset):
 
 def make_cell_segment_model(dataset):
     attr_dict = {
-        '__tablename__': dataset + '_' + root_model_name
+        '__tablename__': dataset + '_' + root_model_name.lower()
     }
     model_name = dataset.capitalize() + root_model_name
     if model_name not in annotation_models:
