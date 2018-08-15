@@ -48,17 +48,6 @@ class ReferenceAnnotation(AnnotationSchema):
         required=True, description='annotation this references')
 
 
-class TagAnnotation(mm.Schema):
-    '''a simple tagged annotation'''
-    tag = mm.fields.Str(
-        required=True, description="tag to attach to annotation")
-
-class ReferenceTagAnnotation(ReferenceAnnotation, TagAnnotation):
-    '''A tag attached to another annotation'''
-
-class BoundTagAnnotation( BoundSpatialPoint, TagAnnotation ):
-    '''A tag attached to a point in space.'''
-
 class SpatialPoint(mm.Schema):
     '''a position in the segmented volume '''
     position = mm.fields.List(mm.fields.Int,

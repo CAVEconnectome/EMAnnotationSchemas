@@ -1,6 +1,6 @@
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.tags import BoundTagAnnotation,\
-                                                ReferenceTagAnnotation
+                                     ReferenceTagAnnotation
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.bouton_shape import BoutonShape
