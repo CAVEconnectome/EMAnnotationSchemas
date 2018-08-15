@@ -16,7 +16,7 @@ class Contact(AnnotationSchema):
                               description='point on contact interface')
     sidea_supervoxel_ids = mm.fields.List(mm.fields.Int,
                                           description="list of supervoxel ids on sidea")
-    sideb_supervoxel_ids = mm.fields.List(mm.fields.List,
+    sideb_supervoxel_ids = mm.fields.List(mm.fields.Int,
                                           description="list of superevoxel ids on sideb")
 
     @mm.post_load
