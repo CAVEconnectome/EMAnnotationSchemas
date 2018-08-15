@@ -5,11 +5,11 @@ from sqlalchemy.ext.declarative import AbstractConcreteBase
 from geoalchemy2 import Geometry
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.base import NumericField, ReferenceAnnotation
+from emannotationschemas.contact import Contact
 import marshmallow as mm
 Base = declarative_base()
 
 annotation_models = {}
-pychunkedgraph_models = {}
 
 
 class InvalidSchemaField(Exception):
@@ -23,16 +23,21 @@ class TSBase(AbstractConcreteBase, Base):
     #     return Column(String(50), ForeignKey('locations.table_name'))
 
 
-def make_all_models(datasets, materialize=True):
+# TODO do we want the option of excluding pychunkedgraph related models?
+def make_all_models(datasets, include_pychunkedgraph=False):
     model_dict = {}
     types = get_types()
     for dataset in datasets:
         model_dict[dataset] = {}
         for type_ in types:
             model_dict[dataset][type_] = make_annotation_model(dataset, type_)
-        if materialize:
+        if include_pychunkedgraph:
             cell_segment_model = make_cell_segment_model(dataset)
             model_dict[dataset]['cellsegment'] = cell_segment_model
+            contact_model = make_annotation_model_from_schema(dataset,
+                                                              'contact',
+                                                              Contact)
+            model_dict[dataset]['contact'] = contact_model
     return model_dict
 
 
@@ -79,9 +84,9 @@ def make_cell_segment_model(dataset):
         '__tablename__': dataset + '_' + "CellSegment"
     }
     model_name = dataset.capitalize() + "CellSegment"
-    if model_name not in pychunkedgraph_models:
-        pychunkedgraph_models[model_name] = type(model_name, (TSBase,), attrd)
-    return pychunkedgraph_models[model_name]
+    if model_name not in annotation_models:
+        annotation_models[model_name] = type(model_name, (TSBase,), attrd)
+    return annotation_models[model_name]
 
 
 def make_annotation_model_from_schema(dataset, annotation_type, Schema):
