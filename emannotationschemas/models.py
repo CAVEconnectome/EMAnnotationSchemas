@@ -87,7 +87,7 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
             reference_type = target_field.metadata['reference_type']
             attrd['target_id'] = Column(Integer, ForeignKey(
                 dataset + '_' + reference_type + '.id'))
-            annotation_models[model_name] = type(model_name, (TSBase,), attrd)
+        annotation_models[model_name] = type(model_name, (TSBase,), attrd)
 
     return annotation_models[model_name]
 
