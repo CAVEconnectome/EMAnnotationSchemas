@@ -130,8 +130,8 @@ def make_all_models(datasets, types=None, include_contacts=False):
     Returns
     -------
     dict
-        2 level nested dictionary where first key is dataset, and second key is types
-        and values are sqlalchemy Models
+        2 level nested dictionary where first key is dataset,
+        and second key is types and values are sqlalchemy Models
 
 
     Raises
