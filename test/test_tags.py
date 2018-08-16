@@ -42,5 +42,6 @@ def test_improper_reference_tag():
     schema = TypedReferenceTags['synapse']()
     try:
         result = schema.load( reference_tag_reference_tag_data )
+        assert False
     except AssertionError:
         assert True

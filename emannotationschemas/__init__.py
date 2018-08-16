@@ -13,6 +13,7 @@ type_mapping = {
     'functional_coregistration': FunctionalCoregistration,
     'bound_tag': BoundTagAnnotation,
 }
+# Get all reference tags
 for ref_type in TypedReferenceTags:
     type_mapping['{}_reference_tag'.format(ref_type)] = TypedReferenceTags[ref_type]
 

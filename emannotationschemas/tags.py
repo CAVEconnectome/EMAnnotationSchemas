@@ -4,7 +4,7 @@ from emannotationschemas.base import AnnotationSchema, \
 import marshmallow as mm
 from functools import partial
 
-#Keeps track of the which types of objects for we allow reference tags.
+#Keeps track of the which types of objects are allowed reference tags. Must be a table in materialization.
 referenceable_types = ['synapse','bouton_shape','bound_tag','reference_tag']
 
 class TagAnnotation(mm.Schema):
@@ -46,7 +46,6 @@ def typed_reference_tag_factory(reference_type, ReferenceSchema ):
                                     reference_type=reference_type
                                     )
     new_attrd['valid_type'] = new_tag_name
-    print(new_tag_name)
     return type(new_tag_name, (ReferenceSchema,), new_attrd)
 
 TypedReferenceTags = {}
