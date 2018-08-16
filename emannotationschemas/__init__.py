@@ -1,6 +1,6 @@
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.tags import BoundTagAnnotation,\
-                                     ReferenceTagAnnotation
+                                     TypedReferenceTags
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.bouton_shape import BoutonShape
@@ -12,9 +12,9 @@ type_mapping = {
     'bouton_shape': BoutonShape,
     'functional_coregistration': FunctionalCoregistration,
     'bound_tag': BoundTagAnnotation,
-    'reference_tag': ReferenceTagAnnotation
 }
-
+for ref_type in TypedReferenceTags:
+    type_mapping['{}_reference_tag'.format(ref_type)] = TypedReferenceTags[ref_type]
 
 def get_types():
     return [k for k in type_mapping.keys()]

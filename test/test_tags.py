@@ -1,10 +1,17 @@
-from emannotationschemas.tags import BoundTagAnnotation, ReferenceTagAnnotation
+from emannotationschemas.tags import BoundTagAnnotation, TypedReferenceTags
 
-reference_tag= {
-    'type': 'reference_tag',
-    'tag' : "This tag points at an object",
+synapse_reference_tag_data = {
+    'type': 'synapse_reference_tag',
+    'tag' : "This tag points at a synapse",
     'target_id': 98109,
-    'reference_type': 'any'
+    'reference_type': 'synapse_reference_tag'
+}
+
+reference_tag_reference_tag_data = {
+    'type': 'reference_tag_reference_tag',
+    'tag' : "This tag points at a reference tag",
+    'target_id': 98109,
+    'reference_type': 'reference_tag_reference_tag'
 }
 
 bound_tag = {
@@ -17,12 +24,23 @@ def annotation_import(item):
     item['supervoxel_id'] = 5
     item.pop('rootId', None)
 
-def test_reference_tag():
-    schema = ReferenceTagAnnotation()
-    result = schema.load( reference_tag )
-    assert( result.data['tag'][-6:] == 'object' )
-
 def test_bound_tag():
     schema = BoundTagAnnotation(context={'bsp_fn':annotation_import})
     result = schema.load( bound_tag )
-    assert( result.data['pt']['supervoxel_id'] == 5)
+    assert result.data['pt']['supervoxel_id'] == 5
+
+def test_proper_reference_tag():
+    schema = TypedReferenceTags['synapse']()
+    result = schema.load( synapse_reference_tag_data )
+    assert result.data['tag'][-7:] == 'synapse' 
+
+    schema = TypedReferenceTags['reference_tag']()
+    result = schema.load( reference_tag_reference_tag_data )
+    assert result.data['tag'][-3:] == 'tag' 
+
+def test_improper_reference_tag():
+    schema = TypedReferenceTags['synapse']()
+    try:
+        result = schema.load( reference_tag_reference_tag_data )
+    except AssertionError:
+        assert True
