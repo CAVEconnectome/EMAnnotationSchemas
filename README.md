@@ -15,4 +15,4 @@ In order to add a new annotation type to this repository you must do the followi
 
 3. You should add a test to the [testing suite](test/) that uses this schema, and checks that you can correctly detect potential problems with annotation data that is sent into the system. 
 
-An example of a proper schema is [emannotationschemas.synapse.SynapseSchema](emannotationschemas/synapse.py). 
+An example of a proper schema is [emannotationschemas.synapse.SynapseSchema](emannotationschemas/synapse.py).   
