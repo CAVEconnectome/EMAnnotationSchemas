@@ -5,7 +5,7 @@ import marshmallow as mm
 from functools import partial
 
 #Keeps track of the which types of objects are allowed reference tags. Must be a table in materialization.
-referenceable_types = ['synapse','bouton_shape','bound_tag','reference_tag']
+referenceable_types = ['synapse','bound_tag','reference_tag']
 
 class TagAnnotation(mm.Schema):
     '''a simple text tag annotation'''
