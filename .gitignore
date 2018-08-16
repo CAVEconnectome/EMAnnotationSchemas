@@ -108,3 +108,5 @@ test-reports/
 
 data/
 .vscode
+*.sublime-workspace
+*.orig

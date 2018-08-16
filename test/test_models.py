@@ -6,9 +6,16 @@ import marshmallow as mm
 
 
 def test_model_creation():
-    model_dict = make_all_models(['test'])
+    model_dict = make_all_models(['test', 'test2'], include_contacts=True)
     model = model_dict['test']['synapse']
     assert(model.__name__ == "TestSynapse")
+    model = model_dict['test2']['synapse']
+    assert(model.__name__ == "Test2Synapse")
+    model = model_dict['test']['cellsegment']
+    assert(model.__name__ == "TestCellSegment")
+    model = model_dict['test']['contact']
+    assert(model.__name__ == "TestContact")
+
     assert(issubclass(model, AbstractConcreteBase))
     # TODO better tests here
 
