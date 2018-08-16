@@ -1,6 +1,6 @@
 from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
-from marshmallow.validate import Range, OneOf
+from marshmallow.validate import OneOf
 
 allowed_classification_systems = ['ivscc',
                              'valence',
@@ -39,10 +39,6 @@ class CellTypeLocal( AnnotationSchema ):
     cell_type = mm.fields.String(
                             required=True,
                             description='Cell type name')
-    confidence = mm.fields.Float(
-                            required=False,
-                            description='Confidence in assignment, between 0-1',
-                            validate=Range(min=0,max=1) )
     pt = mm.fields.Nested( BoundSpatialPoint, 
                             required=True,
                             description='Location associated with classification')
