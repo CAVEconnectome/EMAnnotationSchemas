@@ -10,7 +10,29 @@ from emannotationschemas.errors import UnknownAnnotationTypeException
 import marshmallow as mm
 Base = declarative_base()
 
-annotation_models = {}
+
+class ModelStore():
+
+    def __init__(self):
+        self.container = {}
+
+    @staticmethod
+    def to_key(dataset, type_):
+        return dataset + "_" + type_
+
+    def contains_model(self, dataset, type_):
+        return self.to_key(dataset, type_) in self.container.keys()
+
+    def get_model(self, dataset, type_):
+        key = self.to_key(dataset, type_)
+        return self.container[key]
+
+    def set_model(self, dataset, type_, model):
+        key = self.to_key(dataset, type_)
+        self.container[key] = model
+
+
+annotation_models = ModelStore()
 
 # TODO decide what to call this for real
 root_model_name = "CellSegment"
@@ -170,20 +192,24 @@ def add_column(attrd, k, field, dataset):
 
 
 def make_cell_segment_model(dataset):
+    root_type = root_model_name.lower()
     attr_dict = {
-        '__tablename__': dataset + '_' + root_model_name.lower()
+        '__tablename__': dataset + '_' + root_type
     }
     model_name = dataset.capitalize() + root_model_name
-    if model_name not in annotation_models:
-        annotation_models[model_name] = type(model_name, (TSBase,), attr_dict)
-    return annotation_models[model_name]
+
+    if not annotation_models.contains_model(dataset, root_type):
+        annotation_models.set_model(dataset,
+                                    root_type,
+                                    type(model_name, (TSBase,), attr_dict))
+    return annotation_models.get_model(dataset, root_type)
 
 
 def make_annotation_model_from_schema(dataset, annotation_type, Schema):
 
     model_name = dataset.capitalize() + annotation_type.capitalize()
 
-    if model_name not in annotation_models:
+    if not annotation_models.contains_model(dataset, annotation_type):
         attrd = {
             '__tablename__': dataset + '_' + annotation_type,
             '__mapper_args__': {
@@ -199,9 +225,11 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
             reference_type = target_field.metadata['reference_type']
             attrd['target_id'] = Column(Integer, ForeignKey(
                 dataset + '_' + reference_type + '.id'))
-        annotation_models[model_name] = type(model_name, (TSBase,), attrd)
+        annotation_models.set_model(dataset,
+                                    annotation_type,
+                                    type(model_name, (TSBase,), attrd))
 
-    return annotation_models[model_name]
+    return annotation_models.get_model(dataset, annotation_type)
 
 
 def make_annotation_model(dataset, annotation_type):
