@@ -1,5 +1,5 @@
-[![Build Status](https://www.travis-ci.com/seung-lab/EMAnnotationSchemas.svg?branch=master)](https://www.travis-ci.com/fcollman/EMAnnotationSchemas)
-[![codecov](https://codecov.io/gh/seung-lab/EMAnnotationSchemas/branch/master/graph/badge.svg)](https://codecov.io/gh/fcollman/EMAnnotationSchemas)
+[![Build Status](https://www.travis-ci.com/seung-lab/EMAnnotationSchemas.svg?branch=master)](https://www.travis-ci.com/seung-lab/EMAnnotationSchemas)
+[![codecov](https://codecov.io/gh/seung-lab/EMAnnotationSchemas/branch/master/graph/badge.svg)](https://codecov.io/gh/seung-lab/EMAnnotationSchemas)
 # EMAnnotationSchemas
 Repository to hold schemas for annotations of volumetric imaging data focused on EM
 
