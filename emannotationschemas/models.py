@@ -78,13 +78,18 @@ def fix_types(types):
     return types
 
 
-def make_dataset_models(dataset, types=None, include_contacts=False):
+def make_dataset_models(dataset,
+                        version='default',
+                        types=None,
+                        include_contacts=False):
     """make all the models for a dataset
 
     Parameters
     ----------
     dataset: str
         name of dataset
+    version: str
+        version identifier for models
     types: list[str]
         list of types to make (default=None falls back to all types)
     include_contacts:
@@ -103,25 +108,31 @@ def make_dataset_models(dataset, types=None, include_contacts=False):
 
     types = fix_types(types)
     dataset_dict = {}
-    cell_segment_model = make_cell_segment_model(dataset)
+    cell_segment_model = make_cell_segment_model(dataset, version)
     dataset_dict[root_model_name.lower()] = cell_segment_model
     for type_ in types:
-        dataset_dict[type_] = make_annotation_model(dataset, type_)
+        dataset_dict[type_] = make_annotation_model(dataset, type_, version)
     if include_contacts:
         contact_model = make_annotation_model_from_schema(dataset,
                                                           'contact',
-                                                          Contact)
+                                                          Contact,
+                                                          version)
         dataset_dict['contact'] = contact_model
     return dataset_dict
 
 
-def make_all_models(datasets, types=None, include_contacts=False):
+def make_all_models(datasets,
+                    version='default',
+                    types=None,
+                    include_contacts=False):
     """make all the models for a dataset
 
     Parameters
     ----------
     datasets: list[str]
         list of datasets to make models for
+    version: str
+        version identifier for models
     types: list[str]
         list of types to make (default=None falls back to all types)
     include_contacts:
@@ -144,6 +155,7 @@ def make_all_models(datasets, types=None, include_contacts=False):
     types = fix_types(types)
     for dataset in datasets:
         model_dict[dataset] = make_dataset_models(dataset,
+                                                  version,
                                                   types,
                                                   include_contacts)
     return model_dict
@@ -191,10 +203,10 @@ def add_column(attrd, k, field, dataset):
     return attrd
 
 
-def make_cell_segment_model(dataset):
+def make_cell_segment_model(dataset, version):
     root_type = root_model_name.lower()
     attr_dict = {
-        '__tablename__': dataset + '_' + root_type
+        '__tablename__': "{}_{}_{}".format(version, dataset, root_type)
     }
     model_name = dataset.capitalize() + root_model_name
 
@@ -205,13 +217,18 @@ def make_cell_segment_model(dataset):
     return annotation_models.get_model(dataset, root_type)
 
 
-def make_annotation_model_from_schema(dataset, annotation_type, Schema):
+def make_annotation_model_from_schema(dataset,
+                                      annotation_type,
+                                      Schema,
+                                      version='default'):
 
     model_name = dataset.capitalize() + annotation_type.capitalize()
 
     if not annotation_models.contains_model(dataset, annotation_type):
         attrd = {
-            '__tablename__': dataset + '_' + annotation_type,
+            '__tablename__': "{}_{}_{}".format(version,
+                                               dataset,
+                                               annotation_type),
             '__mapper_args__': {
                 'polymorphic_identity': dataset,
                 'concrete': True
@@ -223,8 +240,8 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
         if issubclass(Schema, ReferenceAnnotation):
             target_field = Schema._declared_fields['target_id']
             reference_type = target_field.metadata['reference_type']
-            attrd['target_id'] = Column(Integer, ForeignKey(
-                dataset + '_' + reference_type + '.id'))
+            ref_col = "{}_{}_{}.id".format(version, dataset, reference_type)
+            attrd['target_id'] = Column(Integer, ForeignKey(ref_col))
         annotation_models.set_model(dataset,
                                     annotation_type,
                                     type(model_name, (TSBase,), attrd))
@@ -232,6 +249,9 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
     return annotation_models.get_model(dataset, annotation_type)
 
 
-def make_annotation_model(dataset, annotation_type):
+def make_annotation_model(dataset, annotation_type, version='default'):
     Schema = get_schema(annotation_type)
-    return make_annotation_model_from_schema(dataset, annotation_type, Schema)
+    return make_annotation_model_from_schema(dataset,
+                                             annotation_type,
+                                             Schema,
+                                             version)
