@@ -15,7 +15,7 @@ def test_model_creation():
     assert(model.__name__ == "TestCellSegment")
     model = model_dict['test']['contact']
     assert(model.__name__ == "TestContact")
-
+    assert(model.__tablename__ == 'default_test_contact')
     assert(issubclass(model, AbstractConcreteBase))
     # TODO better tests here
 
