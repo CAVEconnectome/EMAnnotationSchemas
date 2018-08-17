@@ -25,9 +25,17 @@ good_compartment = {
     'target_id': synapse_id
     }
 
+rich_compartment = {
+    'type': 'postsynaptic_compartment',
+    'compartment': 'dendrite',
+    'on_spine' : True,
+    'dendrite_class' : 'apical',
+    'target_id': synapse_id
+    }
+
 bad_compartment = {
     'type': 'postsynaptic_compartment',
-    'compartment': 'spinne',
+    'compartment': 'some_nonsense',
     'target_id': synapse_id
     }
 
@@ -46,3 +54,6 @@ def test_postsynaptic_compartment():
 
     result = schema.load( bad_compartment )
     assert('compartment' in result.errors)
+
+    result = schema.load( rich_compartment )
+    assert( result.data['on_spine'] )

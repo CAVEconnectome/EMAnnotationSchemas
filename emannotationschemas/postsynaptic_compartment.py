@@ -3,14 +3,12 @@ import marshmallow as mm
 from marshmallow.validate import OneOf
 
 allowed_compartments = ['soma',
-                        'shaft_apical',
-                        'shaft_basal',
-                        'shaft_unknown',
-                        'spine_apical',
-                        'spine_basal',
-                        'spine_unknown',
+                        'dendrite',
                         'axon',
                         ]
+
+allowed_dendrite_classes = ['basal',
+                            'apical']
 
 class PostsynapticCompartment( ReferenceAnnotation ):
 
@@ -22,9 +20,18 @@ class PostsynapticCompartment( ReferenceAnnotation ):
     compartment = mm.fields.Str(
         required=True,
         validate=OneOf(allowed_compartments),
-        description=['Compartment of the postsynaptic neuron \
-                      targeted by the synapse']
+        description='Compartment of the postsynaptic neuron \
+                      targeted by the synapse'
         )
+
+    on_spine = mm.fields.Bool(
+        required=False,
+        description='Boolean representing if the synapse is onto a spine or not')
+
+    dendrite_class = mm.fields.Str(
+        required=False,
+        validate=OneOf(allowed_dendrite_classes),
+        description='Type of dendritic branch, e.g. basal or apical')
 
     @mm.post_load
     def validate_type(self, item):
