@@ -11,7 +11,6 @@ allowed_bouton_categories = ['pancake',
                             'ivy',
                             'clutch',
                             'chandelier',
-                            'unknown',
                             ]
 
 class PresynapticBoutonType( ReferenceAnnotation ):
