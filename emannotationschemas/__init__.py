@@ -1,16 +1,17 @@
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
-from emannotationschemas.bouton_shape import BoutonShape
-from emannotationschemas.functional_coregistration import FunctionalCoregistration
+from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
+from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
+from emannotationschemas.cell_type_local import CellTypeLocal
 __version__ = '0.2.0'
 
 type_mapping = {
     'synapse': SynapseSchema,
-    'bouton_shape': BoutonShape,
-    'functional_coregistration': FunctionalCoregistration
+    'presynaptic_bouton_type': PresynapticBoutonType,
+    'postsynaptic_compartment': PostsynapticCompartment,
+    'cell_type_ai_manual': CellTypeLocal,
 }
-
 
 def get_types():
     return [k for k in type_mapping.keys()]
