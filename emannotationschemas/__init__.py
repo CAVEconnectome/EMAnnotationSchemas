@@ -10,7 +10,7 @@ type_mapping = {
     'synapse': SynapseSchema,
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
-    'cell_type': CellTypeLocal,
+    'cell_type_local': CellTypeLocal,
 }
 
 def get_types():

@@ -2,7 +2,7 @@ from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
 from marshmallow.validate import OneOf
 
-allowed_classification_systems = ['ivscc',
+allowed_classification_systems = ['ivscc_m',
                              'valence',
                              'classical',
                              'freeform']
@@ -10,23 +10,22 @@ allowed_classification_systems = ['ivscc',
 allowed_types = dict(
                     valence=['e',
                              'i',
-                             'g',
-                             'unknown'],
-                    ivscc=[ 'spiny_{}'.format(i) for i in range(1,15) ] + \
-                          [ 'aspiny_s_{}'.format(i) for i in range(1,17) ] + \
-                          [ 'unknown' ],
+                             'g'],
+                    ivscc_m=[ 'spiny_{}'.format(i) for i in range(1,15) ] + \
+                          [ 'aspiny_s_{}'.format(i) for i in range(1,17) ],
                     classical=['chandelier',
                              'pyramidal',
                              'martinotti',
                              'pv',
                              'sst',
                              'vip',
+                             'clutch',
+                             'ivy',
+                             'basket',
                              'neurogliaform',
-                             'unknown',
                              'astrocyte',
                              'microglia-perivascular',
                              'microglia-perineuronal',
-                             'unknown'
                              ]
                     )
 
@@ -44,7 +43,7 @@ class CellTypeLocal( AnnotationSchema ):
                             description='Location associated with classification')
     @mm.post_load
     def validate_type( self, item):
-        assert item['type'] == 'cell_type'
+        assert item['type'] == 'cell_type_local'
 
         system = item['classification_system']
         if system in allowed_types.keys(): 
