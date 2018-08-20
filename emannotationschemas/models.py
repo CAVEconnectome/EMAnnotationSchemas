@@ -194,7 +194,8 @@ def add_column(attrd, k, field, dataset):
 def make_cell_segment_model(dataset):
     root_type = root_model_name.lower()
     attr_dict = {
-        '__tablename__': dataset + '_' + root_type
+        '__tablename__': dataset + '_' + root_type,
+        'root_id': Column(Numeric, index=True)
     }
     model_name = dataset.capitalize() + root_model_name
 
@@ -224,7 +225,7 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
             target_field = Schema._declared_fields['target_id']
             reference_type = target_field.metadata['reference_type']
             attrd['target_id'] = Column(Integer, ForeignKey(
-                dataset + '_' + reference_type + '.id'))
+                dataset + '_' + reference_type + '.root_id'))
         annotation_models.set_model(dataset,
                                     annotation_type,
                                     type(model_name, (TSBase,), attrd))
