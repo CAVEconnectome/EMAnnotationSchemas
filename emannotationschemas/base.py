@@ -81,6 +81,7 @@ class BoundSpatialPoint(SpatialPoint):
     supervoxel_id = NumericField(missing=mm.missing,
                                  description="supervoxel id of this point")
     root_id = NumericField(description="root id of the bound point",
+                           length=20,
                            index=True)
 
     @mm.post_load

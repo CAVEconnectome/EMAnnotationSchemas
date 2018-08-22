@@ -195,7 +195,7 @@ def make_cell_segment_model(dataset):
     root_type = root_model_name.lower()
     attr_dict = {
         '__tablename__': dataset + '_' + root_type,
-        'root_id': Column(Numeric, index=True, unique=True)
+        'root_id': Column(Numeric(precision=20), index=True, unique=True)
     }
     model_name = dataset.capitalize() + root_model_name
 
