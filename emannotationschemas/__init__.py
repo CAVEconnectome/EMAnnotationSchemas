@@ -3,6 +3,7 @@ from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
+from emannotationschemas.functional_coregistration import FunctionalCoregistration
 from emannotationschemas.cell_type_local import CellTypeLocal
 __version__ = '0.2.0'
 
