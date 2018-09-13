@@ -8,6 +8,8 @@ class FunctionalCoregistration(AnnotationSchema):
                           description="location of cell body of functional cell")
     func_id = mm.fields.Int(required=True, description="functional cell ID")
 
+    render_rule = {'func_id':['pt_position']}
+    
     @mm.post_load
     def validate_type(self, item):
         # check that the annotation type is present in the object as 'functional_coregistration'

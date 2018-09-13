@@ -41,6 +41,9 @@ class CellTypeLocal( AnnotationSchema ):
     pt = mm.fields.Nested( BoundSpatialPoint, 
                             required=True,
                             description='Location associated with classification')
+
+    render_rule = {'points':{'cell_type':['pt']}}
+    
     @mm.post_load
     def validate_type( self, item):
         assert item['type'] == 'cell_type_local'

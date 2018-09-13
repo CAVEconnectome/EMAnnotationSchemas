@@ -16,6 +16,8 @@ class SynapseSchema(AnnotationSchema):
                                order=2)
     size = mm.fields.Float(description="size of synapse")
 
+    render_rule = {'lines': {'pre':[('pre_pt_position', 'ctr_pt_position')],
+                             'post':[('post_pt_position', 'ctr_pt_position')]}}
     @mm.post_load
     def validate_type(self, item):
         # check that the annotation type is present in the object as 'synapse'
