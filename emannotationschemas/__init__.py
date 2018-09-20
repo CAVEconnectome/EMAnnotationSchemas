@@ -11,6 +11,8 @@ type_mapping = {
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
     'cell_type_ai_manual': CellTypeLocal,
+    'synapse_ai_manual': SynapseSchema,
+    'soma_ai_manual': BoundSphereSchema,
 }
 
 def get_types():
