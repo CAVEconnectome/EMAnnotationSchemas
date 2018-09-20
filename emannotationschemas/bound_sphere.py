@@ -1,7 +1,7 @@
 from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
 
-class BoundSphereSchema(AnnotationSchema):
+class BoundSphere(AnnotationSchema):
     ctr_pt = mm.fields.Nested(BoundSpatialPoint,
                               required=True,
                               description='center of sphere')

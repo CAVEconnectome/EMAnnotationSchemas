@@ -3,6 +3,7 @@ from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
+from emannotationschemas.bound_sphere import BoundSphere
 from emannotationschemas.cell_type_local import CellTypeLocal
 __version__ = '0.2.0'
 
@@ -12,7 +13,7 @@ type_mapping = {
     'postsynaptic_compartment': PostsynapticCompartment,
     'cell_type_ai_manual': CellTypeLocal,
     'synapse_ai_manual': SynapseSchema,
-    'soma_ai_manual': BoundSphereSchema,
+    'soma_ai_manual': BoundSphere,
 }
 
 def get_types():
