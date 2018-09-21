@@ -11,8 +11,9 @@ allowed_types = dict(
                     valence=['e',
                              'i',
                              'g'],
-                    ivscc_m=[ 'spiny_{}'.format(i) for i in range(1,15) ] + \
-                          [ 'aspiny_s_{}'.format(i) for i in range(1,17) ],
+                    ivscc_m=['spiny_{}'.format(i) for i in range(1,15) ] + \
+                            ['aspiny_s_{}'.format(i) for i in range(1,17) ] + \
+                            ['aspiny_d_{}'.format(i) for i in range(1,6) ],
                     classical=['chandelier',
                              'pyramidal',
                              'martinotti',

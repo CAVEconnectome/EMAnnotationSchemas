@@ -8,6 +8,7 @@ class BoundSphere(AnnotationSchema):
     radius = mm.fields.Float(required=True,
                              description='radius of sphere')
 
+
     @mm.post_load
     def validate_type(self, item):
         assert item['type'] == 'sphere'
