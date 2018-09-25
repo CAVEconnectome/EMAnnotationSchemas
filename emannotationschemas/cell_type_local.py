@@ -12,7 +12,7 @@ allowed_types = dict(
                              'i',
                              'g'],
                     ivscc_m=['spiny_{}'.format(i) for i in range(1,15) ] + \
-                            ['aspiny_s_{}'.format(i) for i in range(1,17) ],
+                            ['aspiny_s_{}'.format(i) for i in range(1,17) ] +\
                             ['aspiny_d_{}'.format(i) for i in range(1,6) ],
 
                     classical=['chandelier',
@@ -31,12 +31,13 @@ allowed_types = dict(
                              ]
                     )
 
-class CellTypeLocal( AnnotationSchema ):
+
+class CellTypeLocal(AnnotationSchema):
 
     classification_system = mm.fields.String(
                             required=True,
                             description='Classification system followed',
-                            validate=OneOf( allowed_classification_systems ))
+                            validate=OneOf(allowed_classification_systems))
     cell_type = mm.fields.String(
                             required=True,
                             description='Cell type name')
@@ -48,7 +49,7 @@ class CellTypeLocal( AnnotationSchema ):
         assert item['type'] == 'cell_type_local'
 
         system = item['classification_system']
-        if system in allowed_types.keys(): 
+        if system in allowed_types.keys():
             if item['cell_type'] not in allowed_types[system]:
                 item['valid'] = False
             else:
