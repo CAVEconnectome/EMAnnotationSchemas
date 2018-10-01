@@ -5,30 +5,33 @@ from marshmallow.validate import OneOf
 allowed_classification_systems = ['ivscc_m',
                              'valence',
                              'classical',
-                             'freeform']
+                             ]
 
 allowed_types = dict(
                     valence=['e',
                              'i',
-                             'g'],
+                             'g',
+                             'uncertain'],
                     ivscc_m=['spiny_{}'.format(i) for i in range(1, 15)] +
                             ['aspiny_s_{}'.format(i) for i in range(1, 17)] +
-                            ['aspiny_d_{}'.format(i) for i in range(1, 6)],
+                            ['aspiny_d_{}'.format(i) for i in range(1, 6)] +
+                            ['uncertain'],
 
                     classical=['chandelier',
-                             'pyramidal',
-                             'martinotti',
-                             'pv',
-                             'sst',
-                             'vip',
-                             'clutch',
-                             'ivy',
-                             'basket',
-                             'neurogliaform',
-                             'astrocyte',
-                             'microglia-perivascular',
-                             'microglia-perineuronal',
-                             ]
+                               'pyramidal',
+                               'martinotti',
+                               'pv',
+                               'sst',
+                               'vip',
+                               'clutch',
+                               'ivy',
+                               'basket',
+                               'neurogliaform',
+                               'astrocyte',
+                               'microglia-perivascular',
+                               'microglia-perineuronal',
+                               'uncertain',
+                               ]
                     )
 
 
