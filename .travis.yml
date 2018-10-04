@@ -33,9 +33,8 @@ jobs:
         - "chmod a+x /tmp/travis-automerge/auto_merge_travis_with_bumpversion.sh"
         - "BRANCHES_TO_MERGE_REGEX='develop' BRANCH_TO_MERGE_INTO=master /tmp/travis-automerge/auto_merge_travis_with_bumpversion.sh"
     - stage: deploy
-      python:
-        - 3.6
-        - 2.7
+      python: 3.6
+      python: 2.7
       script: 
         - "git clone https://gist.github.com/cf9b261f26a1bf3fae6b59e7047f007a.git /tmp/travis-autodist"
         - "chmod a+x /tmp/travis-autodist/pypi_dist.sh"
