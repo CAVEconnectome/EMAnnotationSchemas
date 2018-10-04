@@ -10,9 +10,6 @@ stages:
 
 script:
   - python setup.py pytest
-after_success:
-  - test $TRAVIS_PYTHON_VERSION = "3.6" &&
-    codecov
 
 cache:
   - pip: true
@@ -22,6 +19,8 @@ jobs:
     - python: 2.7
     - python: 3.5
     - python: 3.6
+      after_success:
+        - codecov
     - python: 3.7-dev
     - stage: merge-deploy
       python: 3.6
