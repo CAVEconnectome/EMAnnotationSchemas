@@ -22,10 +22,6 @@ jobs:
     - python: 3.5
     - python: 3.6
     - python: 3.7-dev
-    - stage: test
-      name: "Unit Tests"
-
-      
     - stage: coverage
       python: 3.6
       script:
