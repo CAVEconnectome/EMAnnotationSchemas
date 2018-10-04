@@ -6,8 +6,7 @@ install:
 - pip install bumpversion twine
 stages:
 - test
-- name: merge
-- name: deploy
+- name: merge-deploy
 
 script:
   - python setup.py pytest
@@ -24,13 +23,13 @@ jobs:
     - python: 3.5
     - python: 3.6
     - python: 3.7-dev
-    - stage: merge
+    - stage: merge-deploy
       python: 3.6
       script:
         - "git clone https://gist.github.com/2c04596a45ccac57fe8dde0718ad58ee.git /tmp/travis-automerge"
         - "chmod a+x /tmp/travis-automerge/auto_merge_travis_with_bumpversion.sh"
         - "BRANCHES_TO_MERGE_REGEX='develop' BRANCH_TO_MERGE_INTO=master /tmp/travis-automerge/auto_merge_travis_with_bumpversion.sh"
-    - stage: deploy
+    - stage: merge-deploy
       python: 3.6
       script: 
         - "git clone https://gist.github.com/cf9b261f26a1bf3fae6b59e7047f007a.git /tmp/travis-autodist"
