@@ -33,4 +33,4 @@ jobs:
       script: 
         - "git clone https://gist.github.com/cf9b261f26a1bf3fae6b59e7047f007a.git /tmp/travis-autodist"
         - "chmod a+x /tmp/travis-autodist/pypi_dist.sh"
-        - "BRANCHES_TO_DIST='master' /tmp/travis-autodist/pypi_dist.sh"
+        - "BRANCHES_TO_DIST='develop' /tmp/travis-autodist/pypi_dist.sh"
