@@ -5,7 +5,7 @@ from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.functional_coregistration import FunctionalCoregistration
 from emannotationschemas.cell_type_local import CellTypeLocal
-__version__ = '0.2.0'
+__version__ = '0.2.18'
 
 type_mapping = {
     'synapse': SynapseSchema,
@@ -13,6 +13,7 @@ type_mapping = {
     'postsynaptic_compartment': PostsynapticCompartment,
     'cell_type_ai_manual': CellTypeLocal,
     'microns_func_coreg': FunctionalCoregistration
+    'synapse_ai_manual': SynapseSchema,
 }
 
 def get_types():

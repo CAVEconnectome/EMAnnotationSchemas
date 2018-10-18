@@ -180,7 +180,7 @@ def add_column(attrd, k, field, dataset):
                 else:
                     dyn_args = [field_column_map[type(sub_field)]]
                     if sub_k == 'root_id':
-                        fk = dataset + "_" + root_model_name.lower() + ".id"
+                        fk = dataset + "_" + root_model_name.lower() + ".root_id"
                         dyn_args.append(ForeignKey(fk))
                     attrd[k + "_" +
                           sub_k] = Column(*dyn_args,
@@ -195,7 +195,7 @@ def make_cell_segment_model(dataset):
     root_type = root_model_name.lower()
     attr_dict = {
         '__tablename__': dataset + '_' + root_type,
-        'root_id': Column(Numeric, index=True)
+        'root_id': Column(Numeric, index=True, unique=True)
     }
     model_name = dataset.capitalize() + root_model_name
 
@@ -225,7 +225,7 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
             target_field = Schema._declared_fields['target_id']
             reference_type = target_field.metadata['reference_type']
             attrd['target_id'] = Column(Integer, ForeignKey(
-                dataset + '_' + reference_type + '.root_id'))
+                dataset + '_' + reference_type + '.id'))
         annotation_models.set_model(dataset,
                                     annotation_type,
                                     type(model_name, (TSBase,), attrd))
