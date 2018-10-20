@@ -4,14 +4,14 @@ from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.cell_type_local import CellTypeLocal
+
 __version__ = '0.2.18'
 
 type_mapping = {
     'synapse': SynapseSchema,
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
-    'cell_type_ai_manual': CellTypeLocal,
-    'synapse_ai_manual': SynapseSchema,
+    'cell_type_local': CellTypeLocal,
 }
 
 def get_types():
@@ -34,3 +34,25 @@ def get_flat_schema(type):
     except KeyError:
         msg = 'type {} is not a known annotation type'.format(type)
         raise UnknownAnnotationTypeException(msg)
+
+
+def create_app(test_config=None):
+    from flask import Flask
+    from emannotationschemas.config import configure_app
+    from emannotationschemas.utils import get_instance_folder_path
+
+    from emannotationschemas.blueprint_app import bp 
+
+    # Define the Flask Object
+    app = Flask(__name__,
+                instance_path=get_instance_folder_path(),
+                instance_relative_config=True)
+    # load configuration (from test_config if passed)
+    if test_config is None:
+        app = configure_app(app)
+    else:
+        app.config.update(test_config)
+    # register blueprints
+    app.register_blueprint(bp)
+
+    return app
