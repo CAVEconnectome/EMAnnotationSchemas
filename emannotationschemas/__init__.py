@@ -14,6 +14,7 @@ type_mapping = {
     'cell_type_local': CellTypeLocal,
 }
 
+
 def get_types():
     return [k for k in type_mapping.keys()]
 
