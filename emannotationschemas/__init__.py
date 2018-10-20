@@ -5,7 +5,7 @@ from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.cell_type_local import CellTypeLocal
 
-__version__ = '0.2.18'
+__version__ = '0.3.0'
 
 type_mapping = {
     'synapse': SynapseSchema,
