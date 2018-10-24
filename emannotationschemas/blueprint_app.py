@@ -6,7 +6,7 @@ from flask import jsonify
 
 
 bp = Blueprint("schema", __name__, url_prefix="/schema")
-__version__ = '0.3.5'
+__version__ = '0.3.6'
 
 @bp.route("")
 def index():
