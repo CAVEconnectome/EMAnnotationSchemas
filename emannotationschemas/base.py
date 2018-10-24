@@ -4,7 +4,7 @@ import marshmallow as mm
 class NumericField(mm.fields.Int):
     def _jsonschema_type_mapping(self):
         return {
-            'type': 'int',
+            'type': 'integer',
         }
 
 
