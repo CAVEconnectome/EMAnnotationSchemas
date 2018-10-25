@@ -11,7 +11,7 @@ import marshmallow as mm
 Base = declarative_base()
 
 
-def format_table_name(dataset, table_name, version):
+def format_table_name(dataset, table_name, version='v1'):
     return "{}_{}_{}".format(dataset, table_name, version)
 
 
@@ -21,17 +21,17 @@ class ModelStore():
         self.container = {}
 
     @staticmethod
-    def to_key(dataset, table_name, version):
+    def to_key(dataset, table_name, version='v1'):
         return format_table_name(dataset, table_name, version)
 
-    def contains_model(self, dataset, table_name, version):
+    def contains_model(self, dataset, table_name, version='v1'):
         return self.to_key(dataset, table_name, version) in self.container.keys()
 
-    def get_model(self, dataset, table_name, version):
+    def get_model(self, dataset, table_name, version='v1'):
         key = self.to_key(dataset, table_name, version)
         return self.container[key]
 
-    def set_model(self, dataset, table_name, version, model):
+    def set_model(self, dataset, table_name, model, version='v1'):
         key = self.to_key(dataset, table_name, version)
         self.container[key] = model
 
@@ -78,8 +78,6 @@ def validate_types(schemas_and_tables):
         msg = '{} are invalid types'.format(bad_types)
         raise UnknownAnnotationTypeException(msg)
 
-    return types
-
 
 def make_dataset_models(dataset, schemas_and_tables, version='v1', include_contacts=False):
     """make all the models for a dataset
@@ -108,19 +106,19 @@ def make_dataset_models(dataset, schemas_and_tables, version='v1', include_conta
 
     validate_types(schemas_and_tables)
     dataset_dict = {}
-    cell_segment_model = make_cell_segment_model(dataset, version)
+    cell_segment_model = make_cell_segment_model(dataset, version=version)
     dataset_dict[root_model_name.lower()] = cell_segment_model
     for schema_name, table_name in schemas_and_tables:
         model_key = table_name
         dataset_dict[model_key] = make_annotation_model(dataset,
                                                         schema_name,
                                                         table_name,
-                                                        version)
+                                                        version=version)
     if include_contacts:
         contact_model = make_annotation_model_from_schema(dataset,
                                                           'contact',
-                                                          version,
-                                                          Contact)
+                                                          Contact,
+                                                          version=version)
         dataset_dict['contact'] = contact_model
     return dataset_dict
 
@@ -156,8 +154,8 @@ def make_all_models(datasets, schemas_and_tables=None,
     for dataset in datasets:
         model_dict[dataset] = make_dataset_models(dataset,
                                                   schemas_and_tables,
-                                                  version,
-                                                  include_contacts)
+                                                  include_contacts=include_contacts,
+                                                  version=version)
     return model_dict
 
 
@@ -173,7 +171,7 @@ field_column_map = {
 }
 
 
-def add_column(attrd, k, field, dataset, version):
+def add_column(attrd, k, field, dataset, version='v1'):
     field_type = type(field)
     do_index = field.metadata.get('index', False)
     if field_type in field_column_map:
@@ -194,7 +192,7 @@ def add_column(attrd, k, field, dataset, version):
                     if sub_k == 'root_id':
                         table_name = format_table_name(dataset,
                                                        root_model_name,
-                                                       version)
+                                                       version=version)
                         fk = table_name + ".root_id"
                         dyn_args.append(ForeignKey(fk))
                     attrd[k + "_" +
@@ -206,10 +204,10 @@ def add_column(attrd, k, field, dataset, version):
     return attrd
 
 
-def make_cell_segment_model(dataset, version):
+def make_cell_segment_model(dataset, version='v1'):
     root_type = root_model_name.lower()
     attr_dict = {
-        '__tablename__': format_table_name(dataset, root_model_name, version),
+        '__tablename__': format_table_name(dataset, root_model_name, version=version),
         'root_id': Column(Numeric, index=True, unique=True)
     }
     model_name = dataset.capitalize() + root_model_name
@@ -217,17 +215,18 @@ def make_cell_segment_model(dataset, version):
     if not annotation_models.contains_model(dataset, root_type):
         annotation_models.set_model(dataset,
                                     root_type,
-                                    type(model_name, (TSBase,), attr_dict))
+                                    type(model_name, (TSBase,), attr_dict),
+                                    version=version)
     return annotation_models.get_model(dataset, root_type)
 
 
-def make_annotation_model_from_schema(dataset, table_name, version, Schema):
+def make_annotation_model_from_schema(dataset, table_name, Schema, version='v1'):
 
     model_name = dataset.capitalize() + table_name.capitalize()
 
-    if not annotation_models.contains_model(dataset, table_name):
+    if not annotation_models.contains_model(dataset, table_name, version=version):
         attrd = {
-            '__tablename__': format_table_name(dataset, table_name, version),
+            '__tablename__': format_table_name(dataset, table_name, version=version),
             '__mapper_args__': {
                 'polymorphic_identity': dataset,
                 'concrete': True
@@ -235,7 +234,7 @@ def make_annotation_model_from_schema(dataset, table_name, version, Schema):
         }
         for k, field in Schema._declared_fields.items():
             if (not field.metadata.get('drop_column', False)):
-                attrd = add_column(attrd, k, field, dataset)
+                attrd = add_column(attrd, k, field, dataset, version=version)
         if issubclass(Schema, ReferenceAnnotation):
             target_field = Schema._declared_fields['target_id']
             reference_type = target_field.metadata['reference_type']
@@ -243,11 +242,12 @@ def make_annotation_model_from_schema(dataset, table_name, version, Schema):
                 dataset + '_' + reference_type + '.id'))
         annotation_models.set_model(dataset,
                                     table_name,
-                                    type(model_name, (TSBase,), attrd))
+                                    type(model_name, (TSBase,), attrd),
+                                    version=version)
 
     return annotation_models.get_model(dataset, table_name)
 
 
-def make_annotation_model(dataset, annotation_type, table_name, version):
+def make_annotation_model(dataset, annotation_type, table_name, version='v1'):
     Schema = get_schema(annotation_type)
     return make_annotation_model_from_schema(dataset, table_name, Schema)

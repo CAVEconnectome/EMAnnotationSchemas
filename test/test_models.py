@@ -6,7 +6,7 @@ import marshmallow as mm
 
 
 def test_model_creation():
-    model_dict = make_all_models(['test', 'test2'], include_contacts=True)
+    model_dict = make_all_models(['test', 'test2'], [('synapse', 'synapse')], include_contacts=True)
     model = model_dict['test']['synapse']
     assert(model.__name__ == "TestSynapse")
     model = model_dict['test2']['synapse']
