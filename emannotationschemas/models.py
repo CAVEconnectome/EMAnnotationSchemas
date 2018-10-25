@@ -132,7 +132,7 @@ def make_all_models(datasets, schemas_and_tables=None,
     datasets: list[str]
         list of datasets to make models for
     schemas_and_tables: list[(str, str_]
-        list of schema and table names to make
+        list of schema, table names to make
     include_contacts:
         option to include the model for cell contacts
 
