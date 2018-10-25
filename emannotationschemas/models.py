@@ -11,24 +11,28 @@ import marshmallow as mm
 Base = declarative_base()
 
 
+def format_table_name(dataset, table_name, version):
+    return "{}_{}_{}".format(dataset, table_name, version)
+
+
 class ModelStore():
 
     def __init__(self):
         self.container = {}
 
     @staticmethod
-    def to_key(dataset, type_):
-        return dataset + "_" + type_
+    def to_key(dataset, table_name, version):
+        return format_table_name(dataset, table_name, version)
 
-    def contains_model(self, dataset, type_):
-        return self.to_key(dataset, type_) in self.container.keys()
+    def contains_model(self, dataset, table_name, version):
+        return self.to_key(dataset, table_name, version) in self.container.keys()
 
-    def get_model(self, dataset, type_):
-        key = self.to_key(dataset, type_)
+    def get_model(self, dataset, table_name, version):
+        key = self.to_key(dataset, table_name, version)
         return self.container[key]
 
-    def set_model(self, dataset, type_, model):
-        key = self.to_key(dataset, type_)
+    def set_model(self, dataset, table_name, version, model):
+        key = self.to_key(dataset, table_name, version)
         self.container[key] = model
 
 
@@ -49,7 +53,7 @@ class TSBase(AbstractConcreteBase, Base):
     #     return Column(String(50), ForeignKey('locations.table_name'))
 
 
-def fix_types(types):
+def validate_types(schemas_and_tables):
     '''normalize a list of desired annotation types
     if passed None returns all types, otherwise checks that types exist
     Parameters
@@ -68,32 +72,33 @@ def fix_types(types):
     '''
 
     all_types = get_types()
-    if types is None:
-        types = all_types
-    else:
-        if not (all(type_ in all_types for type_ in types)):
-            msg = '{} contains invalid type'.format(types)
-            raise UnknownAnnotationTypeException(msg)
+    if not (all(sn in all_types for sn, tn in schemas_and_tables)):
+        bad_types = [sn for sn,
+                     tn in schemas_and_tables if sn not in all_types]
+        msg = '{} are invalid types'.format(bad_types)
+        raise UnknownAnnotationTypeException(msg)
 
     return types
 
 
-def make_dataset_models(dataset, types=None, include_contacts=False):
+def make_dataset_models(dataset, schemas_and_tables, version='v1', include_contacts=False):
     """make all the models for a dataset
 
     Parameters
     ----------
     dataset: str
         name of dataset
-    types: list[str]
-        list of types to make (default=None falls back to all types)
+    table_and_types: list[(schema_name, table_name)]
+        list of tuples with types and model names to make
+    version: str
+        version number to use for making models
     include_contacts:
         option to include the model for cell contacts
 
     Returns
     -------
     dict
-        dictionary where keys are types and values are sqlalchemy Models
+        dictionary where keys are table_names and values are sqlalchemy Models
 
     Raises
     ------
@@ -101,29 +106,35 @@ def make_dataset_models(dataset, types=None, include_contacts=False):
         If a type is not a valid annotation type
     """
 
-    types = fix_types(types)
+    validate_types(schemas_and_tables)
     dataset_dict = {}
-    cell_segment_model = make_cell_segment_model(dataset)
+    cell_segment_model = make_cell_segment_model(dataset, version)
     dataset_dict[root_model_name.lower()] = cell_segment_model
-    for type_ in types:
-        dataset_dict[type_] = make_annotation_model(dataset, type_)
+    for schema_name, table_name in schemas_and_tables:
+        model_key = table_name
+        dataset_dict[model_key] = make_annotation_model(dataset,
+                                                        schema_name,
+                                                        table_name,
+                                                        version)
     if include_contacts:
         contact_model = make_annotation_model_from_schema(dataset,
                                                           'contact',
+                                                          version,
                                                           Contact)
         dataset_dict['contact'] = contact_model
     return dataset_dict
 
 
-def make_all_models(datasets, types=None, include_contacts=False):
+def make_all_models(datasets, schemas_and_tables=None,
+                    version="v1", include_contacts=False):
     """make all the models for a dataset
 
     Parameters
     ----------
     datasets: list[str]
         list of datasets to make models for
-    types: list[str]
-        list of types to make (default=None falls back to all types)
+    schemas_and_tables: list[(str, str_]
+        list of schema and table names to make
     include_contacts:
         option to include the model for cell contacts
 
@@ -141,10 +152,11 @@ def make_all_models(datasets, types=None, include_contacts=False):
     """
 
     model_dict = {}
-    types = fix_types(types)
+    validate_types(schemas_and_tables)
     for dataset in datasets:
         model_dict[dataset] = make_dataset_models(dataset,
-                                                  types,
+                                                  schemas_and_tables,
+                                                  version,
                                                   include_contacts)
     return model_dict
 
@@ -161,7 +173,7 @@ field_column_map = {
 }
 
 
-def add_column(attrd, k, field, dataset):
+def add_column(attrd, k, field, dataset, version):
     field_type = type(field)
     do_index = field.metadata.get('index', False)
     if field_type in field_column_map:
@@ -180,7 +192,10 @@ def add_column(attrd, k, field, dataset):
                 else:
                     dyn_args = [field_column_map[type(sub_field)]]
                     if sub_k == 'root_id':
-                        fk = dataset + "_" + root_model_name.lower() + ".root_id"
+                        table_name = format_table_name(dataset,
+                                                       root_model_name,
+                                                       version)
+                        fk = table_name + ".root_id"
                         dyn_args.append(ForeignKey(fk))
                     attrd[k + "_" +
                           sub_k] = Column(*dyn_args,
@@ -191,10 +206,10 @@ def add_column(attrd, k, field, dataset):
     return attrd
 
 
-def make_cell_segment_model(dataset):
+def make_cell_segment_model(dataset, version):
     root_type = root_model_name.lower()
     attr_dict = {
-        '__tablename__': dataset + '_' + root_type,
+        '__tablename__': format_table_name(dataset, root_model_name, version),
         'root_id': Column(Numeric, index=True, unique=True)
     }
     model_name = dataset.capitalize() + root_model_name
@@ -206,13 +221,13 @@ def make_cell_segment_model(dataset):
     return annotation_models.get_model(dataset, root_type)
 
 
-def make_annotation_model_from_schema(dataset, annotation_type, Schema):
+def make_annotation_model_from_schema(dataset, table_name, version, Schema):
 
-    model_name = dataset.capitalize() + annotation_type.capitalize()
+    model_name = dataset.capitalize() + table_name.capitalize()
 
-    if not annotation_models.contains_model(dataset, annotation_type):
+    if not annotation_models.contains_model(dataset, table_name):
         attrd = {
-            '__tablename__': dataset + '_' + annotation_type,
+            '__tablename__': format_table_name(dataset, table_name, version),
             '__mapper_args__': {
                 'polymorphic_identity': dataset,
                 'concrete': True
@@ -227,12 +242,12 @@ def make_annotation_model_from_schema(dataset, annotation_type, Schema):
             attrd['target_id'] = Column(Integer, ForeignKey(
                 dataset + '_' + reference_type + '.id'))
         annotation_models.set_model(dataset,
-                                    annotation_type,
+                                    table_name,
                                     type(model_name, (TSBase,), attrd))
 
-    return annotation_models.get_model(dataset, annotation_type)
+    return annotation_models.get_model(dataset, table_name)
 
 
-def make_annotation_model(dataset, annotation_type):
+def make_annotation_model(dataset, annotation_type, table_name, version):
     Schema = get_schema(annotation_type)
-    return make_annotation_model_from_schema(dataset, annotation_type, Schema)
+    return make_annotation_model_from_schema(dataset, table_name, Schema)
