@@ -191,7 +191,7 @@ def add_column(attrd, k, field, dataset, version='v1'):
                     dyn_args = [field_column_map[type(sub_field)]]
                     if sub_k == 'root_id':
                         table_name = format_table_name(dataset,
-                                                       root_model_name,
+                                                       root_model_name.lower(),
                                                        version=version)
                         fk = table_name + ".root_id"
                         dyn_args.append(ForeignKey(fk))
@@ -207,17 +207,17 @@ def add_column(attrd, k, field, dataset, version='v1'):
 def make_cell_segment_model(dataset, version='v1'):
     root_type = root_model_name.lower()
     attr_dict = {
-        '__tablename__': format_table_name(dataset, root_model_name, version=version),
+        '__tablename__': format_table_name(dataset, root_type, version=version),
         'root_id': Column(Numeric, index=True, unique=True)
     }
     model_name = dataset.capitalize() + root_model_name
 
-    if not annotation_models.contains_model(dataset, root_type):
+    if not annotation_models.contains_model(dataset, root_type, version=version):
         annotation_models.set_model(dataset,
                                     root_type,
                                     type(model_name, (TSBase,), attr_dict),
                                     version=version)
-    return annotation_models.get_model(dataset, root_type)
+    return annotation_models.get_model(dataset, root_type, version=version)
 
 
 def make_annotation_model_from_schema(dataset, table_name, Schema, version='v1'):
@@ -245,9 +245,9 @@ def make_annotation_model_from_schema(dataset, table_name, Schema, version='v1')
                                     type(model_name, (TSBase,), attrd),
                                     version=version)
 
-    return annotation_models.get_model(dataset, table_name)
+    return annotation_models.get_model(dataset, table_name, version=version)
 
 
 def make_annotation_model(dataset, annotation_type, table_name, version='v1'):
     Schema = get_schema(annotation_type)
-    return make_annotation_model_from_schema(dataset, table_name, Schema)
+    return make_annotation_model_from_schema(dataset, table_name, Schema, version=version)
