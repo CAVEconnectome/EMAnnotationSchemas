@@ -2,11 +2,11 @@ from flask import Blueprint, jsonify, abort
 from marshmallow_jsonschema import JSONSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas import get_schema, get_types
-from flask import jsonify
 
 
 bp = Blueprint("schema", __name__, url_prefix="/schema")
 __version__ = '1.0.3'
+
 
 @bp.route("")
 def index():
@@ -31,6 +31,7 @@ def get_type_schema(annotation_type):
     json_schema = JSONSchema()
     js = json_schema.dump(Schema())
     return js.data
+
 
 @bp.route("/type/<annotation_type>")
 def get_type_schema_route(annotation_type):
