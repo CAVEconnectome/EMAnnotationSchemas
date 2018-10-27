@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean
+from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean, create_engine
 from sqlalchemy import ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import AbstractConcreteBase
@@ -8,7 +8,22 @@ from emannotationschemas.base import NumericField, ReferenceAnnotation
 from emannotationschemas.contact import Contact
 from emannotationschemas.errors import UnknownAnnotationTypeException
 import marshmallow as mm
+import numpy as np
+
 Base = declarative_base()
+
+root_model_name = "CellSegment"
+
+
+def get_next_version(sql_uri, dataset_name):
+    engine = create_engine(sql_uri)
+    versions = np.array([get_table_version(t)
+                         for t in engine.table_names() if (dataset_name in t)])
+    if len(versions) > 0:
+        new_version = np.max(versions)+1
+    else:
+        new_version = 0
+    return new_version
 
 
 def format_table_name(dataset, table_name, version: int=1):
@@ -42,7 +57,7 @@ class ModelStore():
 annotation_models = ModelStore()
 
 # TODO decide what to call this for real
-root_model_name = "CellSegment"
+
 
 
 class InvalidSchemaField(Exception):
