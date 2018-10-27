@@ -11,9 +11,12 @@ import marshmallow as mm
 Base = declarative_base()
 
 
-def format_table_name(dataset, table_name, version='v1'):
-    return "{}_{}_{}".format(dataset, table_name, version)
+def format_table_name(dataset, table_name, version: int=1):
+    return "{}_{}_v{}".format(dataset, table_name, version)
 
+
+def get_table_version(table_name):
+    return int(table_name.split('_')[-1][1:])
 
 class ModelStore():
 
@@ -21,17 +24,17 @@ class ModelStore():
         self.container = {}
 
     @staticmethod
-    def to_key(dataset, table_name, version='v1'):
+    def to_key(dataset, table_name, version: int=1):
         return format_table_name(dataset, table_name, version)
 
-    def contains_model(self, dataset, table_name, version='v1'):
+    def contains_model(self, dataset, table_name, version: int=1):
         return self.to_key(dataset, table_name, version) in self.container.keys()
 
-    def get_model(self, dataset, table_name, version='v1'):
+    def get_model(self, dataset, table_name, version: int=1):
         key = self.to_key(dataset, table_name, version)
         return self.container[key]
 
-    def set_model(self, dataset, table_name, model, version='v1'):
+    def set_model(self, dataset, table_name, model, version: int=1):
         key = self.to_key(dataset, table_name, version)
         self.container[key] = model
 
@@ -79,7 +82,7 @@ def validate_types(schemas_and_tables):
         raise UnknownAnnotationTypeException(msg)
 
 
-def make_dataset_models(dataset, schemas_and_tables, version='v1', include_contacts=False):
+def make_dataset_models(dataset, schemas_and_tables, version: int=1, include_contacts=False):
     """make all the models for a dataset
 
     Parameters
@@ -171,7 +174,7 @@ field_column_map = {
 }
 
 
-def add_column(attrd, k, field, dataset, version='v1'):
+def add_column(attrd, k, field, dataset, version: int=1):
     field_type = type(field)
     do_index = field.metadata.get('index', False)
     if field_type in field_column_map:
@@ -204,7 +207,7 @@ def add_column(attrd, k, field, dataset, version='v1'):
     return attrd
 
 
-def make_cell_segment_model(dataset, version='v1'):
+def make_cell_segment_model(dataset, version: int=1):
     root_type = root_model_name.lower()
     attr_dict = {
         '__tablename__': format_table_name(dataset, root_type, version=version),
@@ -220,7 +223,7 @@ def make_cell_segment_model(dataset, version='v1'):
     return annotation_models.get_model(dataset, root_type, version=version)
 
 
-def make_annotation_model_from_schema(dataset, table_name, Schema, version='v1'):
+def make_annotation_model_from_schema(dataset, table_name, Schema, version: int=1):
 
     model_name = dataset.capitalize() + table_name.capitalize()
 
@@ -248,6 +251,6 @@ def make_annotation_model_from_schema(dataset, table_name, Schema, version='v1')
     return annotation_models.get_model(dataset, table_name, version=version)
 
 
-def make_annotation_model(dataset, annotation_type, table_name, version='v1'):
+def make_annotation_model(dataset, annotation_type, table_name, version: int=1):
     Schema = get_schema(annotation_type)
     return make_annotation_model_from_schema(dataset, table_name, Schema, version=version)
