@@ -65,7 +65,7 @@ class InvalidSchemaField(Exception):
 
 
 class TSBase(AbstractConcreteBase, Base):
-    id = Column(Integer, primary_key=True)
+    id = Column(Numeric, primary_key=True, autoincrement=False)
     # @declared_attr
     # def table_name(cls):
     #     return Column(String(50), ForeignKey('locations.table_name'))
@@ -211,7 +211,7 @@ def add_column(attrd, k, field, dataset, version: int=1):
                         table_name = format_table_name(dataset,
                                                        root_model_name.lower(),
                                                        version=version)
-                        fk = table_name + ".root_id"
+                        fk = table_name + ".id"
                         dyn_args.append(ForeignKey(fk))
                     attrd[k + "_" +
                           sub_k] = Column(*dyn_args,
@@ -226,7 +226,6 @@ def make_cell_segment_model(dataset, version: int=1):
     root_type = root_model_name.lower()
     attr_dict = {
         '__tablename__': format_table_name(dataset, root_type, version=version),
-        'root_id': Column(Numeric, index=True, unique=True)
     }
     model_name = dataset.capitalize() + root_model_name
 
