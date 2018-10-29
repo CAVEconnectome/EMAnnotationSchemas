@@ -1,5 +1,6 @@
 marshmallow<3.0.0
 sqlalchemy
+psycopg2-binary
 geoalchemy2
 flask
 marshmallow-jsonschema
