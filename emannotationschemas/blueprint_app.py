@@ -5,7 +5,7 @@ from emannotationschemas import get_schema, get_types
 
 
 bp = Blueprint("schema", __name__, url_prefix="/schema")
-__version__ = '1.0.7'
+__version__ = '1.0.8'
 
 
 @bp.route("")

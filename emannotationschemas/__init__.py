@@ -6,7 +6,7 @@ from emannotationschemas.functional_coregistration import FunctionalCoregistrati
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.cell_type_local import CellTypeLocal
 
-__version__ = '1.0.7'
+__version__ = '1.0.8'
 
 type_mapping = {
     'synapse': SynapseSchema,
