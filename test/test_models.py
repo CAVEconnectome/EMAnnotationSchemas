@@ -1,6 +1,6 @@
 from emannotationschemas.models import make_all_models, InvalidSchemaField
 from emannotationschemas.models import make_annotation_model_from_schema
-from sqlalchemy.ext.declarative import AbstractConcreteBase
+from emannotationschemas.models import Base
 import pytest
 import marshmallow as mm
 
@@ -16,7 +16,7 @@ def test_model_creation():
     model = model_dict['test']['contact']
     assert(model.__name__ == "TestContact")
 
-    assert(issubclass(model, AbstractConcreteBase))
+    assert(issubclass(model, Base))
     # TODO better tests here
 
 
