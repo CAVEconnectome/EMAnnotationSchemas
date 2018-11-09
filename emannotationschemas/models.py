@@ -250,28 +250,30 @@ def make_cell_segment_model(dataset, version: int=1):
                                     version=version)
     return annotation_models.get_model(dataset, root_type, version=version)
 
-
-def make_annotation_model_from_schema(dataset, table_name, Schema, version: int=1):
-
+def declare_annotation_model_from_schema(dataset, table_name, Schema, version: int=1):
     model_name = dataset.capitalize() + table_name.capitalize()
-
-    if not annotation_models.contains_model(dataset, table_name, version=version):
-        attrd = {
+    attrd = {
             '__tablename__': format_table_name(dataset, table_name, version=version),
             'id': Column(Numeric, primary_key=True, autoincrement=False),
             '__mapper_args__': {
                 'polymorphic_identity': dataset,
                 'concrete': True
-            }
+            },
+            'id': Column(Numeric, primary_key=True, autoincrement=False)
         }
-        for k, field in Schema._declared_fields.items():
-            if (not field.metadata.get('drop_column', False)):
-                attrd = add_column(attrd, k, field, dataset, version=version)
-        if issubclass(Schema, ReferenceAnnotation):
-            target_field = Schema._declared_fields['target_id']
-            reference_type = target_field.metadata['reference_type']
-            attrd['target_id'] = Column(Integer, ForeignKey(
-                dataset + '_' + reference_type + '.id'))
+    for k, field in Schema._declared_fields.items():
+        if (not field.metadata.get('drop_column', False)):
+            attrd = add_column(attrd, k, field, dataset, version=version)
+    if issubclass(Schema, ReferenceAnnotation):
+        target_field = Schema._declared_fields['target_id']
+        reference_type = target_field.metadata['reference_type']
+        attrd['target_id'] = Column(Integer, ForeignKey(
+            dataset + '_' + reference_type + '.id'))
+    return type(model_name, (Base,), attrd)
+        
+def make_annotation_model_from_schema(dataset, table_name, Schema, version: int=1):
+    if not annotation_models.contains_model(dataset, table_name, version=version):
+        Model = declare_annotation_model_from_schema(dataset, table_name, Schema, version=version)
         annotation_models.set_model(dataset,
                                     table_name,
                                     type(model_name, (Base,), attrd),
@@ -279,6 +281,9 @@ def make_annotation_model_from_schema(dataset, table_name, Schema, version: int=
 
     return annotation_models.get_model(dataset, table_name, version=version)
 
+def declare_annotation_model(dataset, annotation_type, table_name, version: int=1):
+    Schema = get_schema(annotation_type)
+    return declare_annotation_model_from_schema(dataset, table_name, Schema, version=version)
 
 def make_annotation_model(dataset, annotation_type, table_name, version: int=1):
     Schema = get_schema(annotation_type)
