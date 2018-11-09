@@ -64,13 +64,6 @@ class InvalidSchemaField(Exception):
     '''Exception raised if a schema can't be translated to a model'''
 
 
-class TSBase(AbstractConcreteBase, Base):
-    id = Column(Numeric, primary_key=True, autoincrement=False)
-    # @declared_attr
-    # def table_name(cls):
-    #     return Column(String(50), ForeignKey('locations.table_name'))
-
-
 def validate_types(schemas_and_tables):
     '''normalize a list of desired annotation types
     if passed None returns all types, otherwise checks that types exist
@@ -225,14 +218,15 @@ def add_column(attrd, k, field, dataset, version: int=1):
 def make_cell_segment_model(dataset, version: int=1):
     root_type = root_model_name.lower()
     attr_dict = {
-        '__tablename__': format_table_name(dataset, root_type, version=version)
+        '__tablename__': format_table_name(dataset, root_type, version=version),
+        'id': Column(Numeric, primary_key=True, autoincrement=False)
     }
     model_name = dataset.capitalize() + root_model_name
 
     if not annotation_models.contains_model(dataset, root_type, version=version):
         annotation_models.set_model(dataset,
                                     root_type,
-                                    type(model_name, (TSBase,), attr_dict),
+                                    type(model_name, (Base,), attr_dict),
                                     version=version)
     return annotation_models.get_model(dataset, root_type, version=version)
 
