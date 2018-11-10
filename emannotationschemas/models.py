@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean, create_engine
-from sqlalchemy import ForeignKey
+from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean, \
+    create_engine, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import AbstractConcreteBase
 from geoalchemy2 import Geometry
@@ -59,16 +60,28 @@ annotation_models = ModelStore()
 # TODO decide what to call this for real
 
 
-
 class InvalidSchemaField(Exception):
     '''Exception raised if a schema can't be translated to a model'''
 
 
-class TSBase(AbstractConcreteBase, Base):
-    id = Column(Numeric, primary_key=True, autoincrement=False)
-    # @declared_attr
-    # def table_name(cls):
-    #     return Column(String(50), ForeignKey('locations.table_name'))
+class AnalysisVersion(Base):
+    __tablename__ = 'analysisversion'
+    id = Column(Integer, primary_key=True)
+    dataset = Column(String(100), nullable=False)
+    version = Column(Integer, nullable=False)
+    time_stamp = Column(DateTime, nullable=False)
+
+    def __repr__(self):
+        return "{}_v{}".format(self.dataset, self.version)
+
+
+class AnalysisTable(Base):
+    __tablename__ = 'analysistables'
+    id = Column(Integer, primary_key=True)
+    schema = Column(String(100), nullable=False)
+    tablename = Column(String(100), nullable=False)
+    analysisversion_id = Column(Integer, ForeignKey('analysisversion.id'))
+    analysisversion = relationship('AnalysisVersion')
 
 
 def validate_types(schemas_and_tables):
@@ -225,14 +238,15 @@ def add_column(attrd, k, field, dataset, version: int=1):
 def make_cell_segment_model(dataset, version: int=1):
     root_type = root_model_name.lower()
     attr_dict = {
-        '__tablename__': format_table_name(dataset, root_type, version=version)
+        '__tablename__': format_table_name(dataset, root_type, version=version),
+        'id': Column(Numeric, primary_key=True, autoincrement=False)
     }
     model_name = dataset.capitalize() + root_model_name
 
     if not annotation_models.contains_model(dataset, root_type, version=version):
         annotation_models.set_model(dataset,
                                     root_type,
-                                    type(model_name, (TSBase,), attr_dict),
+                                    type(model_name, (Base,), attr_dict),
                                     version=version)
     return annotation_models.get_model(dataset, root_type, version=version)
 
@@ -240,6 +254,7 @@ def declare_annotation_model_from_schema(dataset, table_name, Schema, version: i
     model_name = dataset.capitalize() + table_name.capitalize()
     attrd = {
             '__tablename__': format_table_name(dataset, table_name, version=version),
+            'id': Column(Numeric, primary_key=True, autoincrement=False),
             '__mapper_args__': {
                 'polymorphic_identity': dataset,
                 'concrete': True
