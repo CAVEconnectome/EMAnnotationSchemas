@@ -276,7 +276,7 @@ def make_annotation_model_from_schema(dataset, table_name, Schema, version: int=
         Model = declare_annotation_model_from_schema(dataset, table_name, Schema, version=version)
         annotation_models.set_model(dataset,
                                     table_name,
-                                    type(model_name, (Base,), attrd),
+                                    Model,
                                     version=version)
 
     return annotation_models.get_model(dataset, table_name, version=version)
