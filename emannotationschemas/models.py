@@ -155,7 +155,7 @@ def make_dataset_models(dataset, schemas_and_tables, version: int=1, include_con
 
 
 def make_all_models(datasets, schemas_and_tables=None,
-                    version="v1", include_contacts=False):
+                    version=1, include_contacts=False):
     """make all the models for a dataset
 
     Parameters
