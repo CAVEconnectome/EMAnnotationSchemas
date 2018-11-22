@@ -1,4 +1,4 @@
-from emannotationschemas.models import make_all_models, InvalidSchemaField
+from emannotationschemas.models import make_dataset_models, InvalidSchemaField
 from emannotationschemas.models import make_annotation_model_from_schema
 from emannotationschemas.models import Base
 import pytest
@@ -6,17 +6,25 @@ import marshmallow as mm
 
 
 def test_model_creation():
-    model_dict = make_all_models(['test', 'test2'], [('synapse', 'synapse')], include_contacts=True)
-    model = model_dict['test']['synapse']
+    metadata_dict = {
+                        'synapseflatref':{
+                            'reference_table':'synapse'
+                        }
+                    }
+    model_dict = make_dataset_models('test', [('synapse', 'synapse'),
+                                              ('flat_segmentation_reference', 'synapseflatref')],
+                                              metadata_dict=metadata_dict,
+                                              include_contacts=True)
+    model = model_dict['synapse']
     assert(model.__name__ == "TestSynapse")
-    model = model_dict['test2']['synapse']
-    assert(model.__name__ == "Test2Synapse")
-    model = model_dict['test']['cellsegment']
+    model = model_dict['cellsegment']
     assert(model.__name__ == "TestCellSegment")
-    model = model_dict['test']['contact']
+    model = model_dict['contact']
     assert(model.__name__ == "TestContact")
-
+    model = model_dict['synapseflatref']
+    assert(model.__name__ == 'TestSynapseflatref')
     assert(issubclass(model, Base))
+
     # TODO better tests here
 
 
