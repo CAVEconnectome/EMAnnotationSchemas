@@ -4,6 +4,7 @@ from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.functional_coregistration import FunctionalCoregistration
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
+from emannotationschemas.base import FlatSegmentationReference
 from emannotationschemas.cell_type_local import CellTypeLocal
 
 __version__ = '1.0.10'
@@ -16,6 +17,7 @@ type_mapping = {
     'synapse_ai_manual': SynapseSchema,
     'microns_func_coreg': FunctionalCoregistration,
     'cell_type_local': CellTypeLocal,
+    'flat_segmentation_reference': FlatSegmentationReference
 }
 
 

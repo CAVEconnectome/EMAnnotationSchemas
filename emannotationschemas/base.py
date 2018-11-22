@@ -48,6 +48,12 @@ class ReferenceAnnotation(AnnotationSchema):
         required=True, description='annotation this references')
 
 
+class FlatSegmentationReference(ReferenceAnnotation):
+    segment_id = mm.fields.Int(
+        required=True, description='id in flat segmentation this should be linked to'
+    )
+
+
 class TagAnnotation(mm.Schema):
     '''a simple tagged annotation'''
     tag = mm.fields.Str(
