@@ -7,7 +7,7 @@ from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.base import FlatSegmentationReference
 from emannotationschemas.cell_type_local import CellTypeLocal
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 type_mapping = {
     'synapse': SynapseSchema,
