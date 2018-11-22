@@ -111,7 +111,7 @@ def validate_types(schemas_and_tables):
         raise UnknownAnnotationTypeException(msg)
 
 
-def make_dataset_models(dataset, schemas_and_tables, version: int = 1, include_contacts=False):
+def make_dataset_models(dataset, schemas_and_tables, metadata_dict = None, version: int = 1, include_contacts=False):
     """make all the models for a dataset
 
     Parameters
@@ -120,6 +120,8 @@ def make_dataset_models(dataset, schemas_and_tables, version: int = 1, include_c
         name of dataset
     table_and_types: list[(schema_name, table_name)]
         list of tuples with types and model names to make
+    metadata_dict:
+        a dictionary with keys of table_names and values of metadata dicts needed
     version: str
         version number to use for making models
     include_contacts:
@@ -135,16 +137,19 @@ def make_dataset_models(dataset, schemas_and_tables, version: int = 1, include_c
     UnknownAnnotationTypeException
         If a type is not a valid annotation type
     """
-
+    if metadata_dict is None:
+        metadata_dict={}
     validate_types(schemas_and_tables)
     dataset_dict = {}
     cell_segment_model = make_cell_segment_model(dataset, version=version)
     dataset_dict[root_model_name.lower()] = cell_segment_model
     for schema_name, table_name in schemas_and_tables:
         model_key = table_name
+        metadata = metadata_dict.get(table_name, None)
         dataset_dict[model_key] = make_annotation_model(dataset,
                                                         schema_name,
                                                         table_name,
+                                                        table_metadata=metadata,
                                                         version=version)
     if include_contacts:
         contact_model = make_annotation_model_from_schema(dataset,
@@ -153,42 +158,6 @@ def make_dataset_models(dataset, schemas_and_tables, version: int = 1, include_c
                                                           version=version)
         dataset_dict['contact'] = contact_model
     return dataset_dict
-
-
-def make_all_models(datasets, schemas_and_tables=None,
-                    version=1, include_contacts=False):
-    """make all the models for a dataset
-
-    Parameters
-    ----------
-    datasets: list[str]
-        list of datasets to make models for
-    schemas_and_tables: list[(str, str_]
-        list of schema, table names to make
-    include_contacts:
-        option to include the model for cell contacts
-
-    Returns
-    -------
-    dict
-        2 level nested dictionary where first key is dataset,
-        and second key is types and values are sqlalchemy Models
-
-
-    Raises
-    ------
-    UnknownAnnotationTypeException
-        If a type is not a valid annotation type
-    """
-
-    model_dict = {}
-    validate_types(schemas_and_tables)
-    for dataset in datasets:
-        model_dict[dataset] = make_dataset_models(dataset,
-                                                  schemas_and_tables,
-                                                  include_contacts=include_contacts,
-                                                  version=version)
-    return model_dict
 
 
 field_column_map = {
