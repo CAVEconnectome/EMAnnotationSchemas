@@ -1,7 +1,7 @@
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.base import flatten_dict
 from emannotationschemas import get_flat_schema
-
+import numpy as np
 
 good_synapse = {
     'type': 'synapse',
@@ -77,7 +77,7 @@ def test_synapse_postgis():
     schema = SynapseSchema(context={'postgis': True})
     result = schema.load(good_synapse)
     d = flatten_dict(result.data)
-    assert(d['pre_pt_position'] == 'POINTZ(31 31 0)')
+    assert((d['pre_pt_position'] == np.array([31,31,0])).all())
 
 
 def test_synapse_validity():

@@ -5,12 +5,11 @@ compartment_model_name = "NeuronCompartment"
 post_synaptic_compartment_name = "PostSynapseCompartment"
 
 
-def make_neuron_compartment_model(dataset, version: int = 1):
+def make_neuron_compartment_model(dataset):
     compartment_type = compartment_model_name.lower()
 
     root_id_name = format_table_name(dataset,
-                                     root_model_name.lower(),
-                                     version)+'.id'
+                                     root_model_name.lower())+'.id'
 
     attr_dict = {
         '__tablename__': format_table_name(dataset,

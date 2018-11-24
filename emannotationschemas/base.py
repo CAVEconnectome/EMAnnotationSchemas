@@ -1,5 +1,5 @@
 import marshmallow as mm
-
+import numpy as np
 
 class NumericField(mm.fields.Int):
     def _jsonschema_type_mapping(self):
@@ -76,9 +76,7 @@ class SpatialPoint(mm.Schema):
     @mm.post_load
     def transform_position(self, item):
         if self.context.get('postgis', False):
-            item['position'] = "POINTZ({} {} {})".format(item['position'][0],
-                                                         item['position'][1],
-                                                         item['position'][2])
+            item['position'] = np.array(item['position'])
         return item
 
 
