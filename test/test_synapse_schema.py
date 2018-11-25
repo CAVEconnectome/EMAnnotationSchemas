@@ -39,7 +39,6 @@ supervoxel_rootId_invalid_synapse = {
 def annotation_import(item):
     item['supervoxel_id'] = 5
     item.pop('rootId', None)
-    return item
 
 
 def test_synapse_validation():
