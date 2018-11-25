@@ -76,8 +76,9 @@ class SpatialPoint(mm.Schema):
     @mm.post_load
     def transform_position(self, item):
         if self.context.get('postgis', False):
-            #item['position'] = np.array(item['position'])
-            item['position']='POINTZ({} {} {})'.format(item['position'][0], item['position'][1], item['position'][2])
+            item['position'] = "POINTZ({} {} {})".format(item['position'][0],
+                                                         item['position'][1],
+                                                         item['position'][2])
         return item
 
 

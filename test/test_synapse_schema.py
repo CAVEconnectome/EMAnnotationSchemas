@@ -39,6 +39,7 @@ supervoxel_rootId_invalid_synapse = {
 def annotation_import(item):
     item['supervoxel_id'] = 5
     item.pop('rootId', None)
+    return item
 
 
 def test_synapse_validation():
@@ -77,7 +78,7 @@ def test_synapse_postgis():
     schema = SynapseSchema(context={'postgis': True})
     result = schema.load(good_synapse)
     d = flatten_dict(result.data)
-    assert((d['pre_pt_position'] == np.array([31,31,0])).all())
+    assert(d['pre_pt_position'] == 'POINTZ(31 31 0)')
 
 
 def test_synapse_validity():

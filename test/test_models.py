@@ -16,14 +16,14 @@ def test_model_creation():
                                               metadata_dict=metadata_dict,
                                               include_contacts=True)
     model = model_dict['synapse']
-    assert(model.__name__ == "TestSynapse")
+    assert(model[0].__name__ == "TestSynapse")
     model = model_dict['root']
-    assert(model.__name__ == "TestRoot")
+    assert(model[0].__name__ == "TestRoot")
     model = model_dict['contact']
-    assert(model.__name__ == "TestContact")
+    assert(model[0].__name__ == "TestContact")
     model = model_dict['synapseflatref']
-    assert(model.__name__ == 'TestSynapseflatref')
-    assert(issubclass(model, Base))
+    assert(model[0].__name__ == 'TestSynapseflatref')
+    assert(issubclass(model[0], Base))
 
     # TODO better tests here
 
