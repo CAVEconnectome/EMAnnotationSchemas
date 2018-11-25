@@ -1,7 +1,7 @@
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.base import flatten_dict
 from emannotationschemas import get_flat_schema
-import numpy as np
+
 
 good_synapse = {
     'type': 'synapse',

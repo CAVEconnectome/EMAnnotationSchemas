@@ -1,5 +1,5 @@
 import marshmallow as mm
-import numpy as np
+
 
 class NumericField(mm.fields.Int):
     def _jsonschema_type_mapping(self):
