@@ -1,16 +1,15 @@
 from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean, \
-    DateTime, ForeignKey, ForeignKeyConstraint, MetaData
+    DateTime, ForeignKey, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from geoalchemy2.shape import to_shape
+#from geoalchemy2.shape import to_shape
+#import shapely
 from geoalchemy2 import Geometry
-import shapely
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.base import NumericField, ReferenceAnnotation
 from emannotationschemas.contact import Contact
 from emannotationschemas.errors import UnknownAnnotationTypeException, InvalidTableMetaDataException
 import marshmallow as mm
-import numpy as np
 
 Base = declarative_base()
 
@@ -72,19 +71,19 @@ class AnalysisTable(Base):
     analysisversion = relationship('AnalysisVersion')
 
 
-class NumpyGeometry(Geometry):
+# class NumpyGeometry(Geometry):
 
-    def bind_expression(self, value):
-        str_rep = "{}({})".format(self.geometry_type, "{}".format(value)[1:-1])
-        return getattr(func, self.from_text)(bindvalue, type_=self)
+#     def bind_expression(self, value):
+#         str_rep = "{}({})".format(self.geometry_type, "{}".format(value)[1:-1])
+#         return getattr(func, self.from_text)(bindvalue, type_=self)
 
-    def column_expression(self, value):
-        wkb = super(NumpyGeometry, self).column_expression(value)
-        shp = to_shape(wkb)
-        if type(shp, shapely.geometry.Point):
-            return np.array([shp.xy[0][0], shp.xy[1][0], shp.z], dtype=np.float)
-        else:
-            return shp
+#     def column_expression(self, value):
+#         wkb = super(NumpyGeometry, self).column_expression(value)
+#         shp = to_shape(wkb)
+#         if type(shp, shapely.geometry.Point):
+#             return np.array([shp.xy[0][0], shp.xy[1][0], shp.z], dtype=np.float)
+#         else:
+#             return shp
 
 
 def validate_types(schemas_and_tables):
