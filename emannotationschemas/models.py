@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean, \
-    DateTime, ForeignKey
+    DateTime, ForeignKey, ForeignKeyConstraint, MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from geoalchemy2.shape import to_shape
@@ -14,7 +14,7 @@ import numpy as np
 
 Base = declarative_base()
 
-root_model_name = "CellSegment"
+root_model_name = "Root"
 
 
 def format_table_name(dataset, table_name):
@@ -37,9 +37,9 @@ class ModelStore():
         key = self.to_key(dataset, table_name)
         return self.container[key]
 
-    def set_model(self, dataset, table_name, model):
+    def set_model(self, dataset, table_name, model, model_d=None):
         key = self.to_key(dataset, table_name)
-        self.container[key] = model
+        self.container[key] = (model, model_d)
 
 
 annotation_models = ModelStore()
@@ -67,7 +67,8 @@ class AnalysisTable(Base):
     analysistable_id = Column(Integer, primary_key=True)
     schema_name = Column(String(100), nullable=False)
     table_name = Column(String(100), nullable=False)
-    analysisversion_id = Column(Integer, ForeignKey('analysisversion.id'))
+    analysisversion_id = Column(Integer, ForeignKey(
+        'analysisversion.analysisversion_id'))
     analysisversion = relationship('AnalysisVersion')
 
 
@@ -75,7 +76,7 @@ class NumpyGeometry(Geometry):
 
     def bind_expression(self, value):
         str_rep = "{}({})".format(self.geometry_type, "{}".format(value)[1:-1])
-        return super(NumpyGeometry, self).bind_expression(str_rep)
+        return getattr(func, self.from_text)(bindvalue, type_=self)
 
     def column_expression(self, value):
         wkb = super(NumpyGeometry, self).column_expression(value)
@@ -84,6 +85,7 @@ class NumpyGeometry(Geometry):
             return np.array([shp.xy[0][0], shp.xy[1][0], shp.z], dtype=np.float)
         else:
             return shp
+
 
 def validate_types(schemas_and_tables):
     '''normalize a list of desired annotation types
@@ -168,36 +170,74 @@ field_column_map = {
 }
 
 
-def add_column(attrd, k, field, dataset):
+def make_submodel(nested_field, dataset, super_table, field_name):
+    super_table_name = format_table_name(dataset, super_table)
+    fk_to_super = [super_table_name+"."+super_table+"_id",
+                   super_table_name+".version"]
+    fk_from_super = [super_table+"_id", "version"]
+    attrd = {
+        '__tablename__': format_table_name(dataset, super_table + "_" + field_name),
+        field_name+'_id': Column(Integer, primary_key=True, autoincrement=True),
+        super_table+"_id": Column(Numeric, nullable=False),
+        "version": Column(Integer, nullable=False),
+        '__mapper_args__': {
+            'polymorphic_identity': dataset,
+            'concrete': True
+        }
+    }
+    model_name = make_model_name(super_table, field_name)
+    fk_to = []
+    fk_from = []
+    if nested_field.many:
+        raise InvalidSchemaField("Nested(many=True) not supported")
+    if isinstance(nested_field.schema, ReferenceAnnotation):
+        raise InvalidSchemaField("Nested Reference Annotations not supported")
+    for field_name, field in nested_field.schema._declared_fields.items():
+        if (not field.metadata.get('drop_column', False)):
+            if isinstance(field, mm.fields.Nested):
+                raise InvalidSchemaField("more than one level \
+                                         of schema nesting not supported")
+            attrd, submodels = add_column(attrd, field_name, field, dataset,
+                                          super_table, fk_to, fk_from)
+    if len(fk_to) > 0:
+        attrd['__table_args__'] = (ForeignKeyConstraint(fk_from_super, fk_to_super),
+                                   ForeignKeyConstraint(fk_from, fk_to), {})
+    else:
+        attrd['__table_args__'] = (ForeignKeyConstraint(fk_from_super, fk_to_super), {})
+
+    return type(model_name, (Base,), attrd)
+
+
+def make_model_name(a, b):
+    return a.capitalize() + b.capitalize()
+
+
+def add_column(attrd, field_name, field, dataset, table, fk_to, fk_from):
     field_type = type(field)
     do_index = field.metadata.get('index', False)
-    if field_type in field_column_map:
-        attrd[k] = Column(field_column_map[field_type], index=do_index)
+    postgis_geom = field.metadata.get('postgis_geometry', None)
+    rml = root_model_name.lower()
+    sub_model = None
+    if field_name == rml+'_id':
+        root_table_name = format_table_name(dataset, rml)
+        fk_to.append(root_table_name + ".{}_id".format(rml))
+        fk_from.append(field_name)
+        attrd[field_name] = Column(Numeric, nullable=False, index=do_index)
+        fk_to.append(root_table_name + ".version".format(rml))
+        attrd['version'] = Column(Integer, nullable=False)
+        fk_from.append('version')
+    elif field_type in field_column_map:
+        attrd[field_name] = Column(
+            field_column_map[field_type], index=do_index)
+    elif postgis_geom:
+        attrd[field_name] = Column(Geometry(postgis_geom, dimension=3))
+    elif isinstance(field, mm.fields.Nested):
+        sub_model = make_submodel(field, dataset, table, field_name)
+        attrd[field_name] = relationship(make_model_name(table, field_name), backref=table)
     else:
-        if isinstance(field, mm.fields.Nested):
-            if field.many:
-                raise InvalidSchemaField("Nested(many=True) not supported")
-            for sub_k, sub_field in field.nested._declared_fields.items():
-                do_sub_index = sub_field.metadata.get('index', False)
-                postgis_geom = sub_field.metadata.get('postgis_geometry',
-                                                      None)
-                if postgis_geom:
-                    attrd[k + "_" + sub_k] = Column(NumpyGeometry(postgis_geom,
-                                                                  dimension=3))
-                else:
-                    dyn_args = [field_column_map[type(sub_field)]]
-                    if sub_k == 'root_id':
-                        table_name = format_table_name(dataset,
-                                                       root_model_name.lower())
-                        fk = table_name + ".id"
-                        dyn_args.append(ForeignKey(fk))
-                    attrd[k + "_" +
-                          sub_k] = Column(*dyn_args,
-                                          index=do_sub_index)
-        else:
-            raise InvalidSchemaField(
-                "field type {} not supported".format(field_type))
-    return attrd
+        raise InvalidSchemaField(
+            "field type {} not supported".format(field_type))
+    return attrd, sub_model
 
 
 def make_cell_segment_model(dataset):
@@ -227,9 +267,15 @@ def declare_annotation_model_from_schema(dataset, table_name, Schema, table_meta
             'concrete': True
         }
     }
-    for k, field in Schema._declared_fields.items():
+    fk_to = []
+    fk_from = []
+    submodel_d = {}
+    for field_name, field in Schema._declared_fields.items():
         if (not field.metadata.get('drop_column', False)):
-            attrd = add_column(attrd, k, field, dataset)
+            attrd, submodel = add_column(attrd, field_name, field, dataset,
+                                         table_name, fk_to, fk_from)
+            if submodel is not None:
+                submodel_d[field_name] = submodel
     if issubclass(Schema, ReferenceAnnotation):
         if type(table_metadata) is not dict:
             msg = 'no metadata provided for reference annotation'
@@ -244,8 +290,10 @@ def declare_annotation_model_from_schema(dataset, table_name, Schema, table_meta
                     table_metadata)
                 raise InvalidTableMetaDataException(msg)
         fk = ForeignKey(reference_table + '.' + reference_table_name+'_id')
-        attrd[reference_table+'_id'] = Column(Numeric, fk, nullable=False)                                   
-    return type(model_name, (Base,), attrd)
+        attrd[reference_table+'_id'] = Column(Numeric, fk, nullable=False)
+    if len(fk_to) > 0:
+        attrd['__table_args__'] = (ForeignKeyConstraint(fk_to, fk_from), {})
+    return type(model_name, (Base,), attrd), submodel_d
 
 
 def make_annotation_model_from_schema(dataset,
@@ -254,19 +302,21 @@ def make_annotation_model_from_schema(dataset,
                                       table_metadata=None):
     if not annotation_models.contains_model(dataset,
                                             table_name):
-        Model = declare_annotation_model_from_schema(dataset,
-                                                     table_name,
-                                                     Schema,
-                                                     table_metadata=table_metadata)
+        Model, submodel_d = declare_annotation_model_from_schema(dataset,
+                                                                 table_name,
+                                                                 Schema,
+                                                                 table_metadata=table_metadata)
         annotation_models.set_model(dataset,
                                     table_name,
-                                    Model)
+                                    Model,
+                                    submodel_d)
+
 
     return annotation_models.get_model(dataset, table_name)
 
 
 def declare_annotation_model(dataset, schema_name, table_name, table_metadata=None):
-    Schema = get_schema(annotation_type)
+    Schema = get_schema(schema_name)
     return declare_annotation_model_from_schema(dataset,
                                                 table_name,
                                                 Schema,
