@@ -187,11 +187,12 @@ def make_submodel(nested_field, dataset, super_table, field_name):
     model_name = make_model_name(super_table, field_name)
     fk_to = []
     fk_from = []
+    nested_schema = nested_field.nested()
     if nested_field.many:
         raise InvalidSchemaField("Nested(many=True) not supported")
-    if isinstance(nested_field.schema, ReferenceAnnotation):
+    if isinstance(nested_schema, ReferenceAnnotation):
         raise InvalidSchemaField("Nested Reference Annotations not supported")
-    for field_name, field in nested_field.schema._declared_fields.items():
+    for field_name, field in nested_schema._declared_fields.items():
         if (not field.metadata.get('drop_column', False)):
             if isinstance(field, mm.fields.Nested):
                 raise InvalidSchemaField("more than one level \
@@ -272,9 +273,10 @@ def declare_annotation_model_from_schema(dataset, table_name, Schema, table_meta
     for field_name, field in Schema._declared_fields.items():
         if (not field.metadata.get('drop_column', False)):
             attrd, submodel = add_column(attrd, field_name, field, dataset,
-                                         table_name, fk_to, fk_from)
+                                          table_name, fk_to, fk_from)
             if submodel is not None:
-                submodel_d[field_name] = submodel
+                 submodel_d[field_name] = submodel
+            pass
     if issubclass(Schema, ReferenceAnnotation):
         if type(table_metadata) is not dict:
             msg = 'no metadata provided for reference annotation'

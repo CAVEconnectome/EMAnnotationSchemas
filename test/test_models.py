@@ -4,7 +4,6 @@ from emannotationschemas.models import Base
 import pytest
 import marshmallow as mm
 
-
 def test_model_creation():
     metadata_dict = {
                         'synapseflatref':{

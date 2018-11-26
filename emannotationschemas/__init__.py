@@ -13,9 +13,7 @@ type_mapping = {
     'synapse': SynapseSchema,
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
-    'cell_type_ai_manual': CellTypeLocal,
-    'synapse_ai_manual': SynapseSchema,
-    'microns_func_coreg': FunctionalCoregistration,
+    'coregistration': FunctionalCoregistration,
     'cell_type_local': CellTypeLocal,
     'flat_segmentation_reference': FlatSegmentationReference
 }
