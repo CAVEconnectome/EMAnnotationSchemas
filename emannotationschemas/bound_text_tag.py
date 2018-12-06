@@ -1,6 +1,5 @@
 from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
-from marshmallow.validate import OneOf
 
 class BoundTagAnnotation(AnnotationSchema):
     pt = mm.fields.Nested(BoundSpatialPoint,
