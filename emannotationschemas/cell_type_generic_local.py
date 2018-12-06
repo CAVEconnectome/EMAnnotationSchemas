@@ -33,7 +33,7 @@ def BoundCategoricalFactory(allowed_categories):
     return BoundCategoricalAnnotation
 
 
-def BoundCategoricalSystemFactory(classification_system, allowed_category_dict):
+def BoundCategoricalSystemFactory(allowed_category_dict):
     class BoundClassificationSystemAnnotation(AnnotationSchema):
         pt = mm.fields.Nested(BoundSpatialPoint,
                      required=True,
