@@ -6,7 +6,7 @@ from emannotationschemas.functional_coregistration import FunctionalCoregistrati
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.base import FlatSegmentationReference
 from emannotationschemas.cell_type_local import CellTypeLocal
-from emannotationschemas.cell_type_generic_local import BoundTagAnnotation
+from emannotationschemas.bound_text_tag import BoundTagAnnotation
 
 __version__ = '1.1.1'
 
