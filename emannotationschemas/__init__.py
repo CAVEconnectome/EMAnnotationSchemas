@@ -6,6 +6,7 @@ from emannotationschemas.functional_coregistration import FunctionalCoregistrati
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.base import FlatSegmentationReference
 from emannotationschemas.cell_type_local import CellTypeLocal
+from emannotationschemas.cell_type_generic_local import BoundTagAnnotation
 
 __version__ = '1.1.1'
 
@@ -13,11 +14,10 @@ type_mapping = {
     'synapse': SynapseSchema,
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
-    'cell_type_ai_manual': CellTypeLocal,
-    'synapse_ai_manual': SynapseSchema,
     'microns_func_coreg': FunctionalCoregistration,
     'cell_type_local': CellTypeLocal,
-    'flat_segmentation_reference': FlatSegmentationReference
+    'flat_segmentation_reference': FlatSegmentationReference,
+    'bound_tag': BoundTagAnnotation,
 }
 
 
