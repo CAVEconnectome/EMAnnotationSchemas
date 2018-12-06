@@ -7,7 +7,7 @@ def BoundCategoricalFactory(allowed_categories):
         pt = mm.fields.Nested(BoundSpatialPoint,
                              required=True,
                              description='Location associated with the tag')
-        category = mm.fields.String(required=true,
+        category = mm.fields.String(required=True,
                                     description='Categorical text tag')
         
         @mm.post_load
@@ -26,9 +26,9 @@ def BoundCategoricalSystemFactory(allowed_category_dict):
         pt = mm.fields.Nested(BoundSpatialPoint,
                      required=True,
                      description='Location associated with the tag')
-        category = mm.fields.String(required=true,
+        category = mm.fields.String(required=True,
                                     description='Categorical text tag')
-        classification_system = mm.fields.String(required=true,
+        classification_system = mm.fields.String(required=True,
                                     description='Classification system for cateogory')
 
         @mm.post_load
