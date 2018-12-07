@@ -7,6 +7,7 @@ from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.base import FlatSegmentationReference
 from emannotationschemas.cell_type_local import CellTypeLocal
 from emannotationschemas.bound_text_tag import BoundTagAnnotation
+from emannotationschemas.extended_classical_cell_type import ExtendedClassicalCellType
 
 __version__ = '1.1.1'
 
@@ -18,6 +19,7 @@ type_mapping = {
     'cell_type_local': CellTypeLocal,
     'flat_segmentation_reference': FlatSegmentationReference,
     'bound_tag': BoundTagAnnotation,
+    'extended_classical_cell_type': ExtendedClassicalCellType,
 }
 
 
