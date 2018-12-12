@@ -34,57 +34,55 @@ def make_neuron_compartment_model(dataset, version: int = 1):
                                        version=version)
 
 
-def make_post_synaptic_compartment_model(dataset,
-                                         synapse_table,
-                                         version: int = 1):
-
-    psc_name_lower = post_synaptic_compartment_name.lower()
-    synapse_table_name = format_table_name(dataset, synapse_table, version=version)
+def make_pre_post_synaptic_compartment_model(dataset, 
+                                             synapse_table,
+                                             pre_post_name,
+                                             version: int = 1):
+    name_lower = pre_post_name.lower()
+    synapse_table_name = format_table_name(dataset,
+                                           synapse_table,
+                                           version=version)
 
     attr_dict = {
         '__tablename__': format_table_name(dataset,
-                                           psc_name_lower,
+                                           name_lower,
                                            version=version),
         'label': Column(Integer),
-        'synapse_id': Column(Numeric, ForeignKey(synapse_table_name + ".id"), primary_key=True)
+        'soma_distance': Column(Float),
+        'synapse_id': Column(Numeric,
+                             ForeignKey(synapse_table_name + ".id"),
+                             primary_key=True)
     }
-    model_name = dataset.capitalize() + post_synaptic_compartment_name
+    model_name = dataset.capitalize() + pre_post_name
     if not annotation_models.contains_model(dataset,
-                                            psc_name_lower,
+                                            name_lower,
                                             version=version):
         annotation_models.set_model(dataset,
-                                    psc_name_lower,
+                                    name_lower,
                                     type(model_name, (Base,), attr_dict),
                                     version=version)
 
     return annotation_models.get_model(dataset,
-                                       psc_name_lower,
+                                       name_lower,
                                        version=version)
+
+
+def make_post_synaptic_compartment_model(dataset,
+                                         synapse_table,
+                                         version: int = 1):
+
+    return make_pre_post_synaptic_compartment_model(dataset, 
+                                                    synapse_table,
+                                                    post_synaptic_compartment_name,
+                                                    version)
 
 
 def make_pre_synaptic_compartment_model(dataset,
                                         synapse_table,
                                         version: int = 1):
 
-    psc_name_lower = pre_synaptic_compartment_name.lower()
-    synapse_table_name = format_table_name(dataset, synapse_table, version=version)
-
-    attr_dict = {
-        '__tablename__': format_table_name(dataset,
-                                           psc_name_lower,
-                                           version=version),
-        'label': Column(Integer),
-        'synapse_id': Column(Numeric, ForeignKey(synapse_table_name + ".id"), primary_key=True)
-    }
-    model_name = dataset.capitalize() + pre_synaptic_compartment_name
-    if not annotation_models.contains_model(dataset,
-                                            psc_name_lower,
-                                            version=version):
-        annotation_models.set_model(dataset,
-                                    psc_name_lower,
-                                    type(model_name, (Base,), attr_dict),
-                                    version=version)
-
-    return annotation_models.get_model(dataset,
-                                       psc_name_lower,
-                                       version=version)
+    return make_pre_post_synaptic_compartment_model(dataset, 
+                                                    synapse_table,
+                                                    pre_synaptic_compartment_name,
+                                                    version)
+    
