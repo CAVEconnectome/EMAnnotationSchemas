@@ -6,33 +6,24 @@ post_synaptic_compartment_name = "PostSynapseCompartment"
 pre_synaptic_compartment_name = "PreSynapseCompartment"
 
 
-def make_mesh_label_model(dataset, table_name, columns, version: int = 1):
+def make_mesh_label_model(dataset, table_name, columns):
     compartment_type = compartment_model_name.lower()
 
-    root_id_name = format_table_name(dataset,
-                                     root_model_name.lower(),
-                                     version)+'.id'
-
     attr_dict = {
-        '__tablename__': format_table_name(dataset,
-                                           table_name,
-                                           version=version),
-        'root_id': Column(Numeric, ForeignKey(root_id_name), primary_key=True)
+        '__tablename__': f'{dataset}_{table_name}',
+        'root_id': Column(Numeric, primary_key=True)
     }
     for col in columns:
         attr_dict[col] = Column(LargeBinary),
-    model_name = dataset.capitalize() + compartment_model_name
+    model_name = dataset.capitalize() + table_name
 
     if not annotation_models.contains_model(dataset,
-                                            compartment_type,
-                                            version=version):
+                                            compartment_type):
         annotation_models.set_model(dataset,
                                     compartment_type,
-                                    type(model_name, (Base,), attr_dict),
-                                    version=version)
+                                    type(model_name, (Base,), attr_dict))
     return annotation_models.get_model(dataset,
-                                       compartment_type,
-                                       version=version)
+                                       compartment_type)
 
 
 def make_neuron_compartment_model(dataset, version: int = 1):
