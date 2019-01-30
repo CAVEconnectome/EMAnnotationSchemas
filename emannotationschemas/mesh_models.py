@@ -14,7 +14,8 @@ def make_mesh_label_model(dataset, table_name, columns):
     assert(all(good_col))
     attr_dict = {
         '__tablename__': f'{dataset}_meshlabel_{table_name}',
-        'root_id': Column(Numeric, primary_key=True)
+        'root_id': Column(Numeric, primary_key=True),
+        'ignore': Column(LargeBinary)
     }
     for col in columns:
         attr_dict[col] = Column(LargeBinary)
