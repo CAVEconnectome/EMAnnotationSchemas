@@ -5,16 +5,19 @@ compartment_model_name = "NeuronCompartment"
 post_synaptic_compartment_name = "PostSynapseCompartment"
 pre_synaptic_compartment_name = "PreSynapseCompartment"
 
+mesh_label_names = ['soma', 'ais']
+
 
 def make_mesh_label_model(dataset, table_name, columns):
     compartment_type = compartment_model_name.lower()
-
+    good_col = [col in mesh_label_names for col in columns]
+    assert(all(good_col))
     attr_dict = {
-        '__tablename__': f'{dataset}_{table_name}',
+        '__tablename__': f'{dataset}_meshlabel_{table_name}',
         'root_id': Column(Numeric, primary_key=True)
     }
     for col in columns:
-        attr_dict[col] = Column(LargeBinary),
+        attr_dict[col] = Column(LargeBinary)
     model_name = dataset.capitalize() + table_name
 
     if not annotation_models.contains_model(dataset,
