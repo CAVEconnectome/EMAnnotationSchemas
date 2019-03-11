@@ -16,23 +16,9 @@ Base = declarative_base()
 root_model_name = "CellSegment"
 
 
-def get_next_version(sql_uri, dataset_name):
-    engine = create_engine(sql_uri)
-    versions = np.array([get_table_version(t)
-                         for t in engine.table_names() if (dataset_name in t)])
-    if len(versions) > 0:
-        new_version = np.max(versions)+1
-    else:
-        new_version = 0
-    return new_version
-
-
 def format_table_name(dataset, table_name, version: int = 1):
-    return "{}_{}_v{}".format(dataset, table_name, version)
-
-
-def get_table_version(table_name):
-    return int(table_name.split('_')[-1][1:])
+    return table_name
+    #return "{}_{}_v{}".format(dataset, table_name, version)
 
 
 class ModelStore():
