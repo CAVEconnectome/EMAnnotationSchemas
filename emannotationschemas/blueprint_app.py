@@ -36,3 +36,25 @@ def get_type_schema(annotation_type):
 @bp.route("/type/<annotation_type>")
 def get_type_schema_route(annotation_type):
     return jsonify(get_type_schema(annotation_type))
+
+
+@bp.route("/type/<annotation_type>/view")
+def get_schema_view(annotation_type):
+    Schema = get_schema(annotation_type)
+    print(dir(Schema))
+    ds = []
+    for col, field in Schema._declared_fields.items():
+        if isinstance(field, mm.fields.Nested):
+            print(dir(field.schema), field.schema)
+            schema = field.schema.__class__.__name__
+        else:
+            schema = ''
+
+        ds. append({
+            'field_name': col,
+            'description': field.metadata.get('description', ''),
+            'type': type(field).__name__,
+            'schema': schema
+        })
+    df = pd.DataFrame(ds)
+    return df[['field_name', 'type', 'description', 'schema']].to_html()
