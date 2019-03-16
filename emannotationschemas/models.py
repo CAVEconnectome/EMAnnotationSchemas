@@ -15,8 +15,9 @@ Base = declarative_base()
 root_model_name = "CellSegment"
 
 
-def format_database_name(dataset, version):
-    return f"{dataset}_v{version}"
+def format_database_name(dataset, version: int = 1):
+    database_name_schema = '{dataset}_v{version}'
+    return database_name_schema.format(dataset=dataset, version=version)
 
 
 def format_version_db_uri(sql_uri, dataset, version):
