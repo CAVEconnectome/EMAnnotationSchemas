@@ -1,24 +1,34 @@
 from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean, \
-    create_engine, DateTime, ForeignKey
+     DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.declarative import AbstractConcreteBase
 from geoalchemy2 import Geometry
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.base import NumericField, ReferenceAnnotation
 from emannotationschemas.contact import Contact
-from emannotationschemas.errors import UnknownAnnotationTypeException, InvalidTableMetaDataException
+from emannotationschemas.errors import UnknownAnnotationTypeException, \
+                                       InvalidTableMetaDataException
 import marshmallow as mm
-import numpy as np
 
 Base = declarative_base()
 
 root_model_name = "CellSegment"
 
 
+def format_database_name(dataset, version):
+    return f"{dataset}_v{version}"
+
+
+def format_version_db_uri(sql_uri, dataset, version):
+    sql_uri_base = "/".join(sql_uri.split('/')[:-1])
+    new_db_name = format_database_name(dataset, version)
+    version_db_uri = sql_uri_base + f"/{new_db_name}"
+    return version_db_uri
+
+
 def format_table_name(dataset, table_name, version: int = 1):
     return table_name
-    #return "{}_{}_v{}".format(dataset, table_name, version)
+    # return "{}_{}_v{}".format(dataset, table_name, version)
 
 
 class ModelStore():
