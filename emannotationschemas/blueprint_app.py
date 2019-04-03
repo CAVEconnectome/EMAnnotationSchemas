@@ -7,7 +7,7 @@ import pandas as pd
 
 bp = Blueprint("schema", __name__, url_prefix="/schema")
 
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 
 
 @bp.route("")
