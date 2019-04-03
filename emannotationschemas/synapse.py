@@ -37,3 +37,9 @@ class SynapseSchema(AnnotationSchema):
         else:
             item.pop('valid', None)
         return item
+
+
+class PlasticSynapse(SynapseSchema):
+    plasticity = mm.fields.Int(required=True,
+                               validate=mm.validate.OneOf([0, 1, 2, 3, 4]),
+                               description="plasticity state 0:not synapse 1:normal 2:mild 3:strong 4:not rated")

@@ -6,6 +6,7 @@ import marshmallow as mm
 import pandas as pd
 
 bp = Blueprint("schema", __name__, url_prefix="/schema")
+
 __version__ = '2.0.0'
 
 
