@@ -1,4 +1,4 @@
-from emannotationschemas.synapse import SynapseSchema
+from emannotationschemas.synapse import SynapseSchema, PlasticSynapse
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
@@ -9,7 +9,7 @@ from emannotationschemas.cell_type_local import CellTypeLocal
 from emannotationschemas.bound_text_tag import BoundTagAnnotation
 from emannotationschemas.extended_classical_cell_type import ExtendedClassicalCellType
 
-__version__ = '1.1.4'
+__version__ = '2.0.1'
 
 type_mapping = {
     'synapse': SynapseSchema,
@@ -20,6 +20,7 @@ type_mapping = {
     'flat_segmentation_reference': FlatSegmentationReference,
     'bound_tag': BoundTagAnnotation,
     'extended_classical_cell_type': ExtendedClassicalCellType,
+    'plastic_synapse': PlasticSynapse
 }
 
 

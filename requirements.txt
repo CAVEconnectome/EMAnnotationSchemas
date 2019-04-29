@@ -5,3 +5,4 @@ geoalchemy2
 flask
 marshmallow-jsonschema
 marshmallow_jsonschema
+pandas
