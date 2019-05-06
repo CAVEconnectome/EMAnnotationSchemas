@@ -170,7 +170,7 @@ field_column_map = {
 }
 
 
-def add_column(attrd, k, field, dataset, version: int = 1):
+def add_column(attrd, k, field, dataset, version: int = 1, sqllite=False):
     field_type = type(field)
     do_index = field.metadata.get('index', False)
     if field_type in field_column_map:
@@ -185,7 +185,8 @@ def add_column(attrd, k, field, dataset, version: int = 1):
                                                       None)
                 if postgis_geom:
                     attrd[k + "_" + sub_k] = Column(Geometry(postgis_geom,
-                                                             dimension=3))
+                                                             dimension=3,
+                                                             management=sqllite))
                 else:
                     dyn_args = [field_column_map[type(sub_field)]]
                     if sub_k == 'root_id':
@@ -219,7 +220,8 @@ def make_cell_segment_model(dataset, version: int = 1):
     return annotation_models.get_model(dataset, root_type, version=version)
 
 
-def declare_annotation_model_from_schema(dataset, table_name, Schema, table_metadata=None, version: int = 1):
+def declare_annotation_model_from_schema(dataset, table_name, Schema, table_metadata=None,
+                                         version: int = 1, sqllite=False):
     model_name = dataset.capitalize() + table_name.capitalize()
     attrd = {
         '__tablename__': format_table_name(dataset, table_name, version=version),
@@ -232,7 +234,7 @@ def declare_annotation_model_from_schema(dataset, table_name, Schema, table_meta
     }
     for k, field in Schema._declared_fields.items():
         if (not field.metadata.get('drop_column', False)):
-            attrd = add_column(attrd, k, field, dataset, version=version)
+            attrd = add_column(attrd, k, field, dataset, version=version, sqllite=sqllite)
     if issubclass(Schema, ReferenceAnnotation):
         target_field = Schema._declared_fields['target_id']
         if type(table_metadata) is not dict:
@@ -256,7 +258,8 @@ def make_annotation_model_from_schema(dataset,
                                       table_name,
                                       Schema,
                                       table_metadata=None,
-                                      version: int = 1):
+                                      version: int = 1,
+                                      sqllite=False):
     if not annotation_models.contains_model(dataset,
                                             table_name,
                                             version=version):
@@ -264,7 +267,8 @@ def make_annotation_model_from_schema(dataset,
                                                      table_name,
                                                      Schema,
                                                      table_metadata=table_metadata,
-                                                     version=version)
+                                                     version=version,
+                                                     sqllite=sqllite)
         annotation_models.set_model(dataset,
                                     table_name,
                                     Model,
@@ -273,19 +277,23 @@ def make_annotation_model_from_schema(dataset,
     return annotation_models.get_model(dataset, table_name, version=version)
 
 
-def declare_annotation_model(dataset, annotation_type, table_name, table_metadata=None, version: int = 1):
+def declare_annotation_model(dataset, annotation_type, table_name, table_metadata=None,
+                             version: int = 1, sqllite=False):
     Schema = get_schema(annotation_type)
     return declare_annotation_model_from_schema(dataset,
                                                 table_name,
                                                 Schema,
                                                 table_metadata=table_metadata,
-                                                version=version)
+                                                version=version,
+                                                sqllite=sqllite)
 
 
-def make_annotation_model(dataset, annotation_type, table_name, table_metadata=None, version: int = 1):
+def make_annotation_model(dataset, annotation_type, table_name, table_metadata=None,
+                          version: int = 1, sqllite=False):
     Schema = get_schema(annotation_type)
     return make_annotation_model_from_schema(dataset,
                                              table_name,
                                              Schema,
                                              table_metadata=table_metadata,
-                                             version=version)
+                                             version=version,
+                                             sqllite=sqllite)
