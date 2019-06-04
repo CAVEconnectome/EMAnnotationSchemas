@@ -1,6 +1,7 @@
-from emannotationschemas.categorical_factories import BoundCategoricalFactory
+# from emannotationschemas.categorical_factories import BoundCategoricalFactory
+from emannotationschemas.schema_factory import BoundCategoricalSchemaFactory
 
-schema_type_name = 'extended_classical_cell_type'
+annotation_name = 'extended_classical_cell_type'
 
 allowed_cell_types = ['basket',
                       'chandelier',
@@ -19,11 +20,11 @@ allowed_cell_types = ['basket',
 
 category_name = 'cell_type'
 category_description = 'cell type name'
-class_name = 'ExtendedClassicalCellType'
+SchemaName = 'ExtendedClassicalCellType'
 
-ExtendedClassicalCellType = BoundCategoricalFactory(allowed_cell_types,
-                                                    category_name,
-                                                    category_description,
-                                                    schema_type_name,
-                                                    class_name
-                                                    )
+ExtendedClassicalCellType = BoundCategoricalSchemaFactory(SchemaName,
+                                                          annotation_name,
+                                                          allowed_cell_types,
+                                                          category_name = 'cell_type',
+                                                          category_description=category_description,
+                                                          )
