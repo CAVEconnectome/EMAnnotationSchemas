@@ -8,6 +8,8 @@ from emannotationschemas.base import FlatSegmentationReference
 from emannotationschemas.cell_type_local import CellTypeLocal
 from emannotationschemas.bound_text_tag import BoundTagAnnotation
 from emannotationschemas.extended_classical_cell_type import ExtendedClassicalCellType
+from emannotationschemas.glia_contact import GliaContact
+
 
 __version__ = '1.1.4'
 
@@ -20,6 +22,7 @@ type_mapping = {
     'flat_segmentation_reference': FlatSegmentationReference,
     'bound_tag': BoundTagAnnotation,
     'extended_classical_cell_type': ExtendedClassicalCellType,
+    'glia_contact': GliaContact,
 }
 
 
