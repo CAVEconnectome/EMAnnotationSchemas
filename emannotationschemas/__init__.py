@@ -10,7 +10,7 @@ from emannotationschemas.bound_text_tag import BoundTagAnnotation
 from emannotationschemas.glia_contact import GliaContact
 from emannotationschemas.extended_classical_cell_type import ExtendedClassicalCellType
 
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 
 type_mapping = {
     'synapse': SynapseSchema,
