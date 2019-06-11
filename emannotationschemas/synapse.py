@@ -4,6 +4,7 @@ import marshmallow as mm
 
 
 schema_name = 'SynapseSchema'
+schema_description = 'A schema to host synapses and their sizes'
 annotation_type = 'synapse'
 fields = {'pre_pt': 'BoundSpatialPoint',
           'ctr_pt': 'SpatialPoint',
@@ -15,6 +16,7 @@ descriptions = {'pre_pt': 'presynaptic point',
                 'post_pt': 'postsynaptic point',
                 'size': 'size of synapse',
                 }
+                
 required = {'pre_pt': True,
             'ctr_pt': True,
             'post_pt': True,

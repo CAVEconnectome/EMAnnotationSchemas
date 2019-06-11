@@ -20,6 +20,7 @@ def SimpleSchemaFactory(SchemaName,
                         required={},
                         kwarg_dict={},
                         validation_rules={}):
+
     _validate_arguments(SchemaName, annotation_type, fields, descriptions, required, validation_rules)
     class SimpleSchema(base.AnnotationSchema):
         @mm.post_load
@@ -49,6 +50,7 @@ def SimpleSchemaFactory(SchemaName,
         else:
             SimpleSchema._declared_fields[field_name] = field_lookup[field_type](required=required.get(field_name, False), description=descriptions.get(field_name, ''), **kwarg_dict.get(field_name, {}))
     return SimpleSchema
+
 
 def BoundCategoricalSchemaFactory(SchemaName,
                                   annotation_name,
