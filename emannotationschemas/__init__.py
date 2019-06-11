@@ -22,7 +22,7 @@ type_mapping = {
     'bound_tag': BoundTagAnnotation,
     'extended_classical_cell_type': ExtendedClassicalCellType,
     'plastic_synapse': PlasticSynapse,
-    'glia_contact', GliaContact,
+    'glia_contact': GliaContact,
 }
 
 
