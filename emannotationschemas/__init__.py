@@ -7,6 +7,7 @@ from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.base import FlatSegmentationReference
 from emannotationschemas.cell_type_local import CellTypeLocal
 from emannotationschemas.bound_text_tag import BoundTagAnnotation
+from emannotationschemas.glia_contact import GliaContact
 from emannotationschemas.extended_classical_cell_type import ExtendedClassicalCellType
 
 __version__ = '2.0.1'
@@ -20,7 +21,8 @@ type_mapping = {
     'flat_segmentation_reference': FlatSegmentationReference,
     'bound_tag': BoundTagAnnotation,
     'extended_classical_cell_type': ExtendedClassicalCellType,
-    'plastic_synapse': PlasticSynapse
+    'plastic_synapse': PlasticSynapse,
+    'glia_contact', GliaContact,
 }
 
 
