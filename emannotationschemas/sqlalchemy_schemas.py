@@ -3,6 +3,7 @@ import marshmallow_sqlalchemy as msqla
 import geoalchemy2
 from shapely import geometry
 from geoalchemy2.shape import from_shape, to_shape
+from marshmallow import fields, pre_load, post_dump, ValidationError
 
 
 ma = Marshmallow()
