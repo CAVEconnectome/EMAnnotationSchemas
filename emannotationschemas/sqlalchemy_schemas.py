@@ -9,6 +9,6 @@ def make_annotation_flask_schema(model):
     }
     metaclass = type("Meta", (), meta_attrd)
     attrd = {
-        'Meta:': metaclass,
+        'Meta': metaclass,
     }
     return type(model_name, (ma.ModelSchema,), attrd)
