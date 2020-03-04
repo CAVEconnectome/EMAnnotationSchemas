@@ -43,6 +43,9 @@ class CellTypeSoma(AnnotationSchema):
     pt = mm.fields.Nested( BoundSpatialPoint, 
                             required=True,
                             description='Location associated with classification')
+    notes = mm.fields.String(required=False,
+                             description = "notes the user wrote about this annotation")
+                             
     @mm.post_load
     def validate_type( self, item):
         system = item['level_one']
