@@ -9,7 +9,7 @@ from emannotationschemas.cell_type_local import CellTypeLocal
 from emannotationschemas.bound_text_tag import BoundTagAnnotation
 from emannotationschemas.glia_contact import GliaContact
 from emannotationschemas.extended_classical_cell_type import ExtendedClassicalCellType
-
+from emannotationschemas.cell_type_soma import CellTypeSoma
 __version__ = '2.0.2'
 
 type_mapping = {
@@ -23,6 +23,7 @@ type_mapping = {
     'extended_classical_cell_type': ExtendedClassicalCellType,
     'plastic_synapse': PlasticSynapse,
     'glia_contact': GliaContact,
+    'cell_type_soma': CellTypeSoma
 }
 
 
