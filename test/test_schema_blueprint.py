@@ -20,7 +20,7 @@ def test_types(client):
 
 def test_bad_schema(client):
     response = client.get('/schema/type/not_a_type')
-    print(response.data)
+    print(response)
     assert(response.status_code == 404)
 
 
@@ -28,8 +28,8 @@ def test_get_synapse_schema(app, client):
     url = '/schema/type/synapse'.format()
     response = client.get(url)
     assert(response.status_code == 200)
-    assert(len(response.data) > 0)
     schema = response.json
+    assert(len(schema) > 0)
     assert('$ref' in schema.keys())
     assert('#/definitions/SynapseSchema' in schema['$ref'])
     assert('SynapseSchema' in schema['definitions'])

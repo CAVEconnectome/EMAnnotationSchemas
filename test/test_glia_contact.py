@@ -21,8 +21,8 @@ def annotation_import( item ):
 def test_glia_import():
     schema = GliaContact(context={'bsp_fn':annotation_import})
     result = schema.load( good_glia_contact_annotation )
-    assert( result.data['size'] == contact_size)
+    assert( result['size'] == contact_size)
 
     result = schema.load( also_good_glia_contact_annotation )
-    assert( result.data['glia_pt']['supervoxel_id'] == 5)
-    assert( result.data['object_pt']['supervoxel_id'] == 5)
+    assert( result['glia_pt']['supervoxel_id'] == 5)
+    assert( result['object_pt']['supervoxel_id'] == 5)

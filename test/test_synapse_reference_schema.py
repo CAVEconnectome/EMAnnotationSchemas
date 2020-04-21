@@ -1,9 +1,11 @@
+import pytest
 from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 
 from emannotationschemas.base import flatten_dict
 from emannotationschemas import get_flat_schema
+from marshmallow import ValidationError
 
 synapse_id = 1
 
@@ -39,21 +41,69 @@ bad_compartment = {
     'target_id': synapse_id
     }
 
-def test_bouton_type():
+def test_bad_bouton_type():
+    with pytest.raises(Exception):
+        assert check_bad_bouton_type()
+
+def test_good_bouton_type():
+    with pytest.raises(Exception):
+        assert check_good_bouton_type()
+
+
+def check_bad_bouton_type():
     schema = PresynapticBoutonType()
-    result = schema.load( good_bouton )
-    assert(result.data['bouton_type'] == 'basmati' )
+    try:
+        result = schema.load(bad_bouton)
+    except ValidationError as err:
+        raise Exception(f"Wrong type {err}")
 
-    result = schema.load( bad_bouton )
-    assert('bouton_type' in result.errors)
 
-def test_postsynaptic_compartment():
+def check_good_bouton_type():
+    schema = PresynapticBoutonType()
+    try:
+        result = schema.load(good_bouton)
+    except ValidationError as err:
+        raise Exception(f"Wrong type {err}")
+
+
+def test_good_postsynaptic_compartment():
+    with pytest.raises(Exception):
+        assert check_good_postsynaptic_compartment()
+
+
+def test_bad_postsynaptic_compartment():
+    with pytest.raises(Exception):
+        assert check_bad_postsynaptic_compartment()
+
+
+def test_rich_postsynaptic_compartment():
+    with pytest.raises(Exception):
+        assert check_rich_postsynaptic_compartment()
+
+
+def check_good_postsynaptic_compartment():
     schema = PostsynapticCompartment()
-    result = schema.load( good_compartment )
-    assert( result.data['compartment'] == 'soma' )
+    try:
+        result = schema.load(good_compartment)
+        assert( result['compartment'] == 'soma' )
+    except ValidationError as err:
+        raise Exception(f"Wrong compartment type {err}")
+    
 
-    result = schema.load( bad_compartment )
-    assert('compartment' in result.errors)
+def check_bad_postsynaptic_compartment():    
+    schema = PostsynapticCompartment()
+    try:
+        result = schema.load(bad_compartment)
+        assert( result['compartment'] == 'soma' )
+    except ValidationError as err:
+        raise Exception(f"Wrong compartment type {err}")
+    
 
-    result = schema.load( rich_compartment )
-    assert( result.data['on_spine'] )
+def check_rich_postsynaptic_compartment():
+    schema = PostsynapticCompartment()
+    try:
+        result = schema.load(rich_compartment)
+        assert( result['on_spine'] )
+    except ValidationError as err:
+        raise Exception(f"Wrong compartment type {err}")
+    

@@ -19,10 +19,10 @@ def annotation_import( item ):
 def test_cell_type_validation():
     schema = ExtendedClassicalCellType(context={'bsp_fn':annotation_import})
     result = schema.load( good_cell_type )
-    assert( result.data['pt']['supervoxel_id'] == 5)
-    assert result.data['valid']
+    assert( result['pt']['supervoxel_id'] == 5)
+    assert result['valid']
 
 def test_cell_type_invalid():
     schema = ExtendedClassicalCellType(context={'bsp_fn':annotation_import})
     result = schema.load( bad_cell_type )
-    assert not result.data['valid']
+    assert not result['valid']
