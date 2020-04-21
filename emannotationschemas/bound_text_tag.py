@@ -8,6 +8,6 @@ class BoundTagAnnotation(AnnotationSchema):
     tag = mm.fields.String(required=True,
                            description='Arbitrary text tag')
     @mm.post_load
-    def validate_type(self, item):
+    def validate_type(self, item, **kwargs):
         assert item['type'] == 'bound_tag'
         return item

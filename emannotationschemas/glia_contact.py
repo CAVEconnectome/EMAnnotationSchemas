@@ -12,7 +12,7 @@ class GliaContact(AnnotationSchema):
     size = mm.fields.Float(description="size of contact", required=False)
 
     @mm.post_load
-    def validate_type(self, item):
+    def validate_type(self, item, **kwargs):
         # check that the annotation type is present in the object as 'synapse'
         assert item['type'] == 'glia_contact'
         return item

@@ -17,7 +17,7 @@ class Contact(AnnotationSchema):
 
 
     @mm.post_load
-    def validate_type(self, item):
+    def validate_type(self, item, **kwargs):
         # check that the annotation type is present in the object as 'synapse'
         assert item['type'] == 'contact'
 

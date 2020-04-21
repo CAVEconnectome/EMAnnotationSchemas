@@ -9,6 +9,6 @@ class FunctionalCoregistration(AnnotationSchema):
     func_id = mm.fields.Int(required=True, description="functional cell ID")
 
     @mm.post_load
-    def validate_type(self, item):
+    def validate_type(self, item, **kwargs):
         # check that the annotation type is present in the object as 'functional_coregistration'
         assert item['type'] == 'microns_func_coreg'
