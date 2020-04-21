@@ -1,6 +1,7 @@
 from emannotationschemas.base import ReferenceAnnotation
 import marshmallow as mm
 from marshmallow.validate import OneOf
+from marshmallow import validates_schema, ValidationError
 
 allowed_bouton_categories = ['pancake',
                             'basmati',
@@ -13,7 +14,7 @@ allowed_bouton_categories = ['pancake',
                             'chandelier',
                             ]
 
-class PresynapticBoutonType( ReferenceAnnotation ):
+class PresynapticBoutonType(ReferenceAnnotation):
 
     target_id = mm.fields.Int(
         required=True,
@@ -22,9 +23,10 @@ class PresynapticBoutonType( ReferenceAnnotation ):
 
     bouton_type = mm.fields.Str(
         required=True,
-        validate=OneOf( allowed_bouton_categories ),
+        validate=OneOf(allowed_bouton_categories),
         description='Presynaptic type based on bouton')
 
-    @mm.post_load
-    def validate_type(self, item):
-        assert item['type'] == 'presynaptic_bouton_type'
+    @validates_schema
+    def validate_type(self, data, **kwargs):
+        if data["type"] != 'presynaptic_bouton_type':
+            raise ValidationError("Type must be presynaptic_bouton_type")
