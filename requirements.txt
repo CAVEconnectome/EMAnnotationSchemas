@@ -1,8 +1,9 @@
-marshmallow<3.0.0
-sqlalchemy
-psycopg2-binary
-geoalchemy2
-flask
-marshmallow-jsonschema
-marshmallow_jsonschema
-pandas
+Flask==1.1.2
+GeoAlchemy2==0.7.0
+marshmallow==3.5.1
+marshmallow-jsonschema==0.10.0
+pandas==1.0.3
+psycopg2-binary==2.8.5
+python-dateutil==2.8.1
+pytz==2019.3
+SQLAlchemy==1.3.15
