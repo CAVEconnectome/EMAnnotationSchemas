@@ -31,8 +31,7 @@ def get_type_schema(annotation_type):
     except UnknownAnnotationTypeException:
         abort(404)
     json_schema = JSONSchema()
-    js = json_schema.dump(Schema())
-    return js.data
+    return json_schema.dump(Schema())
 
 
 @bp.route("/type/<annotation_type>")
