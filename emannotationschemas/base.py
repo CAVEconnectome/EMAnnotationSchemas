@@ -1,4 +1,6 @@
 import marshmallow as mm
+from geoalchemy2.shape import to_shape
+from marshmallow import INCLUDE
 
 
 class NumericField(mm.fields.Int):
@@ -6,7 +8,7 @@ class NumericField(mm.fields.Int):
         return {
             'type': 'integer',
         }
-
+    
 
 class IdSchema(mm.Schema):
     '''schema with a unique identifier'''
@@ -30,6 +32,8 @@ def flatten_dict(d, root=None, sep='_'):
 
 
 class AnnotationSchema(mm.Schema):
+    class Meta:
+        unknown = INCLUDE
     '''schema with the type of annotation'''
     type = mm.fields.Str(
         required=True,
@@ -74,7 +78,7 @@ class SpatialPoint(mm.Schema):
                               postgis_geometry='POINTZ')
 
     @mm.post_load
-    def transform_position(self, item):
+    def transform_position(self, item, **kwargs):
         if self.context.get('postgis', False):
             item['position'] = "POINTZ({} {} {})".format(item['position'][0],
                                                          item['position'][1],
@@ -90,7 +94,7 @@ class BoundSpatialPoint(SpatialPoint):
                            index=True)
 
     @mm.post_load
-    def convert_point(self, item):
+    def convert_point(self, item, **kwargs):
         bsp_fn = self.context.get('bsp_fn', None)
         if bsp_fn is not None:
             bsp_fn(item)
