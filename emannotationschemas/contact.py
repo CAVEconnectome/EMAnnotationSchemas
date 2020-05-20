@@ -15,25 +15,23 @@ class Contact(AnnotationSchema):
     ctr_pt = mm.fields.Nested(SpatialPoint,
                               description='point on contact interface')
 
+    @mm.validates_schema
+    def validate_type(self, data, **kwargs):
+        # check that the annotation type is present in the object as 'contact'
+        if data["type"] != 'contact':
+            raise mm.ValidationError("Type must be 'contact'")
 
     @mm.post_load
-    def validate_type(self, item, **kwargs):
-        # check that the annotation type is present in the object as 'synapse'
-        assert item['type'] == 'contact'
-
-        sidea_id = item['sidea_pt'].get('root_id', None)
-        sideb_id = item['sideb_pt'].get('root_id', None)
-
+    def check_contact_sides(self, data, **kwargs):
+        sidea_id = data['sidea_pt'].get('root_id', None)
+        sideb_id = data['sideb_pt'].get('root_id', None)
         # if the root_id is present
-        # we should set the valid flag depending up on this rule
-        # when the root_id is not present
-        # (i.e. when posting new annotations with no root_id's in mind)
-        # then the valid flag should be not present
+            # we should set the valid flag depending up on this rule
+            # when the root_id is not present
+            # (i.e. when posting new annotations with no root_id's in mind)
+            # then the valid flag should be not present
         if sidea_id is not None:
-            if (sidea_id == sideb_id):
-                item['valid'] = False
-            else:
-                item['valid'] = True
+            data['valid'] = False if sidea_id == sideb_id else True
         else:
-            item.pop('valid', None)
-        return item
+            data.pop('valid', None)
+        return data
