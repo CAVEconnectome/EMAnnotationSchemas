@@ -36,8 +36,8 @@ class PostsynapticCompartment( ReferenceAnnotation ):
         validate=OneOf(allowed_dendrite_classes),
         description='Type of dendritic branch, e.g. basal or apical')
 
-
-    @validates_schema
+    @mm.validates_schema
     def validate_type(self, data, **kwargs):
+        # check that the annotation type is present in the object as 'postsynaptic_compartment'
         if data["type"] != 'postsynaptic_compartment':
-            raise ValidationError("Type must be 'postsynaptic_compartment'")
+            raise mm.ValidationError("Type must be 'postsynaptic_compartment'")
