@@ -1,14 +1,28 @@
 import marshmallow as mm
 from geoalchemy2.shape import to_shape
 from marshmallow import INCLUDE
-
+from geoalchemy2.types import WKBElement, WKTElement
+import numpy as np
 
 class NumericField(mm.fields.Int):
     def _jsonschema_type_mapping(self):
         return {
             'type': 'integer',
         }
-    
+
+class PostGISField(mm.fields.Int):
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        if isinstance(value, (WKBElement, WKTElement)):
+            return get_geom_from_wkb(value)
+        return value
+
+
+def get_geom_from_wkb(wkb):
+    wkb_element = to_shape(wkb)
+    if wkb_element.has_z:
+        return f"POINTZ({wkb_element.xy[0][0]} {wkb_element.xy[1][0]} {wkb_element.z})"
+    return wkb_element
 
 class IdSchema(mm.Schema):
     '''schema with a unique identifier'''
@@ -37,12 +51,13 @@ class AnnotationSchema(mm.Schema):
     '''schema with the type of annotation'''
     type = mm.fields.Str(
         required=True,
-        description='type of annotation',
-        drop_column=True)
+        description='type of annotation')
 
     valid = mm.fields.Bool(
         required=False,
-        description="is this annotation valid"
+        description="is this annotation valid",
+        default=False,
+        missing=None,
     )
 
 
@@ -70,27 +85,29 @@ class ReferenceTagAnnotation(ReferenceAnnotation, TagAnnotation):
 
 class SpatialPoint(mm.Schema):
     '''a position in the segmented volume '''
-    position = mm.fields.List(mm.fields.Int,
-                              validate=mm.validate.Length(equal=3),
-                              required=True,
-                              description='spatial position in voxels of'
-                                          'x,y,z of annotation',
-                              postgis_geometry='POINTZ')
+    position = PostGISField(postgis_geometry='POINTZ')
+ 
 
     @mm.post_load
-    def transform_position(self, item, **kwargs):
+    def transform_position(self, data, **kwargs):
         if self.context.get('postgis', False):
-            item['position'] = "POINTZ({} {} {})".format(item['position'][0],
-                                                         item['position'][1],
-                                                         item['position'][2])
-        return item
+            data['position'] = "POINTZ({} {} {})".format(data['position'][0],
+                                                         data['position'][1],
+                                                         data['position'][2])
+        return data
 
+    @mm.post_load
+    def transform_position(self, data, **kwargs):
+        if self.context.get('numpy', False):
+            data['position'] = np.asarray(data, dtype=np.uint64)
+
+        return data
 
 class BoundSpatialPoint(SpatialPoint):
     ''' a position in the segmented volume that is associated with an object'''
-    supervoxel_id = NumericField(missing=mm.missing,
-                                 description="supervoxel id of this point")
-    root_id = NumericField(description="root id of the bound point",
+    supervoxel_id = NumericField(missing=None,
+                                 description="supervoxel id of this point", segment=True)
+    root_id = NumericField(description="root id TTT the bound point", missing=None, segment=True,
                            index=True)
 
     @mm.post_load
