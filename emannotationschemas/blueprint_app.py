@@ -51,7 +51,7 @@ def get_schema_view(annotation_type):
         else:
             schema = ''
 
-        ds. append({
+        ds.append({
             'field_name': col,
             'description': field.metadata.get('description', ''),
             'type': type(field).__name__,
