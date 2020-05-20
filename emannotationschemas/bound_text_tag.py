@@ -7,7 +7,10 @@ class BoundTagAnnotation(AnnotationSchema):
                          description='Location associated with the tag')
     tag = mm.fields.String(required=True,
                            description='Arbitrary text tag')
-    @mm.post_load
-    def validate_type(self, item, **kwargs):
-        assert item['type'] == 'bound_tag'
-        return item
+    
+    @mm.validates_schema
+    def validate_type(self, data, **kwargs):
+        # check that the annotation type is present in the object as 'bound_tag'
+        if data["type"] != 'bound_tag':
+            raise mm.ValidationError("Type must be 'bound_tag'")
+
