@@ -1,13 +1,15 @@
-version: '2.1'
+version: '3'
 services:
     db:
       image: mdillon/postgis
-      environment:
-        POSTGRES_PASSWORD: synapsedb
+      restart: always
+      env_file:
+        - ./.env.dev
       ports:
         - 5432:5432
       volumes:
-        - ./data:/var/lib/postgresql/data
+        - postgres_data:/var/lib/postgresql/data
+        # - ./entrypoint.sh:/var/lib/postgresql/entrypoint.sh
       healthcheck:
         test: "pg_isready -h localhost -p 5432 -q -U postgres"
         interval: 3s
@@ -19,3 +21,20 @@ services:
         - 8080:8080
       links:
         - db
+    app:
+      image: 'app:tag'
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - 80:80
+      volumes:
+        - ./emannotationschemas:/emannotationschemas
+      env_file:
+        - ./.env.dev 
+      depends_on:
+        - db
+
+volumes:
+  postgres_data:
+    driver: local
