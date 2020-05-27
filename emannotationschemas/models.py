@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean, \
-                       DateTime, ForeignKey, DateTime, BigInteger
+                       DateTime, ForeignKey, DateTime, BigInteger, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from geoalchemy2 import Geometry
@@ -55,12 +55,13 @@ annotation_models = ModelStore()
 class Metadata(Base):
     __tablename__ = 'annotation_table_metadata'
     id = Column(Integer, primary_key=True)
-    schema = Column(String(100), nullable=False)
-    tablename = Column(String(100), nullable=False)
+    schema_type = Column(String(100), nullable=False)
+    table_name = Column(String(100), nullable=False)
     valid = Column(Boolean)
     created = Column(DateTime, nullable=False)
     deleted = Column(DateTime, nullable=True)
     user_id = Column(Integer, nullable=True)
+    description = Column(Text, nullable=True)
     reference_table = Column(String(100), nullable=True)
 
 
@@ -297,8 +298,9 @@ def _link_segmentation(segmenmtation_model, annotation_name: str):
         (segmenmtation_model, Base),
         dict(
             __tablename__=f"{annotation_name}_segmentation",
-           id=Column(Integer, ForeignKey(f"{annotation_name}.id"), primary_key=True),
-           parent=relationship(segmenmtation_model),
+           id=Column(Integer, primary_key=True),
+           annotation_id=Column(ForeignKey(f"{annotation_name}.id")),
+           parent=relationship(segmenmtation_model, lazy="joined"),
         ),
     )
     return relationship(segmenmtation_model)
@@ -313,8 +315,7 @@ def add_column(columns: dict,
     segmentation_columns = {}
 
     if field_type in field_column_map:
-        if isinstance(field_type, PostGISField):
-
+        if field_type == PostGISField:
             postgis_geom = field.metadata.get('postgis_geometry', 'POINTZ')
         
             columns[key] = Column(Geometry(geometry_type=postgis_geom, dimension=3))
