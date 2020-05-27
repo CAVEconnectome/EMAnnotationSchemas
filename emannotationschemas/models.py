@@ -171,7 +171,7 @@ def split_annotation_schema(Schema):
         
     return flat_annotation_schema, flat_segmentation_schema   
 
-def create_linked_annotation_model(em_dataset: str,
+def create_linked_annotation_models(em_dataset: str,
                                    table_name: str, 
                                    annotation_columns: dict,
                                    segmentation_columns: dict):
@@ -201,18 +201,23 @@ def create_linked_annotation_model(em_dataset: str,
     
     segmentation_dict = create_table_dict(em_dataset, table_name, segmentation_columns, with_crud_columns=False)
     
+    annotation_name = annotation_dict.get('__tablename__', 'AnnotationSchema')
+    segmentation_name = f"{annotation_name}_segmentation"
     try:
         segmentation_dict.pop('id')
     except KeyError:
         print(f"Segmentation Model {segmentation_dict} has no key 'id' ")
     
-    segmenmtation_model = type('segmentation_dict', (object,), segmentation_dict)
-    
-    annotation_name = annotation_dict.get('__tablename__', 'AnnotationSchema')
-    
-    _link_segmentation(segmenmtation_model, annotation_name)
+    segmentation_dict.update({
+            '__tablename__': segmentation_name,
+           'id': Column(Integer, primary_key=True),
+           'annotation_id': Column(ForeignKey(f"{annotation_name}.id")),
+           'annotation': relationship(annotation_name, lazy="joined")
+    })   
+    AnnotationModel = type(annotation_name, (Base,), annotation_dict)
+    SegmentationModel = type(segmentation_name, (Base,), segmentation_dict)
 
-    return type(annotation_name, (Base,), annotation_dict)
+    return AnnotationModel, SegmentationModel
 
 def create_table_dict(em_dataset: str,
                       table_name: str,
@@ -292,19 +297,6 @@ def create_table_dict(em_dataset: str,
                                     ForeignKey(reference_table + '.id'))            
     return model
 
-def _link_segmentation(segmenmtation_model, annotation_name: str):
-    segmenmtation_model = type(
-        f"{segmenmtation_model.__name__}",
-        (segmenmtation_model, Base),
-        dict(
-            __tablename__=f"{annotation_name}_segmentation",
-           id=Column(Integer, primary_key=True),
-           annotation_id=Column(ForeignKey(f"{annotation_name}.id")),
-           parent=relationship(segmenmtation_model, lazy="joined"),
-        ),
-    )
-    return relationship(segmenmtation_model)
-
 
 def add_column(columns: dict,
                key:str, 
@@ -352,7 +344,7 @@ def create_model(Schema, em_dataset: str, table_name: str):
     """
     annotation_columns, segmentation_columns = split_annotation_schema(Schema)
     
-    return create_linked_annotation_model(em_dataset,
+    return create_linked_annotation_models(em_dataset,
                                           table_name,
                                           annotation_columns,
                                           segmentation_columns)        
@@ -369,11 +361,10 @@ def make_annotation_model_from_schema(em_dataset: str,
                                             table_name,
                                             version=version):
         
-        Model = create_model(Schema, em_dataset, table_name)
-        
+        Anno, Seg = create_model(Schema, em_dataset, table_name)
         annotation_models.set_model(em_dataset,
                                     table_name,
-                                    Model,
+                                    Anno,
                                     version=version)
 
     return annotation_models.get_model(em_dataset, table_name, version=version)
