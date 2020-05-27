@@ -316,10 +316,10 @@ def add_column(columns: dict,
         if isinstance(field_type, PostGISField):
 
             postgis_geom = field.metadata.get('postgis_geometry', 'POINTZ')
-
-            columns[key] = Column(Geometry(geometry_type=postgis_geom, dimension=3, srid=4326))
-
-        columns[key] = Column(field_column_map[field_type], index=do_index)
+        
+            columns[key] = Column(Geometry(geometry_type=postgis_geom, dimension=3))
+        else:
+            columns[key] = Column(field_column_map[field_type], index=do_index)
         
     else:
         raise InvalidSchemaField(f"field type {field_type} not supported")   
