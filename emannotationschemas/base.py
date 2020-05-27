@@ -10,9 +10,9 @@ class NumericField(mm.fields.Int):
             'type': 'integer',
         }
 
-class PostGISField(mm.fields.Int):
-
-    def _deserialize(self, value, attr, data, **kwargs):
+class PostGISField(mm.fields.Field):
+      
+    def _deserialize(self, value, attr, obj, **kwargs):
         if isinstance(value, (WKBElement, WKTElement)):
             return get_geom_from_wkb(value)
         return value
@@ -85,24 +85,27 @@ class ReferenceTagAnnotation(ReferenceAnnotation, TagAnnotation):
 
 class SpatialPoint(mm.Schema):
     '''a position in the segmented volume '''
-    position = PostGISField(postgis_geometry='POINTZ')
- 
+    
+    position =  PostGISField(validate=mm.validate.Length(equal=3),
+                             required=True,
+                             description='spatial position in voxels of '
+                                           'x,y,z of annotation',
+                             postgis_geometry='POINTZ')
+
 
     @mm.post_load
     def transform_position(self, data, **kwargs):
         if self.context.get('postgis', False):
             data['position'] = "POINTZ({} {} {})".format(data['position'][0],
-                                                         data['position'][1],
-                                                         data['position'][2])
+                                             data['position'][1],
+                                             data['position'][2])
         return data
 
     @mm.post_load
-    def transform_position(self, data, **kwargs):
+    def to_numpy(self, data, **kwargs):
         if self.context.get('numpy', False):
-            data['position'] = np.asarray(data, dtype=np.uint64)
-
+            data['position'] = np.asarray(data['position'], dtype=np.uint64)
         return data
-
 class BoundSpatialPoint(SpatialPoint):
     ''' a position in the segmented volume that is associated with an object'''
     supervoxel_id = NumericField(missing=None,
