@@ -1,43 +1,36 @@
 from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean, \
-     DateTime, ForeignKey, DateTime, BigInteger
+                       DateTime, ForeignKey, DateTime, BigInteger
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from geoalchemy2 import Geometry
-from emannotationschemas import get_schema, get_types
-from emannotationschemas.base import NumericField, ReferenceAnnotation
+import marshmallow as mm
+from emannotationschemas import get_schema, get_types, get_flat_schema
+from emannotationschemas.base import NumericField, PostGISField, \
+                                     ReferenceAnnotation # SegmentationField
+from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.contact import Contact
 from emannotationschemas.errors import UnknownAnnotationTypeException, \
-                                       InvalidTableMetaDataException
-import marshmallow as mm
+                                       InvalidTableMetaDataException, \
+                                       InvalidSchemaField
+from typing import Sequence
 
 Base = declarative_base()
 
-root_model_name = "CellSegment"
+field_column_map = {
+    #SegmentationField: Numeric,
+    NumericField: Numeric,
+    PostGISField: Geometry,
+    mm.fields.Int: Integer,
+    mm.fields.Integer: Integer,
+    mm.fields.Float: Float,
+    mm.fields.Str: String,
+    mm.fields.String: String,
+    mm.fields.Bool: Boolean,
+    mm.fields.Boolean: Boolean
+}
 
 
-def format_database_name(dataset, version: int = 1):
-    database_name_schema = '{dataset}_v{version}'
-    return database_name_schema.format(dataset=dataset, version=version)
-
-
-def format_version_db_uri(sql_uri, dataset, version):
-    sql_uri_base = "/".join(sql_uri.split('/')[:-1])
-    new_db_name = format_database_name(dataset, version)
-    version_db_uri = sql_uri_base + f"/{new_db_name}"
-    return version_db_uri
-
-
-def format_table_name(dataset, table_name, version=None):
-    try:
-        if version is not None:
-            return f"{dataset}_{table_name}_v{version}"
-        else:
-            return f"{table_name}"
-    except Exception as e:
-        raise e
-
-
-class ModelStore():
+class ModelStore:
 
     def __init__(self):
         self.container = {}
@@ -57,40 +50,40 @@ class ModelStore():
         key = self.to_key(dataset, table_name, version)
         self.container[key] = model
 
-
 annotation_models = ModelStore()
 
-# TODO decide what to call this for real
-
-
-class InvalidSchemaField(Exception):
-    '''Exception raised if a schema can't be translated to a model'''
-
-
-class AnalysisVersion(Base):
-    __tablename__ = 'analysisversion'
-    id = Column(Integer, primary_key=True)
-    dataset = Column(String(100), nullable=False)
-    version = Column(Integer, nullable=False)
-    time_stamp = Column(DateTime, nullable=False)
-    valid = Column(Boolean)
-    def __repr__(self):
-        return "{}_v{}".format(self.dataset, self.version)
-
-
-class AnalysisTable(Base):
-    __tablename__ = 'analysistables'
+class Metadata(Base):
+    __tablename__ = 'annotation_table_metadata'
     id = Column(Integer, primary_key=True)
     schema = Column(String(100), nullable=False)
     tablename = Column(String(100), nullable=False)
     valid = Column(Boolean)
-    analysisversion_id = Column(Integer, ForeignKey('analysisversion.id'))
-    analysisversion = relationship('AnalysisVersion')
+    created = Column(DateTime, nullable=False)
+    deleted = Column(DateTime, nullable=True)
+    user_id = Column(Integer, nullable=True)
+    reference_table = Column(String(100), nullable=True)
 
 
-def validate_types(schemas_and_tables):
-    '''normalize a list of desired annotation types
+def format_database_name(dataset: str, version: int = 1):
+    return f"{dataset}_v{version}"
+
+
+def format_version_db_uri(sql_uri: str, dataset: str, version: int=None):
+    sql_uri_base = "/".join(sql_uri.split('/')[:-1])
+    new_db_name = format_database_name(dataset, version)
+    return sql_uri_base + f"/{new_db_name}"
+
+
+def format_table_name(dataset, table_name, version=None):
+    if version is not None:
+        return f"{dataset}_{table_name}_v{version}"
+    else:
+        return f"{dataset}_{table_name}"
+
+def validate_types(schemas_and_tables: list):
+    """Normalize a list of desired annotation types
     if passed None returns all types, otherwise checks that types exist
+    
     Parameters
     ----------
     types: list[str] or None
@@ -104,155 +97,182 @@ def validate_types(schemas_and_tables):
     ------
     UnknownAnnotationTypeException
         If types contains an invalid type
-    '''
+    """
 
     all_types = get_types()
-    if not (all(sn in all_types for sn, tn in schemas_and_tables)):
-        bad_types = [sn for sn,
-                     tn in schemas_and_tables if sn not in all_types]
-        msg = '{} are invalid types'.format(bad_types)
-        raise UnknownAnnotationTypeException(msg)
+    if not (all(schema_name in all_types for schema_name, table_name in schemas_and_tables)):
+        
+        bad_types = [schema_name for schema_name,
+                     table_name in schemas_and_tables if schema_name not in all_types]
+        
+        msg = f"{bad_types} are invalid types"
+        raise UnknownAnnotationTypeException(msg)   
 
-
-def make_dataset_models(dataset, schemas_and_tables,
-                        metadata_dict = None,
-                        include_contacts=False,
-                        version = None,
-                        with_crud_columns = False):
-    """make all the models for a dataset
+def convert_dict_to_schema(schema_name: str, schema_dict: dict):
+    """Generate a Marshmallow Schema object from dictionary.
 
     Parameters
     ----------
-    dataset: str
-        name of dataset
-    table_and_types: list[(schema_name, table_name)]
-        list of tuples with types and model names to make
-    metadata_dict:
-        a dictionary with keys of table_names and values of metadata dicts needed
-    include_contacts:
-        option to include the model for cell contacts
-    with_crud_columns:
-        option to include created, deleted, and supersceded_id
-    version: int
-        option to include version number to use for making models, for legacy compatiabilty
+    schema_name : str
+        Name of Schema to be used in object
+
+    schema_dict : dict
+        Dictionary of column types
+
     Returns
     -------
-    dict
-        dictionary where keys are table_names and values are sqlalchemy Models
+    Marshmallow Schema Object
+    """
+    return type(f'Flat{schema_name}', (mm.Schema,), schema_dict)
+
+def split_annotation_schema(Schema):
+    """ Split an EM Annotation schema into seperate annotation (spatial position) and 
+    segmentation (supervoxel and root_id) schemas
+
+    Parameters
+    ----------
+    Schema : EMAnnotation Schema
+        A Schema defined by EMAnnotationSchemas
+
+    Returns
+    -------
+    flat_annotation_schema
+        A flattened annotation marshmallow schema
+
+    flat_segmentation_schema
+        A flattened segmentation marshmallow schema
 
     Raises
     ------
-    UnknownAnnotationTypeException
-        If a type is not a valid annotation type
+    Exception
+        Schema is not flattened, i.e. nested schema type
     """
-    if metadata_dict is None:
-        metadata_dict={}
-    validate_types(schemas_and_tables)
-    dataset_dict = {}
-    cell_segment_model = make_cell_segment_model(dataset, version)
-    dataset_dict[root_model_name.lower()] = cell_segment_model
-    for schema_name, table_name in schemas_and_tables:
-        model_key = table_name
-        metadata = metadata_dict.get(table_name, None)
-        dataset_dict[model_key] = make_annotation_model(dataset,
-                                                        schema_name,
-                                                        table_name,
-                                                        table_metadata=metadata,
-                                                        version=version, 
-                                                        with_crud_columns = with_crud_columns)
-    if include_contacts:
-        contact_model = make_annotation_model_from_schema(dataset,
-                                                          'contact',
-                                                          Contact,
-                                                          version=version, 
-                                                          with_crud_columns = with_crud_columns)
-        dataset_dict['contact'] = contact_model
-    return dataset_dict
 
+    flat_schema = create_flattened_schema(Schema)
 
-field_column_map = {
-    NumericField: Numeric,
-    mm.fields.Int: Integer,
-    mm.fields.Integer: Integer,
-    mm.fields.Float: Float,
-    mm.fields.Str: String,
-    mm.fields.String: String,
-    mm.fields.Bool: Boolean,
-    mm.fields.Boolean: Boolean
-}
+    annotation_columns = {}
+    segmentation_columns = {}
 
-
-def add_column(attrd, k, field, dataset, version=None):
-    field_type = type(field)
-    do_index = field.metadata.get('index', False)
-    if field_type in field_column_map:
-        attrd[k] = Column(field_column_map[field_type], index=do_index)
-    else:
+    for key, field in flat_schema._declared_fields.items():
         if isinstance(field, mm.fields.Nested):
-            if field.many:
-                raise InvalidSchemaField("Nested(many=True) not supported")
-            for sub_k, sub_field in field.nested._declared_fields.items():
-                do_sub_index = sub_field.metadata.get('index', False)
-                postgis_geom = sub_field.metadata.get('postgis_geometry',
-                                                      None)
-                if postgis_geom:
-                    attrd[k + "_" + sub_k] = Column(Geometry(postgis_geom,
-                                                             dimension=3))
-                else:
-                    dyn_args = [field_column_map[type(sub_field)]]
-                    if sub_k == 'root_id':
-                        table_name = format_table_name(dataset,
-                                                       root_model_name.lower(),
-                                                       version=version)
-                        fk = table_name + ".id"
-                        dyn_args.append(ForeignKey(fk))
-                    attrd[k + "_" +
-                          sub_k] = Column(*dyn_args,
-                                          index=do_sub_index)
+            raise Exception(f"Schema {flat_schema} must be flattened before splitting")
+        field_type = type(field)
+        
+        if field_type is not NumericField:
+            annotation_columns[key] = field   
         else:
-            raise InvalidSchemaField(
-                "field type {} not supported".format(field_type))
-    return attrd
+            segmentation_columns[key] = field
+            
+    flat_annotation_schema = convert_dict_to_schema(f'{Schema.__name__}_annotation',
+                                                    annotation_columns)
+    flat_segmentation_schema = convert_dict_to_schema(f'{Schema.__name__}_segmentation',
+                                                      segmentation_columns)
+        
+    return flat_annotation_schema, flat_segmentation_schema   
 
+def create_linked_annotation_model(em_dataset: str,
+                                   table_name: str, 
+                                   annotation_columns: dict,
+                                   segmentation_columns: dict):
+    """ Create an annotation model which has a child segmentation model 
+    with FK to primary key of the annotation table.
 
-def make_cell_segment_model(dataset, version=None):
-    root_type = root_model_name.lower()
-    attr_dict = {
-        '__tablename__': format_table_name(dataset, root_type, version=version),
-        'id': Column(Numeric, primary_key=True, autoincrement=False)
-    }
-    model_name = dataset.capitalize() + root_model_name
+    Parameters
+    ----------
+    em_dataset : str
+        Name of electron microscopy dataset name.
 
-    if not annotation_models.contains_model(dataset, root_type, version=version):
-        annotation_models.set_model(dataset,
-                                    root_type,
-                                    type(model_name, (Base,), attr_dict),
-                                    version=version)
-    return annotation_models.get_model(dataset, root_type, version=version)
+    table_name : str
+        Name of table to use to define the __tablename__
 
+    annotation_columns : dict
+        Dictionary of annotation SQL fields
 
-def declare_annotation_model_from_schema(dataset, table_name, Schema,
-                                         table_metadata=None,
-                                         version=None,
-                                         with_crud_columns = False):
-    model_name = dataset.capitalize() + table_name.capitalize()
-    attrd = {
-        '__tablename__': format_table_name(dataset, table_name, version=version),
-        'id': Column(BigInteger, primary_key=True, autoincrement=False),
+    segmentation_columns : dict
+        Dictionary of segmentation SQL fields
+
+    Returns
+    -------
+    SqlAlchemy Declarative Base Model
+        Annotation SqlAlchemy model
+    """
+    annotation_dict = create_table_dict(em_dataset, table_name, annotation_columns)
+    
+    segmentation_dict = create_table_dict(em_dataset, table_name, segmentation_columns, with_crud_columns=False)
+    
+    try:
+        segmentation_dict.pop('id')
+    except KeyError:
+        print(f"Segmentation Model {segmentation_dict} has no key 'id' ")
+    
+    segmenmtation_model = type('segmentation_dict', (object,), segmentation_dict)
+    
+    annotation_name = annotation_dict.get('__tablename__', 'AnnotationSchema')
+    
+    _link_segmentation(segmenmtation_model, annotation_name)
+
+    return type(annotation_name, (Base,), annotation_dict)
+
+def create_table_dict(em_dataset: str,
+                      table_name: str,
+                      Schema: dict,
+                      table_metadata: dict=None,
+                      version: int=None,
+                      with_crud_columns: bool=True):
+    """ Generate a dictionary of SQLAlchemy Columns that represent a table
+
+    Parameters
+    ----------
+    em_dataset : str
+        Name of electron microscopy dataset name.
+
+    table_name : str
+        Name of table to use to define the __tablename__
+
+    Schema : EMAnnotation Schema
+        A Schema defined by EMAnnotationSchemas
+
+    table_metadata : dict, optional
+        [description], by default None
+
+    version : int, optional
+        [description], by default None
+
+    with_crud_columns : bool, optional
+        [description], by default True
+
+    Returns
+    -------
+    [type]
+        [description]
+
+    Raises
+    ------
+    InvalidTableMetaDataException
+        [description]
+    """
+    model_name = em_dataset.capitalize() + table_name.capitalize()
+    
+    model = {}
+    model.update({
+        '__tablename__': format_table_name(em_dataset, 
+                                           table_name,
+                                           version=version),
+        'id': Column(BigInteger, primary_key=True),
         '__mapper_args__': {
-            'polymorphic_identity': dataset,
-            'concrete': True
-        }
-    }
+            'polymorphic_identity': em_dataset,
+            'concrete': True},
+    })
     if with_crud_columns:
-        attrd.update({
+        model.update({
             'created': Column(DateTime, index=True, nullable=False),
             'deleted': Column(DateTime, index=True),
             'superceded_id': Column(BigInteger)
-        })
-    for k, field in Schema._declared_fields.items():
+            })
+
+    for key, field in Schema._declared_fields.items():
         if (not field.metadata.get('drop_column', False)):
-            attrd = add_column(attrd, k, field, dataset, version=version)
+            model = add_column(model, key, field)
     if issubclass(Schema, ReferenceAnnotation):
         target_field = Schema._declared_fields['target_id']
         if type(table_metadata) is not dict:
@@ -261,61 +281,188 @@ def declare_annotation_model_from_schema(dataset, table_name, Schema,
         else:
             try:
                 reference_table_name = table_metadata['reference_table']
-                reference_table = format_table_name(
-                    dataset, reference_table_name, version=version)
+                reference_table = format_table_name(em_dataset,
+                                                    reference_table_name,
+                                                    version=version)
             except KeyError:
-                msg = 'reference table not specified in metadata {}'.format(
-                    table_metadata)
+                msg = f"reference table not specified in metadata {table_metadata}"
                 raise InvalidTableMetaDataException(msg)
-        attrd['target_id'] = Column(Integer,
-                                    ForeignKey(reference_table + '.id'))
-    return type(model_name, (Base,), attrd)
+        model['target_id'] = Column(Integer,
+                                    ForeignKey(reference_table + '.id'))            
+    return model
+
+def _link_segmentation(segmenmtation_model, annotation_name: str):
+    segmenmtation_model = type(
+        f"{segmenmtation_model.__name__}",
+        (segmenmtation_model, Base),
+        dict(
+            __tablename__=f"{annotation_name}_segmentation",
+           id=Column(Integer, ForeignKey(f"{annotation_name}.id"), primary_key=True),
+           parent=relationship(segmenmtation_model),
+        ),
+    )
+    return relationship(segmenmtation_model)
 
 
-def make_annotation_model_from_schema(dataset,
-                                      table_name,
+def add_column(columns: dict,
+               key:str, 
+               field:str) -> dict:   
+    
+    field_type = type(field)
+    do_index = field.metadata.get('index', False)
+    segmentation_columns = {}
+
+    if field_type in field_column_map:
+        if isinstance(field_type, PostGISField):
+
+            postgis_geom = field.metadata.get('postgis_geometry', 'POINTZ')
+
+            columns[key] = Column(Geometry(geometry_type=postgis_geom, dimension=3, srid=4326))
+
+        columns[key] = Column(field_column_map[field_type], index=do_index)
+        
+    else:
+        raise InvalidSchemaField(f"field type {field_type} not supported")   
+        
+    return columns
+
+def create_model(Schema, em_dataset: str, table_name: str):
+    """ This is a convenience method. Splits an EMAnnotation Schema into flattened annotation
+    and segmentation schemas then creates a SqlAlchemy model. 
+    
+    See :meth:`emannotationschemas.models.split_annotation_schema` and
+        :meth:`emannotationschemas.models.create_linked_annotation_model`
+    
+    Parameters
+    ----------
+    Schema : EMAnnotation Schema
+        A Schema defined by EMAnnotationSchemas
+
+    em_dataset : str
+        Name of electron microscopy dataset name.
+
+    table_name : str
+        Name of table to use to define the __tablename__ 
+
+    Returns
+    -------
+    SqlAlchemy Declarative Base Model
+        Annotation SqlAlchemy model
+    """
+    annotation_columns, segmentation_columns = split_annotation_schema(Schema)
+    
+    return create_linked_annotation_model(em_dataset,
+                                          table_name,
+                                          annotation_columns,
+                                          segmentation_columns)        
+
+
+def make_annotation_model_from_schema(em_dataset: str,
+                                      table_name: str,
                                       Schema,
-                                      table_metadata=None,
-                                      version=None,
-                                      with_crud_columns=False):
-    if not annotation_models.contains_model(dataset,
+                                      table_metadata: dict=None,
+                                      version: int=None,
+                                      with_crud_columns: bool=True):
+    
+    if not annotation_models.contains_model(em_dataset,
                                             table_name,
                                             version=version):
-        Model = declare_annotation_model_from_schema(dataset,
-                                                     table_name,
-                                                     Schema,
-                                                     table_metadata=table_metadata,
-                                                     version=None,
-                                                     with_crud_columns=with_crud_columns)
-        annotation_models.set_model(dataset,
+        
+        Model = create_model(Schema, em_dataset, table_name)
+        
+        annotation_models.set_model(em_dataset,
                                     table_name,
                                     Model,
                                     version=version)
 
-    return annotation_models.get_model(dataset, table_name, version=version)
+    return annotation_models.get_model(em_dataset, table_name, version=version)
 
 
-def declare_annotation_model(dataset, annotation_type, table_name,
-                             table_metadata=None,
-                             version=None,
-                             with_crud_columns=False):
-    Schema = get_schema(annotation_type)
-    return declare_annotation_model_from_schema(dataset,
-                                                table_name,
-                                                Schema,
-                                                table_metadata=table_metadata,
-                                                version=version,
-                                                with_crud_columns=with_crud_columns)
+def declare_annotation_model(em_dataset: str,
+                             table_name: str,
+                             schema_type: str,
+                             table_metadata: dict=None,
+                             version: int=None,
+                             with_crud_columns: bool=True):
+    
+    Schema = get_schema(schema_type)
+    return create_model(Schema, em_dataset, table_name)
 
-
-def make_annotation_model(dataset, annotation_type, table_name,
-                          table_metadata=None,
-                          version=None,
-                          with_crud_columns=False):
-    Schema = get_schema(annotation_type)
-    return make_annotation_model_from_schema(dataset,
+def make_annotation_model(em_dataset: str,
+                          table_name: str, 
+                          schema_type: str,
+                          table_metadata: dict=None,
+                          version: int=None,
+                          with_crud_columns: bool=True):
+    
+    Schema = get_schema(schema_type)
+    
+    return make_annotation_model_from_schema(em_dataset,
                                              table_name,
                                              Schema,
-                                             table_metadata=table_metadata,
+                                             table_metadata,
                                              version=None,
                                              with_crud_columns=with_crud_columns)
+
+
+def make_dataset_models(em_dataset: str,
+                        schemas_and_tables: Sequence[tuple],
+                        table_metadata: dict=None,
+                        include_contacts: bool=False,
+                        version: int=None,
+                        with_crud_columns: bool=True) -> dict:
+    """Bulk create models for a given em_dataset
+
+    Parameters
+    ----------
+    em_dataset: str
+        name of dataset
+
+    table_and_types: list[(schema_name, table_name)]
+        list of tuples with types and model names to make
+
+    metadata_dict:
+        a dictionary with keys of table_names and values of metadata dicts needed
+
+    include_contacts:
+        option to include the model for cell contacts
+
+    with_crud_columns:
+        option to include created, deleted, and supersceded_id
+
+    version: int
+        option to include version number to use for making models, for legacy compatiabilty
+    Returns
+    -------
+    dict:
+        dictionary where keys are table_names and values are SQLAlchemy Models
+
+    Raises
+    ------
+    UnknownAnnotationTypeException
+        If a type is not a valid annotation type
+    """
+    if table_metadata is None:
+        table_metadata={}
+
+    validate_types(schemas_and_tables)
+    dataset_dict = {}
+
+    for schema_name, table_name in schemas_and_tables:
+        model_key = table_name
+        metadata = table_metadata.get(table_name, None)
+        dataset_dict[model_key] = make_annotation_model(em_dataset,
+                                                        table_name,
+                                                        schema_name,
+                                                        metadata,
+                                                        version,
+                                                        with_crud_columns)
+    if include_contacts:
+        contact_model = make_annotation_model_from_schema(em_dataset,
+                                                          'contact',
+                                                          Contact,
+                                                          metadata,
+                                                          version, 
+                                                          with_crud_columns)
+        dataset_dict['contact'] = contact_model
+    return dataset_dict
