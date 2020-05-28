@@ -349,7 +349,6 @@ def create_model(Schema, em_dataset: str, table_name: str):
                                           annotation_columns,
                                           segmentation_columns)        
 
-
 def make_annotation_model_from_schema(em_dataset: str,
                                       table_name: str,
                                       Schema,
