@@ -86,8 +86,7 @@ class ReferenceTagAnnotation(ReferenceAnnotation, TagAnnotation):
 class SpatialPoint(mm.Schema):
     '''a position in the segmented volume '''
     
-    position =  PostGISField(validate=mm.validate.Length(equal=3),
-                             required=True,
+    position =  PostGISField(required=True,
                              description='spatial position in voxels of '
                                            'x,y,z of annotation',
                              postgis_geometry='POINTZ')
@@ -106,6 +105,8 @@ class SpatialPoint(mm.Schema):
         if self.context.get('numpy', False):
             data['position'] = np.asarray(data['position'], dtype=np.uint64)
         return data
+
+
 class BoundSpatialPoint(SpatialPoint):
     ''' a position in the segmented volume that is associated with an object'''
     supervoxel_id = NumericField(missing=None,
