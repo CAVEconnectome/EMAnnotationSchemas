@@ -17,7 +17,10 @@ def flatten_fields(schema, root=None, sep="_"):
 
 def create_flattened_schema(BaseSchema, sep="_"):
     new_fields = flatten_fields(BaseSchema, sep=sep)
-    FlatSchema = type('Flat{}'.format(BaseSchema.__name__),
+    
+    schema_name = BaseSchema.__name__ if hasattr(BaseSchema, '__name__') else BaseSchema
+
+    FlatSchema = type('Flat{}'.format(schema_name),
                       (mm.Schema,),
                       new_fields)
 
