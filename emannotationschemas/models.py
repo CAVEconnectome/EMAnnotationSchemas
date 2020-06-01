@@ -60,7 +60,7 @@ class Metadata(Base):
     valid = Column(Boolean)
     created = Column(DateTime, nullable=False)
     deleted = Column(DateTime, nullable=True)
-    user_id = Column(Integer, nullable=True)
+    user_id = Column(String(255), nullable=True)
     description = Column(Text, nullable=True)
     reference_table = Column(String(100), nullable=True)
 
