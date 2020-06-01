@@ -158,17 +158,19 @@ def split_annotation_schema(Schema):
         if isinstance(field, mm.fields.Nested):
             raise Exception(f"Schema {flat_schema} must be flattened before splitting")
         field_type = type(field)
-        
+
         if field_type is not NumericField:
             annotation_columns[key] = field   
         else:
             segmentation_columns[key] = field
-            
-    flat_annotation_schema = convert_dict_to_schema(f'{Schema.__name__}_annotation',
+
+    schema_name = Schema.__name__ if hasattr(Schema, '__name__') else Schema
+
+    flat_annotation_schema = convert_dict_to_schema(f'{schema_name}_annotation',
                                                     annotation_columns)
-    flat_segmentation_schema = convert_dict_to_schema(f'{Schema.__name__}_segmentation',
+    flat_segmentation_schema = convert_dict_to_schema(f'{schema_name}_segmentation',
                                                       segmentation_columns)
-        
+
     return flat_annotation_schema, flat_segmentation_schema   
 
 def create_linked_annotation_models(em_dataset: str,
@@ -361,6 +363,8 @@ def make_annotation_model_from_schema(em_dataset: str,
                                             version=version):
         
         Anno, Seg = create_model(Schema, em_dataset, table_name)
+        
+        
         annotation_models.set_model(em_dataset,
                                     table_name,
                                     Anno,
