@@ -16,7 +16,12 @@ class PostGISField(mm.fields.Field):
         if isinstance(value, (WKBElement, WKTElement)):
             return get_geom_from_wkb(value)
         return value
-
+    
+    def _serialize(self, value, attr, obj, **kwargs):
+        value = "POINTZ({} {} {})".format(value[0],
+                                          value[1],
+                                          value[2])
+        return value
 
 def get_geom_from_wkb(wkb):
     wkb_element = to_shape(wkb)
