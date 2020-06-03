@@ -60,8 +60,8 @@ class Metadata(Base):
     valid = Column(Boolean)
     created = Column(DateTime, nullable=False)
     deleted = Column(DateTime, nullable=True)
-    user_id = Column(String(255), nullable=True)
-    description = Column(Text, nullable=True)
+    user_id = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False)
     reference_table = Column(String(100), nullable=True)
 
 
@@ -165,7 +165,6 @@ def split_annotation_schema(Schema):
             segmentation_columns[key] = field
 
     schema_name = Schema.__name__ if hasattr(Schema, '__name__') else Schema
-
     flat_annotation_schema = convert_dict_to_schema(f'{schema_name}_annotation',
                                                     annotation_columns)
     flat_segmentation_schema = convert_dict_to_schema(f'{schema_name}_segmentation',
