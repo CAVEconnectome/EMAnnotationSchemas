@@ -5,7 +5,7 @@ compartment_model_name = "NeuronCompartment"
 post_synaptic_compartment_name = "PostSynapseCompartment"
 pre_synaptic_compartment_name = "PreSynapseCompartment"
 
-def make_neuron_compartment_model(dataset, version: int = 1):
+def make_neuron_compartment_model(dataset: str, version: int = 1):
     compartment_type = compartment_model_name.lower()
 
     root_id_name = format_table_name(dataset,
@@ -34,9 +34,9 @@ def make_neuron_compartment_model(dataset, version: int = 1):
                                        version=version)
 
 
-def make_pre_post_synaptic_compartment_model(dataset, 
-                                             synapse_table,
-                                             pre_post_name,
+def make_pre_post_synaptic_compartment_model(dataset: str, 
+                                             synapse_table: str,
+                                             pre_post_name: str,
                                              version: int = 1):
     name_lower = pre_post_name.lower()
     synapse_table_name = format_table_name(dataset,
@@ -67,8 +67,8 @@ def make_pre_post_synaptic_compartment_model(dataset,
                                        version=version)
 
 
-def make_post_synaptic_compartment_model(dataset,
-                                         synapse_table,
+def make_post_synaptic_compartment_model(dataset: str,
+                                         synapse_table: str,
                                          version: int = 1):
 
     return make_pre_post_synaptic_compartment_model(dataset, 
