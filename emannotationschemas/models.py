@@ -56,7 +56,7 @@ class Metadata(Base):
     __tablename__ = 'annotation_table_metadata'
     id = Column(Integer, primary_key=True)
     schema_type = Column(String(100), nullable=False)
-    table_name = Column(String(100), nullable=False)
+    table_name = Column(String(100), nullable=False, unique=True)
     dataset_name = Column(String(100), nullable=False)
     valid = Column(Boolean)
     created = Column(DateTime, nullable=False)
