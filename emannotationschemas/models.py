@@ -65,7 +65,7 @@ class Metadata(Base):
     user_id = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
     reference_table = Column(String(100), nullable=True)
-    __table_args__ = (UniqueConstraint('table_name', 'dataset_name', name='_dataset_table_uc'))
+    __table_args__ = (UniqueConstraint('table_name', 'dataset_name', name='_dataset_table_uc'),)
 
 def format_database_name(dataset: str, version: int = 1):
     return f"{dataset}_v{version}"
