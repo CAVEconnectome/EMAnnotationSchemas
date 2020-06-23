@@ -1,4 +1,5 @@
 Flask
+middle-auth-client==2.4.3
 GeoAlchemy2
 marshmallow==3.5.1
 marshmallow-jsonschema==0.10.0
@@ -7,5 +8,9 @@ psycopg2-binary==2.8.5
 python-dateutil==2.8.1
 pytz==2020.1
 SQLAlchemy
+flask_cors
+flask-admin
+flask-restx
+flask-accepts
 numpy==1.18.4
 shapely
