@@ -11,6 +11,11 @@ class NumericField(mm.fields.Int):
         }
 
 class PostGISField(mm.fields.Field):
+
+    def _jsonschema_type_mapping(self):
+        return {
+            'type': 'array',
+        }   
       
     def _deserialize(self, value, attr, obj, **kwargs):
         if isinstance(value, (WKBElement, WKTElement)):
