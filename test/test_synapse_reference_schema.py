@@ -3,7 +3,7 @@ from emannotationschemas.synapse import SynapseSchema
 from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
 
-from emannotationschemas.base import flatten_dict
+from emannotationschemas.flatten import flatten_dict
 from emannotationschemas import get_flat_schema
 from marshmallow import ValidationError
 

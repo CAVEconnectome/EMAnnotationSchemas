@@ -1,4 +1,4 @@
-from emannotationschemas.cell_type_local import CellTypeLocal
+from emannotationschemas.schemas.cell_type_local import CellTypeLocal
 
 good_ivscc_cell_type = {
     'type' : 'cell_type_local',

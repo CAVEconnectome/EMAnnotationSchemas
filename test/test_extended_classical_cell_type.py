@@ -1,4 +1,4 @@
-from emannotationschemas.extended_classical_cell_type import ExtendedClassicalCellType
+from emannotationschemas.schemas.extended_classical_cell_type import ExtendedClassicalCellType
 
 good_cell_type = {
     'type' : 'extended_classical_cell_type',

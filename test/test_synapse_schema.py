@@ -1,5 +1,5 @@
-from emannotationschemas.synapse import SynapseSchema
-from emannotationschemas.base import flatten_dict
+from emannotationschemas.schemas.synapse import SynapseSchema
+from emannotationschemas.flatten import flatten_dict
 from emannotationschemas import get_flat_schema
 
 

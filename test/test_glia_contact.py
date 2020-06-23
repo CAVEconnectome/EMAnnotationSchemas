@@ -1,4 +1,4 @@
-from emannotationschemas.glia_contact import GliaContact
+from emannotationschemas.schemas.glia_contact import GliaContact
 
 contact_size = 12.2
 good_glia_contact_annotation = {
