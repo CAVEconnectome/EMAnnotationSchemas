@@ -6,10 +6,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from geoalchemy2 import Geometry
 import marshmallow as mm
 from emannotationschemas import get_schema, get_types, get_flat_schema
-from emannotationschemas.base import NumericField, PostGISField, \
+from emannotationschemas.schemas.base import NumericField, PostGISField, \
                                      ReferenceAnnotation # SegmentationField
+from emannotationschemas.schemas.contact import Contact
 from emannotationschemas.flatten import create_flattened_schema
-from emannotationschemas.contact import Contact
 from emannotationschemas.errors import UnknownAnnotationTypeException, \
                                        InvalidTableMetaDataException, \
                                        InvalidSchemaField
@@ -160,6 +160,12 @@ def split_annotation_schema(Schema):
 
     return flat_annotation_schema, flat_segmentation_schema   
 
+
+def create_segmentation_table(anno_table_id:str,
+                              pcg_table_name: str):
+    raise NotImplementedError
+
+
 def create_linked_annotation_models(em_dataset: str,
                                    table_name: str, 
                                    annotation_columns: dict,
@@ -282,8 +288,8 @@ def create_table_dict(em_dataset: str,
             except KeyError:
                 msg = f"reference table not specified in metadata {table_metadata}"
                 raise InvalidTableMetaDataException(msg)
-        model['target_id'] = Column(Integer,
-                                    ForeignKey(reference_table + '.id'))            
+            model['target_id'] = Column(Integer,
+                                        ForeignKey(reference_table + '.id'))            
     return model
 
 

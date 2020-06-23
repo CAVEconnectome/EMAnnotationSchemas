@@ -1,4 +1,4 @@
-from emannotationschemas.base import ReferenceAnnotation
+from emannotationschemas.schemas.base import ReferenceAnnotation
 import marshmallow as mm
 from marshmallow.validate import OneOf
 

@@ -1,6 +1,7 @@
 from emannotationschemas.models import Base, format_table_name, annotation_models, root_model_name
 from sqlalchemy import Column, String, Integer, Float, Numeric, Boolean, LargeBinary, ForeignKey
 from sqlalchemy.orm import relationship
+
 compartment_model_name = "NeuronCompartment"
 post_synaptic_compartment_name = "PostSynapseCompartment"
 pre_synaptic_compartment_name = "PreSynapseCompartment"

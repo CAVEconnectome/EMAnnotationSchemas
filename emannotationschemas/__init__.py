@@ -1,15 +1,16 @@
-from emannotationschemas.synapse import SynapseSchema, PlasticSynapse
+from emannotationschemas.schemas.synapse import SynapseSchema, PlasticSynapse
+from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
+from emannotationschemas.schemas.functional_coregistration import FunctionalCoregistration
+from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
+from emannotationschemas.schemas.base import FlatSegmentationReference
+from emannotationschemas.schemas.cell_type_local import CellTypeLocal
+from emannotationschemas.schemas.bound_text_tag import BoundTagAnnotation
+from emannotationschemas.schemas.glia_contact import GliaContact
+from emannotationschemas.schemas.contact import Contact
+from emannotationschemas.schemas.extended_classical_cell_type import ExtendedClassicalCellType
+
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
-from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
-from emannotationschemas.functional_coregistration import FunctionalCoregistration
-from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
-from emannotationschemas.base import FlatSegmentationReference
-from emannotationschemas.cell_type_local import CellTypeLocal
-from emannotationschemas.bound_text_tag import BoundTagAnnotation
-from emannotationschemas.glia_contact import GliaContact
-from emannotationschemas.contact import Contact
-from emannotationschemas.extended_classical_cell_type import ExtendedClassicalCellType
 
 __version__ = '2.0.2'
 

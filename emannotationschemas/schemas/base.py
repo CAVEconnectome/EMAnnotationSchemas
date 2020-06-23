@@ -35,21 +35,6 @@ class IdSchema(mm.Schema):
                                     'unique in type')
 
 
-def flatten_dict(d, root=None, sep='_'):
-    if root is None:
-        root = ""
-    else:
-        root += sep
-    d_out = {}
-    for k, v in d.items():
-        if type(v) is dict:
-            fd = flatten_dict(v, root=root + k, sep=sep)
-            d_out.update(fd)
-        else:
-            d_out[root + k] = v
-    return d_out
-
-
 class AnnotationSchema(mm.Schema):
     class Meta:
         unknown = INCLUDE

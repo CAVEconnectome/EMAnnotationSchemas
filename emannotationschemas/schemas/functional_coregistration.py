@@ -1,4 +1,4 @@
-from emannotationschemas.base import BoundSpatialPoint, \
+from emannotationschemas.schemas.base import BoundSpatialPoint, \
     AnnotationSchema
 import marshmallow as mm
 

@@ -1,4 +1,4 @@
-from emannotationschemas.categorical_factories import BoundCategoricalFactory
+from emannotationschemas.schemas.categorical_factories import BoundCategoricalFactory
 
 schema_type_name = 'extended_classical_cell_type'
 
