@@ -1,28 +1,37 @@
-from flask import Blueprint, jsonify, abort
+from flask import Blueprint, jsonify, request, abort, current_app, g
+from flask_restx import Namespace, Resource, reqparse, fields
+from flask_accepts import accepts, responds
+from middle_auth_client import auth_required, auth_requires_permission
+
 from marshmallow_jsonschema import JSONSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas import get_schema, get_types
 import marshmallow as mm
 import pandas as pd
 
-bp = Blueprint("schema", __name__, url_prefix="/schema")
 
 __version__ = '2.0.2'
 
+authorizations = {
+    'apikey': {
+        'type': 'apiKey',
+        'in': 'query',
+        'name': 'middle_auth_token'
+    }
+}
 
-@bp.route("")
-def index():
-    return "EMAnnotationSchema -- version {}".format(__version__)
+api_bp = Namespace("EMAnnotation Schemas",
+                   authorizations=authorizations,
+                   description="EMAnnotation Schemas")
 
 
-@bp.route("/version")
-def get_version():
-    return jsonify(__version__)
-
-
-@bp.route("/type")
-def get_schemas():
-    return jsonify(get_types())
+@api_bp.route("/type")
+class SchemasTypes(Resource):
+   
+    @auth_required
+    @api_bp.doc('get_types', security='apikey')
+    def get(self):
+        return get_types()
 
 
 def get_type_schema(annotation_type):
@@ -33,29 +42,10 @@ def get_type_schema(annotation_type):
     json_schema = JSONSchema()
     return json_schema.dump(Schema())
 
-
-@bp.route("/type/<annotation_type>")
-def get_type_schema_route(annotation_type):
-    return jsonify(get_type_schema(annotation_type))
-
-
-@bp.route("/type/<annotation_type>/view")
-def get_schema_view(annotation_type):
-    Schema = get_schema(annotation_type)
-    print(dir(Schema))
-    ds = []
-    for col, field in Schema._declared_fields.items():
-        if isinstance(field, mm.fields.Nested):
-            print(dir(field.schema), field.schema)
-            schema = field.schema.__class__.__name__
-        else:
-            schema = ''
-
-        ds.append({
-            'field_name': col,
-            'description': field.metadata.get('description', ''),
-            'type': type(field).__name__,
-            'schema': schema
-        })
-    df = pd.DataFrame(ds)
-    return df[['field_name', 'type', 'description', 'schema']].to_html()
+@api_bp.route("/type/<string:annotation_type>")
+class SchemaAnnotationType(Resource):
+   
+    @auth_required
+    @api_bp.doc('get_annotation_type', security='apikey')
+    def get(self, annotation_type: str):
+        return get_type_schema(annotation_type)
