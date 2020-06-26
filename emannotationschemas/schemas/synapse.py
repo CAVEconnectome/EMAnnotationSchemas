@@ -7,13 +7,13 @@ import marshmallow as mm
 
 class SynapseSchema(AnnotationSchema):
     pre_pt = mm.fields.Nested(BoundSpatialPoint, required=True,
-                              description="presynaptic point",
+                              description="a nearby point located in the presynaptic compartment of the synase",
                               order=0)
     ctr_pt = mm.fields.Nested(SpatialPoint, required=True,
-                              description="central point",
+                              description="a point located near/on the synaptic contact",
                               order=1)
     post_pt = mm.fields.Nested(BoundSpatialPoint, required=True,
-                               description="presynaptic point",
+                               description="a nearby point located in the postsynaptic compartment of the synapse",
                                order=2)
     size = mm.fields.Float(description="size of synapse", missing=None)
 
