@@ -19,7 +19,7 @@ import logging
 Base = declarative_base()
 
 field_column_map = {
-    #SegmentationField: Numeric,
+    # SegmentationField: Numeric,
     NumericField: Numeric,
     PostGISField: Geometry,
     mm.fields.Int: Integer,
@@ -52,7 +52,9 @@ class ModelStore:
         key = self.to_key(table_id, version)
         self.container[key] = model
 
+
 annotation_models = ModelStore()
+
 
 def format_database_name(aligned_volume: str, version: int = 0):
     return f"{aligned_volume}_v{version}"
@@ -183,27 +185,19 @@ def create_segmentation_model(table_id: str,
     SqlAlchemy Declarative Base Model
         Segmentation SqlAlchemy model
     """
-    segmentation_dict = create_table_dict(table_id, segmentation_columns, with_crud_columns=False)
-
     segmentation_table_name = f"{table_id}_{pcg_table_name}_v{version}"
-    try:
-        segmentation_dict.pop('id')
-    except KeyError:
-        logging.info(f"Segmentation Model {segmentation_dict} has no key 'id' ")    
+    segmentation_dict = create_table_dict(segmentation_table_name, segmentation_columns, with_crud_columns=False)
 
-    segmentation_dict.update({
-            '__tablename__': segmentation_table_name,
-           'id': Column(Integer, primary_key=True),
-           'annotation_id': Column(ForeignKey(f"{table_id}.id")),
-           'annotation': relationship(table_id, lazy="joined")
-    })   
+    segmentation_dict['annotation_id'] = Column(Integer, ForeignKey(table_id + '.id'))
+
     SegmentationModel = type(segmentation_table_name, (Base,), segmentation_dict)
 
-    raise SegmentationModel
+    return SegmentationModel
 
 
 def create_annotation_model(table_id: str,
-                            annotation_columns: dict):
+                            annotation_columns: dict,
+                            with_crud_columns: bool):
     """ Create an declarative sqlalchemy annotation model.
 
     Parameters
@@ -214,17 +208,16 @@ def create_annotation_model(table_id: str,
     annotation_columns : dict
         Dictionary of annotation SQL fields
 
-    segmentation_columns : dict
-        Dictionary of segmentation SQL fields
-
     Returns
     -------
     SqlAlchemy Declarative Base Model
         Annotation SqlAlchemy model
     """
-    annotation_dict = create_table_dict(table_id, annotation_columns)
+    annotation_dict = create_table_dict(table_id, 
+                                        annotation_columns,
+                                        with_crud_columns)
  
-    annotation_name = annotation_dict.get('__tablename__', 'AnnotationSchema')
+    annotation_name = annotation_dict.get('__tablename__')
    
     AnnotationModel = type(annotation_name, (Base,), annotation_dict)
 
@@ -336,9 +329,8 @@ def make_segmentation_model_from_schema(table_id: str,
 
 def make_annotation_model_from_schema(table_id: str,
                                       Schema,
-                                      table_metadata: dict=None,
-                                      version: int=None,
-                                      with_crud_columns: bool=True):
+                                      version: int = None,
+                                      with_crud_columns: bool = True):
     
     if not annotation_models.contains_model(table_id,
                                             version=version):
@@ -346,7 +338,8 @@ def make_annotation_model_from_schema(table_id: str,
         annotation_columns, __ = split_annotation_schema(Schema)
 
         Anno = create_annotation_model(table_id,
-                                       annotation_columns)       
+                                       annotation_columns,
+                                       with_crud_columns)       
         
         annotation_models.set_model(table_id,
                                     Anno,
@@ -354,39 +347,36 @@ def make_annotation_model_from_schema(table_id: str,
 
     return annotation_models.get_model(table_id, version=version)
 
-
-def declare_annotation_model(table_id: str,
-                             schema_type: str,
-                             table_metadata: dict=None,
-                             version: int=None,
-                             with_crud_columns: bool=True):
+def make_segmentation_model(table_id: str,
+                            schema_type: str,
+                            pcg_table_name: dict=None,
+                            version: int=None):
     
     Schema = get_schema(schema_type)
-    annotation_columns, _ = split_annotation_schema(Schema)
-    return  create_annotation_model(table_id,
-                                    annotation_columns)
+    
+    return make_segmentation_model_from_schema(table_id,
+                                               pcg_table_name,
+                                               Schema,
+                                               version)
 
 def make_annotation_model(table_id: str,
                           schema_type: str,
-                          table_metadata: dict=None,
-                          version: int=None,
-                          with_crud_columns: bool=True):
+                          version: int = None,
+                          with_crud_columns: bool = True):
     
     Schema = get_schema(schema_type)
     
     return make_annotation_model_from_schema(table_id,
                                              Schema,
-                                             table_metadata,
-                                             version=None,
-                                             with_crud_columns=with_crud_columns)
+                                             version,
+                                             with_crud_columns)
 
 
 def make_dataset_models(aligned_volume: str,
                         schemas_and_tables: Sequence[tuple],
-                        table_metadata: dict=None,
-                        include_contacts: bool=False,
-                        version: int=None,
-                        with_crud_columns: bool=True) -> dict:
+                        include_contacts: bool = False,
+                        version: int = None,
+                        with_crud_columns: bool = True) -> dict:
     """Bulk create models for a given aligned_volume
 
     Parameters
@@ -426,18 +416,14 @@ def make_dataset_models(aligned_volume: str,
 
     for schema_name, table_name in schemas_and_tables:
         model_key = table_name
-        metadata = table_metadata.get(table_name, None)
         dataset_dict[model_key] = make_annotation_model(aligned_volume,
-                                                        table_name,
                                                         schema_name,
-                                                        metadata,
                                                         version,
                                                         with_crud_columns)
     if include_contacts:
         contact_model = make_annotation_model_from_schema(aligned_volume,
                                                           'contact',
                                                           Contact,
-                                                          metadata,
                                                           version, 
                                                           with_crud_columns)
         dataset_dict['contact'] = contact_model
