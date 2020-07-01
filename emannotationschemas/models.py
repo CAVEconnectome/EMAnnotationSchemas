@@ -185,12 +185,12 @@ def create_segmentation_model(table_id: str,
     SqlAlchemy Declarative Base Model
         Segmentation SqlAlchemy model
     """
-    segmentation_table_name = f"{table_id}_{pcg_table_name}_v{version}"
-    segmentation_dict = create_table_dict(segmentation_table_name, segmentation_columns, with_crud_columns=False)
+    segmentation_table_id = f"{table_id}__{pcg_table_name}__v{version}"
+    segmentation_dict = create_table_dict(segmentation_table_id, segmentation_columns, with_crud_columns=False)
 
     segmentation_dict['annotation_id'] = Column(Integer, ForeignKey(table_id + '.id'))
 
-    SegmentationModel = type(segmentation_table_name, (Base,), segmentation_dict)
+    SegmentationModel = type(segmentation_table_id, (Base,), segmentation_dict)
 
     return SegmentationModel
 
@@ -408,9 +408,6 @@ def make_dataset_models(aligned_volume: str,
     UnknownAnnotationTypeException
         If a type is not a valid annotation type
     """
-    if table_metadata is None:
-        table_metadata={}
-
     validate_types(schemas_and_tables)
     dataset_dict = {}
 
