@@ -12,7 +12,7 @@ from emannotationschemas.schemas.extended_classical_cell_type import ExtendedCla
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = '2.0.2'
+__version__ = '2.1.0'
 
 type_mapping = {
     'synapse': SynapseSchema,
