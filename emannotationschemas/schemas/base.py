@@ -63,9 +63,7 @@ class ReferenceAnnotation(AnnotationSchema):
 
 
 class FlatSegmentationReference(ReferenceAnnotation):
-    segment_id = mm.fields.Int(
-        required=True, description='id in flat segmentation this should be linked to'
-    )
+    pass
 
 
 class TagAnnotation(mm.Schema):
@@ -115,3 +113,7 @@ class BoundSpatialPoint(SpatialPoint):
         if bsp_fn is not None:
             bsp_fn(item)
         return item
+
+class FlatSegmentationReferenceSinglePoint(FlatSegmentationReference):
+    pt = mm.fields.Nested(BoundSpatialPoint, required=True,
+                          description="the point to be used for attaching objects to the dynamic segmentation")

@@ -2,7 +2,7 @@ from emannotationschemas.schemas.synapse import SynapseSchema, PlasticSynapse
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.schemas.functional_coregistration import FunctionalCoregistration
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
-from emannotationschemas.schemas.base import FlatSegmentationReference
+from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
 from emannotationschemas.schemas.cell_type_local import CellTypeLocal
 from emannotationschemas.schemas.bound_text_tag import BoundTagAnnotation
 from emannotationschemas.schemas.glia_contact import GliaContact
@@ -20,7 +20,7 @@ type_mapping = {
     'postsynaptic_compartment': PostsynapticCompartment,
     'microns_func_coreg': FunctionalCoregistration,
     'cell_type_local': CellTypeLocal,
-    'flat_segmentation_reference': FlatSegmentationReference,
+    'nucleus_detection': FlatSegmentationReferenceSinglePoint,
     'bound_tag': BoundTagAnnotation,
     'extended_classical_cell_type': ExtendedClassicalCellType,
     'plastic_synapse': PlasticSynapse,
