@@ -49,7 +49,6 @@ class CellTypeLocal(AnnotationSchema):
                             description='Location associated with classification')
     @mm.post_load
     def validate_type( self, item, **kwargs):
-        assert item['type'] == 'cell_type_local'
 
         system = item['classification_system']
         if system in allowed_types.keys():
