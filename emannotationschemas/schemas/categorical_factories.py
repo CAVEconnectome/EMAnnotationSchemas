@@ -13,7 +13,6 @@ def BoundCategoricalFactory(allowed_categories,
 
         @mm.post_load
         def validate_type(self, item, **kwargs):
-            assert item['type'] == schema_type_name
             if item[category_name] in allowed_categories:
                 item['valid'] = True
             else:
@@ -39,7 +38,6 @@ def BoundCategoricalSystemFactory(allowed_category_dict,
 
         @mm.post_load
         def validate_type(self, item, **kwargs):
-            assert item['type'] == schema_type_name
             if item[category_name] in allowed_category_dict[item['classification_system']]:
                 item['valid'] = True
             else:
