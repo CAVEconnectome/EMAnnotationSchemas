@@ -26,8 +26,3 @@ class PresynapticBoutonType(ReferenceAnnotation):
         validate=OneOf(allowed_bouton_categories),
         description='Presynaptic type based on bouton')
 
-    @mm.validates_schema
-    def validate_type(self, data, **kwargs):
-        # check that the annotation type is present in the object as 'presynaptic_bouton_type'
-        if data["type"] != 'presynaptic_bouton_type':
-            raise mm.ValidationError("Type must be 'presynaptic_bouton_type'")

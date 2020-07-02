@@ -15,7 +15,4 @@ class BoutonShape(ReferenceAnnotation):
         validate=OneOf(["pancake", "basmati", "potato"]),
         description="first example of description of a bouton shape")
 
-    @mm.post_load
-    def validate_type(self, item, **kwargs):
-        # check that the annotation type is present in the object as 'synapse'
-        assert item['type'] == 'bouton_shape'
+

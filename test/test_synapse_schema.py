@@ -4,7 +4,6 @@ from emannotationschemas import get_flat_schema
 
 
 good_synapse = {
-    'type': 'synapse',
     'pre_pt': {'position': [31, 31, 0]},
     'ctr_pt': {'position': [32, 32, 0]},
     'post_pt': {'position': [33, 33, 0]}
@@ -16,20 +15,17 @@ incomplete_type = {
     'post_pt': {'position': [33, 33, 0]}
 }
 supervoxel_synapse = {
-    'type': 'synapse',
     'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95},
     'ctr_pt': {'position': [32, 32, 0], 'supervoxel_id': 105},
     'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101}
 }
 supervoxel_rootId_synapse = {
-    'type': 'synapse',
     'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95, 'root_id': 4},
     'ctr_pt': {'position': [32, 32, 0], 'supervoxel_id': 105, 'root_id': 5},
     'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101, 'root_id': 5}
 }
 
 supervoxel_rootId_invalid_synapse = {
-    'type': 'synapse',
     'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95, 'root_id': 5},
     'ctr_pt': {'position': [32, 32, 0], 'supervoxel_id': 105, 'root_id': 5},
     'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101, 'root_id': 5}

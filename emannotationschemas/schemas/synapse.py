@@ -18,12 +18,6 @@ class SynapseSchema(AnnotationSchema):
     size = mm.fields.Float(description="size of synapse", missing=None)
 
 
-    @mm.validates_schema
-    def validate_type(self, data, **kwargs):
-        # check that the annotation type is present in the object as 'synapse'
-        if data["type"] != 'synapse':
-            raise mm.ValidationError("Type must be 'synapse'")
-
     @mm.post_load
     def check_root_id(self, data, **kwargs):
         pre_id = data['pre_pt'].get('root_id', None)

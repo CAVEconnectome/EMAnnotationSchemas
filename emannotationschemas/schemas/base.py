@@ -44,9 +44,6 @@ class AnnotationSchema(mm.Schema):
     class Meta:
         unknown = INCLUDE
     '''schema with the type of annotation'''
-    type = mm.fields.Str(
-        required=True,
-        description='type of annotation')
 
     valid = mm.fields.Bool(
         required=False,

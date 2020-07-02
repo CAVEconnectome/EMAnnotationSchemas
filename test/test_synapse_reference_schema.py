@@ -1,7 +1,7 @@
 import pytest
-from emannotationschemas.synapse import SynapseSchema
-from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
-from emannotationschemas.postsynaptic_compartment import PostsynapticCompartment
+from emannotationschemas.schemas.synapse import SynapseSchema
+from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
+from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
 
 from emannotationschemas.flatten import flatten_dict
 from emannotationschemas import get_flat_schema
@@ -10,25 +10,21 @@ from marshmallow import ValidationError
 synapse_id = 1
 
 good_bouton = {
-    'type': 'presynaptic_bouton_type',
     'bouton_type': 'basmati',
     'target_id': synapse_id
     }
 
 bad_bouton = {
-    'type': 'presynaptic_bouton_type',
     'bouton_type': 'some_nonsense',
     'target_id': synapse_id
     }
 
 good_compartment = {
-    'type': 'postsynaptic_compartment',
     'compartment': 'soma',
     'target_id': synapse_id
     }
 
 rich_compartment = {
-    'type': 'postsynaptic_compartment',
     'compartment': 'dendrite',
     'on_spine' : True,
     'dendrite_class' : 'apical',
@@ -36,7 +32,6 @@ rich_compartment = {
     }
 
 bad_compartment = {
-    'type': 'postsynaptic_compartment',
     'compartment': 'some_nonsense',
     'target_id': synapse_id
     }

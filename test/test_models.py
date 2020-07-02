@@ -7,13 +7,12 @@ import marshmallow as mm
 
 def test_model_creation():
     metadata_dict = {
-                        'synapseflatref':{
+                        'spinecall':{
                             'reference_table':'synapse'
                         }
                     }
     model_dict = make_dataset_models('test', [('synapse', 'synapse'),
-                                              ('flat_segmentation_reference', 'synapseflatref')],
-                                              metadata_dict=metadata_dict,
+                                              ('postsynaptic_compartment', 'spinecall')],
                                               include_contacts=True)
     model = model_dict['synapse']
     assert(model.__name__ == "TestSynapse")
@@ -21,7 +20,7 @@ def test_model_creation():
     assert(model.__name__ == "TestCellSegment")
     model = model_dict['contact']
     assert(model.__name__ == "TestContact")
-    model = model_dict['synapseflatref']
+    model = model_dict['spinecall']
     assert(model.__name__ == 'TestSynapseflatref')
     assert(issubclass(model, Base))
 
@@ -36,6 +35,6 @@ def test_model_failure():
         nest = mm.fields.Nested(NestSchema, many=True)
 
     with pytest.raises(InvalidSchemaField):
-        make_annotation_model_from_schema('test', 'badschema', BadSchema)
+        make_annotation_model_from_schema('test',BadSchema)
     with pytest.raises(InvalidSchemaField):
-        make_annotation_model_from_schema('test', 'nestschema', NestSchema)
+        make_annotation_model_from_schema('test', NestSchema)

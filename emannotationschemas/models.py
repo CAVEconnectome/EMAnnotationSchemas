@@ -418,8 +418,8 @@ def make_dataset_models(aligned_volume: str,
                                                         version,
                                                         with_crud_columns)
     if include_contacts:
-        contact_model = make_annotation_model_from_schema(aligned_volume,
-                                                          'contact',
+        table_id = f'annov1__{aligned_volume}__contact'                
+        contact_model = make_annotation_model_from_schema(table_id,
                                                           Contact,
                                                           version, 
                                                           with_crud_columns)
