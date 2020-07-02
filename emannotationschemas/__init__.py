@@ -8,7 +8,7 @@ from emannotationschemas.schemas.bound_text_tag import BoundTagAnnotation
 from emannotationschemas.schemas.glia_contact import GliaContact
 from emannotationschemas.schemas.contact import Contact
 from emannotationschemas.schemas.extended_classical_cell_type import ExtendedClassicalCellType
-
+from emannotationschemas.schemas.nucleus_detection import NucleusDetection
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
@@ -20,7 +20,7 @@ type_mapping = {
     'postsynaptic_compartment': PostsynapticCompartment,
     'microns_func_coreg': FunctionalCoregistration,
     'cell_type_local': CellTypeLocal,
-    'nucleus_detection': FlatSegmentationReferenceSinglePoint,
+    'nucleus_detection': NucleusDetection,
     'bound_tag': BoundTagAnnotation,
     'extended_classical_cell_type': ExtendedClassicalCellType,
     'plastic_synapse': PlasticSynapse,
