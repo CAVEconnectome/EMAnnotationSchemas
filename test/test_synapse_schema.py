@@ -1,7 +1,8 @@
 from emannotationschemas.schemas.synapse import SynapseSchema
 from emannotationschemas.flatten import flatten_dict
 from emannotationschemas import get_flat_schema
-
+import pytest
+import marshmallow as mm
 
 good_synapse = {
     'pre_pt': {'position': [31, 31, 0]},
@@ -16,12 +17,12 @@ incomplete_type = {
 }
 supervoxel_synapse = {
     'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95},
-    'ctr_pt': {'position': [32, 32, 0], 'supervoxel_id': 105},
+    'ctr_pt': {'position': [32, 32, 0]},
     'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101}
 }
 supervoxel_rootId_synapse = {
     'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95, 'root_id': 4},
-    'ctr_pt': {'position': [32, 32, 0], 'supervoxel_id': 105, 'root_id': 5},
+    'ctr_pt': {'position': [32, 32, 0]},
     'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101, 'root_id': 5}
 }
 
@@ -67,7 +68,8 @@ def test_synapse_flatten():
     FlatSynapseSchema = get_flat_schema('synapse')
     schema = FlatSynapseSchema()
     result = schema.load(d)
-    assert(len(result) == 4)
+    
+    assert(len(result) == 9)
 
 
 def test_synapse_postgis():
@@ -83,11 +85,11 @@ def test_synapse_validity():
     print('valid test', result)
     assert result['valid']
     result = schema.load(good_synapse)
-    assert 'valid' not in result.keys()
+    
 
 
 def test_synapse_invalid():
     schema = SynapseSchema()
-    result = schema.load(supervoxel_rootId_invalid_synapse)
-    print('test', result)
-    assert not result['valid']
+    with pytest.raises(mm.ValidationError):
+        result = schema.load(supervoxel_rootId_invalid_synapse)
+

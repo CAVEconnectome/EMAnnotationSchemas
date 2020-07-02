@@ -15,13 +15,11 @@ def test_model_creation():
                                               ('postsynaptic_compartment', 'spinecall')],
                                               include_contacts=True)
     model = model_dict['synapse']
-    assert(model.__name__ == "TestSynapse")
-    model = model_dict['cellsegment']
-    assert(model.__name__ == "TestCellSegment")
+    assert(model.__name__ == "annov1__test__synapse")
     model = model_dict['contact']
-    assert(model.__name__ == "TestContact")
+    assert(model.__name__ == "annov1__test__contact")
     model = model_dict['spinecall']
-    assert(model.__name__ == 'TestSynapseflatref')
+    assert(model.__name__ == 'annov1__test__spinecall')
     assert(issubclass(model, Base))
 
     # TODO better tests here
@@ -35,6 +33,6 @@ def test_model_failure():
         nest = mm.fields.Nested(NestSchema, many=True)
 
     with pytest.raises(InvalidSchemaField):
-        make_annotation_model_from_schema('test',BadSchema)
+        make_annotation_model_from_schema('testBad',BadSchema)
     with pytest.raises(InvalidSchemaField):
-        make_annotation_model_from_schema('test', NestSchema)
+        make_annotation_model_from_schema('testNest', NestSchema)

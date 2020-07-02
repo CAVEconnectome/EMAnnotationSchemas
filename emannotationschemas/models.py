@@ -363,7 +363,17 @@ def make_annotation_model(table_id: str,
                           schema_type: str,
                           version: int = None,
                           with_crud_columns: bool = True):
-    
+    """make an annotation model
+
+    Args:
+        table_id (str): table_id currently annov1__{aligned_volume}__{table_name}
+        schema_type (str): schema type for table
+        version (int, optional): version number. Defaults to None.
+        with_crud_columns (bool, optional): whether to include created, deleted colums. Defaults to True.
+
+    Returns:
+        SqlAlchemy.Model: a sqlalchemy model
+    """
     Schema = get_schema(schema_type)
     
     return make_annotation_model_from_schema(table_id,
@@ -413,7 +423,8 @@ def make_dataset_models(aligned_volume: str,
 
     for schema_name, table_name in schemas_and_tables:
         model_key = table_name
-        dataset_dict[model_key] = make_annotation_model(aligned_volume,
+        table_id = f'annov1__{aligned_volume}__{table_name}'
+        dataset_dict[model_key] = make_annotation_model(table_id,
                                                         schema_name,
                                                         version,
                                                         with_crud_columns)
