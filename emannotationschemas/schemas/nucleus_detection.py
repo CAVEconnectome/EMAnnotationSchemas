@@ -2,4 +2,4 @@ from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoin
 import marshmallow as mm
 
 class NucleusDetection(FlatSegmentationReferenceSinglePoint):
-    volume = mm.fields.Int(description="the volume of the nucleus detected in um^3")
+    volume = mm.fields.Float(description="the volume of the nucleus detected in um^3")
