@@ -31,7 +31,9 @@ class PostGISField(mm.fields.Field):
 def get_geom_from_wkb(wkb):
     wkb_element = to_shape(wkb)
     if wkb_element.has_z:
-        return f"POINTZ({wkb_element.xy[0][0]} {wkb_element.xy[1][0]} {wkb_element.z})"
+        return np.asarray([wkb_element.xy[0][0],
+                           wkb_element.xy[1][0], 
+                           wkb_element.z], dtype=np.uint64)
     return wkb_element
 
 class IdSchema(mm.Schema):
@@ -80,8 +82,7 @@ class SpatialPoint(mm.Schema):
                              description='spatial position in voxels of '
                                            'x,y,z of annotation',
                              postgis_geometry='POINTZ')
-
-
+                             
     @mm.post_load
     def transform_position(self, data, **kwargs):
         if self.context.get('postgis', False):
@@ -89,7 +90,6 @@ class SpatialPoint(mm.Schema):
                                              data['position'][1],
                                              data['position'][2])
         return data
-
     @mm.post_load
     def to_numpy(self, data, **kwargs):
         if self.context.get('numpy', False):
