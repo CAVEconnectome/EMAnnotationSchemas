@@ -2,14 +2,12 @@ from emannotationschemas.schemas.glia_contact import GliaContact
 
 contact_size = 12.2
 good_glia_contact_annotation = {
-    'type' : 'glia_contact',
     'glia_pt': {'position': [1,2,3]},
     'object_pt': {'position': [4,5,6]},
     'size': contact_size,
     }
 
 also_good_glia_contact_annotation = {
-    'type' : 'glia_contact',
     'glia_pt': {'position': [1,2,3]},
     'object_pt': {'position': [4,5,6]},
     }

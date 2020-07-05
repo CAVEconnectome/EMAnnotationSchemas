@@ -1,14 +1,12 @@
 from emannotationschemas.schemas.cell_type_local import CellTypeLocal
 
 good_ivscc_cell_type = {
-    'type' : 'cell_type_local',
     'classification_system': 'ivscc_m',
     'cell_type':'spiny_4',
     'pt': {'position' : [1,2,3]}
     }
 
 bad_classical_cell_type = {
-    'type' : 'cell_type_local',
     'classification_system': 'classical',
     'cell_type':'spiny_4',
     'pt': {'position' : [5,2,3]}
