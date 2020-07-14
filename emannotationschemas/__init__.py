@@ -33,11 +33,29 @@ def get_types():
     return [k for k in type_mapping.keys()]
 
 
-def get_schema(type):
+def get_schema(schema_type: str):
+    """Get schema class object by keyword, only
+    returns an object that is listed in :data:`type_mapping` dict
+
+    Parameters
+    ----------
+    schema_type : str
+        Key name of schema in :data:`type_mapping`
+
+    Returns
+    -------
+    obj
+        marshmallow schema object
+
+    Raises
+    ------
+    UnknownAnnotationTypeException
+        Key argument is not in :data:`type_mapping` dict
+    """
     try:
-        return type_mapping[type]
+        return type_mapping[schema_type]
     except KeyError:
-        msg = 'type {} is not a known annotation type'.format(type)
+        msg = 'type {} is not a known annotation type'.format(schema_type)
         raise UnknownAnnotationTypeException(msg)
 
 
