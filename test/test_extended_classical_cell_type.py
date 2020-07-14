@@ -1,13 +1,11 @@
 from emannotationschemas.schemas.extended_classical_cell_type import ExtendedClassicalCellType
 
 good_cell_type = {
-    'type' : 'extended_classical_cell_type',
     'cell_type':'vip-chat',
     'pt': {'position' : [1,2,3]}
     }
 
 bad_cell_type = {
-    'type' : 'extended_classical_cell_type',
     'cell_type':'fake_cell_type',
     'pt': {'position' : [1,2,3]}
     }
