@@ -4,20 +4,15 @@ from emannotationschemas.base import BoundSpatialPoint, \
 import marshmallow as mm
 
 
-class NucleusSchema(AnnotationSchema):
+class Nucleus(AnnotationSchema):
     ctr_pt = mm.fields.Nested(BoundSpatialPoint, required=True,
                               description="central point",
                               order=1)
-  
-    min_point = mm.fields.Nested(SpatialPoint,
-                                description='minimum corner point of a nuclear bounding box')
-    max_point = mm.fields.Nested(SpatialPoint,
-                                description='maximum corner point of a nuclear bounding box')
     volume = mm.fields.Float(description="volume of nucleus")
     area = mm.fields.Float(description="surface area of nucleus")
     fold_fraction = mm.fields.Float(description="fraction of total surface area of nucleus within a nuclear fold")
     fold_area = mm.fields.Float(description="surface area of nucleus within a nuclear fold")
-    cell_body = mm.fields.Int(required=True, description = 'cell body object associated with nuclear object ')
+    cell_body = mm.fields.Int(required=True, description = 'cell body segmentation ID associated with the given nuclear ')
 
     @mm.post_load
     def validate_type(self, item):
