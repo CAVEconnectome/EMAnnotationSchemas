@@ -166,8 +166,7 @@ def split_annotation_schema(Schema):
 
 def create_segmentation_model(table_id: str,
                               pcg_table_name: str,
-                              segmentation_columns: dict,
-                              version: int = 0):        
+                              segmentation_columns: dict):        
     """ Create an declarative sqlalchemy segmentation model that has
     a foriegn key linked to the supplied annotation_table_name.
 
@@ -185,7 +184,7 @@ def create_segmentation_model(table_id: str,
     SqlAlchemy Declarative Base Model
         Segmentation SqlAlchemy model
     """
-    segmentation_table_id = f"{table_id}__{pcg_table_name}__v{version}"
+    segmentation_table_id = f"{table_id}__{pcg_table_name}"
     segmentation_dict = create_table_dict(segmentation_table_id, segmentation_columns, with_crud_columns=False)
 
     segmentation_dict['annotation_id'] = Column(Integer, ForeignKey(table_id + '.id'))
@@ -316,15 +315,13 @@ def add_column(columns: dict,
 
 def make_segmentation_model_from_schema(table_id: str,
                                         pcg_table_name: str,
-                                        Schema,
-                                        version: int=None):
+                                        Schema):
 
     __, segmentation_columns = split_annotation_schema(Schema)
 
     seg_model = create_segmentation_model(table_id,
                                           pcg_table_name,
-                                          segmentation_columns,
-                                          version)
+                                          segmentation_columns)
     return seg_model
 
 def make_annotation_model_from_schema(table_id: str,
@@ -349,15 +346,13 @@ def make_annotation_model_from_schema(table_id: str,
 
 def make_segmentation_model(table_id: str,
                             schema_type: str,
-                            pcg_table_name: dict=None,
-                            version: int=None):
+                            pcg_table_name: dict=None):
     
     Schema = get_schema(schema_type)
     
     return make_segmentation_model_from_schema(table_id,
                                                pcg_table_name,
-                                               Schema,
-                                               version)
+                                               Schema)
 
 def make_annotation_model(table_id: str,
                           schema_type: str,
