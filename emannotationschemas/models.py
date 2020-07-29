@@ -20,7 +20,7 @@ Base = declarative_base()
 
 field_column_map = {
     # SegmentationField: Numeric,
-    NumericField: Numeric,
+    NumericField: BigInteger,
     PostGISField: Geometry,
     mm.fields.Int: Integer,
     mm.fields.Integer: Integer,
