@@ -101,7 +101,7 @@ class BoundSpatialPoint(SpatialPoint):
     ''' a position in the segmented volume that is associated with an object'''
     supervoxel_id = NumericField(missing=None,
                                  description="supervoxel id of this point", segment=True)
-    root_id = NumericField(description="root id TTT the bound point", missing=None, segment=True,
+    root_id = NumericField(description="root id of the bound point", missing=None, segment=True,
                            index=True)
 
     @mm.post_load
