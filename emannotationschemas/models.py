@@ -37,20 +37,14 @@ class ModelStore:
     def __init__(self):
         self.container = {}
 
-    @staticmethod
-    def to_key(table_id, version=None):
-        return format_table_name(table_id, version)
+    def contains_model(self, table_id):
+        return table_id in self.container.keys()
 
-    def contains_model(self, table_id, version=None):
-        return self.to_key(table_id, version) in self.container.keys()
+    def get_model(self, table_id):
+        return self.container[table_id]
 
-    def get_model(self, table_id, version=None):
-        key = self.to_key(table_id, version)
-        return self.container[key]
-
-    def set_model(self, table_id, model, version=None):
-        key = self.to_key(table_id, version)
-        self.container[key] = model
+    def set_model(self, table_id, model):
+        self.container[table_id] = model
 
 
 annotation_models = ModelStore()
@@ -66,7 +60,7 @@ def format_version_db_uri(sql_uri: str, aligned_volume: str, version: int=None):
     return sql_uri_base + f"/{new_db_name}"
 
 
-def format_table_name(table_id, table_name, version=None):
+def format_table_name(table_id, table_name,):
     if version is not None:
         return f"{table_id}_{table_name}_v{version}"
     else:
@@ -190,7 +184,7 @@ def create_segmentation_model(table_id: str,
     segmentation_dict['annotation_id'] = Column(Integer, ForeignKey(table_id + '.id'))
 
     SegmentationModel = type(segmentation_table_id, (Base,), segmentation_dict)
-
+    annotation_models.set_model()
     return SegmentationModel
 
 
@@ -282,9 +276,7 @@ def create_table_dict(table_id: str,
         else:
             try:
                 reference_table_name = table_metadata['reference_table']
-                reference_table = format_table_name(table_id,
-                                                    reference_table_name,
-                                                    version=version)
+                reference_table = table_id.split("__")[-1]
             except KeyError:
                 msg = f"reference table not specified in metadata {table_metadata}"
                 raise InvalidTableMetaDataException(msg)
@@ -316,21 +308,22 @@ def add_column(columns: dict,
 def make_segmentation_model_from_schema(table_id: str,
                                         pcg_table_name: str,
                                         Schema):
+    if not annotation_models.contains_model(table_id):
+        __, segmentation_columns = split_annotation_schema(Schema)
 
-    __, segmentation_columns = split_annotation_schema(Schema)
+        seg_model = create_segmentation_model(table_id,
+                                            pcg_table_name,
+                                            segmentation_columns)
+        annotation_models.set_model(table_id, seg_model)
 
-    seg_model = create_segmentation_model(table_id,
-                                          pcg_table_name,
-                                          segmentation_columns)
-    return seg_model
+    return annotation_models.get_model(table_id)
 
 def make_annotation_model_from_schema(table_id: str,
                                       Schema,
                                       version: int = None,
                                       with_crud_columns: bool = True):
     
-    if not annotation_models.contains_model(table_id,
-                                            version=version):
+    if not annotation_models.contains_model(table_id):
         
         annotation_columns, __ = split_annotation_schema(Schema)
 
@@ -339,10 +332,9 @@ def make_annotation_model_from_schema(table_id: str,
                                        with_crud_columns)       
         
         annotation_models.set_model(table_id,
-                                    Anno,
-                                    version=version)
+                                    Anno)
 
-    return annotation_models.get_model(table_id, version=version)
+    return annotation_models.get_model(table_id)
 
 def make_segmentation_model(table_id: str,
                             schema_type: str,
