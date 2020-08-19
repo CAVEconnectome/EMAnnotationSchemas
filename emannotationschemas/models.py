@@ -184,7 +184,6 @@ def create_segmentation_model(table_id: str,
     segmentation_dict['annotation_id'] = Column(Integer, ForeignKey(table_id + '.id'))
 
     SegmentationModel = type(segmentation_table_id, (Base,), segmentation_dict)
-    annotation_models.set_model()
     return SegmentationModel
 
 
