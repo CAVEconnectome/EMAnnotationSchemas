@@ -307,15 +307,16 @@ def add_column(columns: dict,
 def make_segmentation_model_from_schema(table_id: str,
                                         pcg_table_name: str,
                                         Schema):
-    if not annotation_models.contains_model(table_id):
+    segmentation_table_name = f"{table_id}__{pcg_table_name}" 
+    if not annotation_models.contains_model(segmentation_table_name):
         __, segmentation_columns = split_annotation_schema(Schema)
 
         seg_model = create_segmentation_model(table_id,
-                                            pcg_table_name,
-                                            segmentation_columns)
-        annotation_models.set_model(table_id, seg_model)
+                                             pcg_table_name,
+                                             segmentation_columns)
+        annotation_models.set_model(segmentation_table_name, seg_model)
 
-    return annotation_models.get_model(table_id)
+    return annotation_models.get_model(segmentation_table_name)
 
 def make_annotation_model_from_schema(table_id: str,
                                       Schema,
