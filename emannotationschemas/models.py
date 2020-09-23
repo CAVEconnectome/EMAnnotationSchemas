@@ -308,6 +308,8 @@ def make_segmentation_model_from_schema(table_name: str,
                                         segmentation_source: str,
                                         Schema):
     segmentation_table_name = f"{table_name}__{segmentation_source}" 
+    make_annotation_model_from_schema(table_name, Schema)
+
     if not annotation_models.contains_model(segmentation_table_name):
         __, segmentation_columns = split_annotation_schema(Schema)
 
