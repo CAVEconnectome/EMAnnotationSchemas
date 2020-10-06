@@ -363,6 +363,37 @@ def make_annotation_model(table_name: str,
     return make_annotation_model_from_schema(table_name,
                                              Schema)
 
+def make_flat_model_from_schema(table_name: str,
+                                Schema):
+    
+    if not annotation_models.contains_model(table_name):
+        
+        flat_schema = get_flat_schema(Schema)
+        
+        annotation_dict = create_table_dict(
+            table_name=table_name,
+            Schema=flat_schema,
+            segmentation_source=None,
+            table_metadata=None,
+            with_crud_columns=False,
+        )
+        FlatAnnotationModel = type(table_name, (Base,), annotation_dict)   
+        
+        annotation_models.set_model(table_name,
+                                    FlatAnnotationModel)
+
+    return annotation_models.get_model(table_name)
+
+
+def make_flat_model(table_name: str,
+                    schema_type: str,
+                    segmentation_source: dict=None):
+    
+    Schema = get_schema(schema_type)
+    
+    return make_flat_model_from_schema(table_name,
+                                       Schema)
+
 
 def make_dataset_models(aligned_volume: str,
                         schemas_and_tables: Sequence[tuple],
