@@ -73,7 +73,7 @@ class CellTypeLocal(AnnotationSchema):
     def validate_type( self, item, **kwargs):
 
         system = item['classification_system']
-        if system in allowed_types.keys():
+        if system in allowed_classification_systems:
             if item['cell_type'] not in allowed_types[system]:
                 item['valid'] = False
             else:
