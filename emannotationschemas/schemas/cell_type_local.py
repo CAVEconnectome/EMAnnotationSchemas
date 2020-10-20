@@ -2,12 +2,6 @@ from emannotationschemas.schemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
 from marshmallow.validate import OneOf
 
-allowed_classification_systems = ['ivscc_m',
-                             'valence',
-                             'classical',
-                             'allen_cortex_excitatory',
-                             'allen_cortex_inhibitory'
-                             ]
 
 allowed_types = dict(
                     valence=['e',
@@ -73,7 +67,7 @@ class CellTypeLocal(AnnotationSchema):
     def validate_type( self, item, **kwargs):
 
         system = item['classification_system']
-        if system in allowed_classification_systems:
+        if system in allowed_types.keys():
             if item['cell_type'] not in allowed_types[system]:
                 item['valid'] = False
             else:
