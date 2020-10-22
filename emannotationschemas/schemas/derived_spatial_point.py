@@ -1,13 +1,20 @@
-from emannotationschemas.schemas.base import BoundSpatialPoint, AnnotationSchema
+from emannotationschemas.schemas.base import BoundSpatialPoint, NumericField, AnnotationSchema
 import marshmallow as mm
 
 
-class DerivedSpatialPoint(AnnotationSchema):
-    pt = mm.fields.Nested(BoundSpatialPoint, required=True,
-                          description="Location of annotated point")
-    chunk_id = mm.fields.Int(required=True,
-                             description="Layer 2 chunk id annotation depends on. If current layer 2 id differs, this annotation is potentially out of date")
+class DerivedSpatialPoint(BoundSpatialPoint, AnnotationSchema):
+    dependent_chunk = NumericField(description='Layer 2 chunk id for the point at the time the annotation was made',
+                                   required=True,
+                                   segment=True)
+    valid = mm.fields.Bool(
+        required=False,
+        description="is this annotation valid",
+        default=True,
+        missing=True,
+    )
 
 
-class DerivedSpatialTag(DerivedSpatialPoint):
-    tag = mm.fields.String(required=True, description="Descriptive text")
+class DerivedTag(AnnotationSchema):
+    '''Basic spatial tag using DerivedSpatialPoint information'''
+    pt = mm.fields.Nested(DerivedSpatialPoint, required=True)
+    tag = mm.fields.String(required=True, description="Description of point")

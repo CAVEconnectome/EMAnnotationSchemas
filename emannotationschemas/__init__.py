@@ -9,7 +9,7 @@ from emannotationschemas.schemas.glia_contact import GliaContact
 from emannotationschemas.schemas.contact import Contact
 from emannotationschemas.schemas.extended_classical_cell_type import ExtendedClassicalCellType
 from emannotationschemas.schemas.nucleus_detection import NucleusDetection
-from emannotationschemas.schemas.derived_spatial_point import DerivedSpatialPoint, DerivedSpatialTag
+from emannotationschemas.schemas.derived_spatial_point import DerivedSpatialPoint, DerivedTag
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
@@ -28,7 +28,7 @@ type_mapping = {
     'glia_contact': GliaContact,
     'contact': Contact,
     'derived_spatial_point': DerivedSpatialPoint,
-    'derived_tag': DerivedSpatialTag,
+    'derived_tag': DerivedTag,
 }
 
 
