@@ -9,6 +9,7 @@ from emannotationschemas.schemas.glia_contact import GliaContact
 from emannotationschemas.schemas.contact import Contact
 from emannotationschemas.schemas.extended_classical_cell_type import ExtendedClassicalCellType
 from emannotationschemas.schemas.nucleus_detection import NucleusDetection
+from emannotationschemas.schemas.derived_spatial_point import DerivedSpatialPoint, DerivedSpatialTag
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
@@ -26,6 +27,8 @@ type_mapping = {
     'plastic_synapse': PlasticSynapse,
     'glia_contact': GliaContact,
     'contact': Contact,
+    'derived_spatial_point': DerivedSpatialPoint,
+    'derived_tag': DerivedSpatialTag,
 }
 
 
@@ -76,7 +79,7 @@ def create_app(test_config=None):
     from emannotationschemas.config import configure_app
     from emannotationschemas.utils import get_instance_folder_path
 
-    from emannotationschemas.blueprint_app import api_bp 
+    from emannotationschemas.blueprint_app import api_bp
     from emannotationschemas.views import views_bp
     import logging
     # Define the Flask Object
@@ -94,7 +97,8 @@ def create_app(test_config=None):
 
     apibp = Blueprint('api', __name__, url_prefix='/schema/api')
     with app.app_context():
-        api = Api(apibp, title="EMAnnotationSchemas API", version=__version__, doc="/doc")
+        api = Api(apibp, title="EMAnnotationSchemas API",
+                  version=__version__, doc="/doc")
         api.add_namespace(api_bp, path='/v2')
         app.register_blueprint(apibp)
         app.register_blueprint(views_bp)
