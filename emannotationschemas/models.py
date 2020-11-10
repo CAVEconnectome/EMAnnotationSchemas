@@ -36,15 +36,25 @@ class ModelStore:
 
     def __init__(self):
         self.container = {}
+        self.flat_container = {}
 
-    def contains_model(self, table_name):
-        return table_name in self.container.keys()
+    def contains_model(self, table_name, flat=False):
+        if flat:
+            return table_name in self.flat_container.keys()
+        else:
+            return table_name in self.container.keys()
 
-    def get_model(self, table_name):
-        return self.container[table_name]
+    def get_model(self, table_name, flat=False):
+        if flat:
+            self.flat_container[table_name]
+        else:
+            return self.container[table_name]
 
-    def set_model(self, table_name, model):
-        self.container[table_name] = model
+    def set_model(self, table_name, model, flat=False):
+        if flat:
+            self.flat_container[table_name] = model
+        else:
+            self.container[table_name] = model
 
 
 annotation_models = ModelStore()
