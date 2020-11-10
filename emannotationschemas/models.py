@@ -46,7 +46,7 @@ class ModelStore:
 
     def get_model(self, table_name, flat=False):
         if flat:
-            self.flat_container[table_name]
+            return self.flat_container[table_name]
         else:
             return self.container[table_name]
 
