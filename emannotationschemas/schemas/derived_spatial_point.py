@@ -3,9 +3,10 @@ import marshmallow as mm
 
 
 class DerivedSpatialPoint(BoundSpatialPoint):
-    dependent_chunk = NumericField(description='Layer 2 chunk id for the point at the time the annotation was made',
-                                   required=True,
-                                   segment=True)
+    dependent_chunk = NumericField(description='Chunk id for the point at the time the annotation was made',
+                                   required=True)
+    level = NumericField(description='Chunk level',
+                         required=False)
 
 
 class DerivedTag(AnnotationSchema):
