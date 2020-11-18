@@ -82,6 +82,7 @@ def create_app(test_config=None):
     # Define the Flask Object
     app = Flask(__name__,
                 instance_path=get_instance_folder_path(),
+                static_url_path='/schema/static',
                 instance_relative_config=True)
 
     logging.basicConfig(level=logging.DEBUG)
@@ -93,6 +94,14 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     apibp = Blueprint('api', __name__, url_prefix='/schema/api')
+    @apibp.route('/versions')
+    def versions():
+        return jsonify([2]), 200
+
+    @app.route("/schema/")
+    def index():
+        return redirect("/schema/views")
+
     with app.app_context():
         api = Api(apibp, title="EMAnnotationSchemas API", version=__version__, doc="/doc")
         api.add_namespace(api_bp, path='/v2')

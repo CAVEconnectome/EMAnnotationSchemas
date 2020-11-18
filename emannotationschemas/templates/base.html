@@ -1,0 +1,22 @@
+<!doctype html>
+<title>{% block title %}{% endblock %} - SchemaService - v.{{version}}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<nav>
+  <ul><li>
+     <a href="{{url_for('views.index')}}">SchemaService - v.{{version}}</a>
+  </li>
+
+    <li>
+          <a href="{{url_for('views.index')}}">Schemas</a>    
+    </li>
+    <li>
+        <a href="/schema/api/doc">API doc</a>    
+    </li>
+  </ul>
+</nav>
+<section class="content">
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  {% block content %}{% endblock %}
+</section>
