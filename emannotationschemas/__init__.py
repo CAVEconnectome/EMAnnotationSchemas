@@ -94,7 +94,8 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     apibp = Blueprint('api', __name__, url_prefix='/schema/api')
-    @apibp.route('/versions')
+   
+    @app.route('/schema/versions')
     def versions():
         return jsonify([2]), 200
 
