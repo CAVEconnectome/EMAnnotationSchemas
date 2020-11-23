@@ -1,6 +1,6 @@
 from emannotationschemas.schemas.synapse import SynapseSchema, PlasticSynapse
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
-from emannotationschemas.schemas.functional_coregistration import FunctionalCoregistration
+from emannotationschemas.schemas.functional_coregistration import FunctionalCoregistration, FunctionalUnitCoregistration
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
 from emannotationschemas.schemas.cell_type_local import CellTypeLocal
@@ -20,6 +20,7 @@ type_mapping = {
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
     'microns_func_coreg': FunctionalCoregistration,
+    'microns_func_unit_coreg': FunctionalUnitCoregistration
     'cell_type_local': CellTypeLocal,
     'nucleus_detection': NucleusDetection,
     'bound_tag': BoundTagAnnotation,
