@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{title}}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<p>Schemas</p>
+
+{% for schema in schema_types %}
+  <p><a href="{{url_for('views.get_schema_view',annotation_type=schema)}}" >{{schema}}</a></p>
+{% endfor %}
+
+
+{% endblock %}

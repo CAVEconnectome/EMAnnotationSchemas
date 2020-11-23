@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}schema: {{schema_type}}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+{{df_table|safe}}
+
+JsonSchema: <a href={{"/schema/api/v2/type/{}".format(schema_type)}}>link</a><br/>
+<a href={{url_for('views.get_flat_schema_view', annotation_type=schema_type)}}>FlatView:</a>
+{% endblock %}

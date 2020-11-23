@@ -1,5 +1,5 @@
 import marshmallow as mm
-from emannotationschemas.base import BoundSpatialPoint
+from emannotationschemas.schemas.base import BoundSpatialPoint
 import os
 
 

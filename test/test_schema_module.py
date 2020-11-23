@@ -1,6 +1,6 @@
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.errors import UnknownAnnotationTypeException
-from emannotationschemas.base import AnnotationSchema
+from emannotationschemas.schemas.base import AnnotationSchema
 import pytest
 
 

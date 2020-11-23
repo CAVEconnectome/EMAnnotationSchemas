@@ -1,11 +1,7 @@
-from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
+from emannotationschemas.schemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
 from marshmallow.validate import OneOf
 
-allowed_classification_systems = ['ivscc_m',
-                             'valence',
-                             'classical',
-                             ]
 
 allowed_types = dict(
                     valence=['e',
@@ -16,7 +12,6 @@ allowed_types = dict(
                             ['aspiny_s_{}'.format(i) for i in range(1, 17)] +
                             ['aspiny_d_{}'.format(i) for i in range(1, 6)] +
                             ['uncertain'],
-
                     classical=['chandelier',
                                'pyramidal',
                                'martinotti',
@@ -31,7 +26,29 @@ allowed_types = dict(
                                'microglia-perivascular',
                                'microglia-perineuronal',
                                'uncertain',
-                               ]
+                               ],
+                    allen_cortex_excitatory=['L2/3 PC',            
+                                  'L4 PC',
+                                  'L5 IT',
+                                  'L5 NP',
+                                  'L5 PT',
+                                  'L6 Tall',
+                                  'L6 Middle',
+                                  'L6 Inverted',
+                                  'L6 Other',
+                                  'Unsure'],
+                    allen_cortex_inhibitory=[
+                        'CCK Large Basket',
+                        'Martinotti',
+                        'Basket (regular)',
+                        'Inhibitory Targeting',
+                        'SST',
+                        'PV Basket',
+                        'Neurgliaform',
+                        'Chandelier Cell',
+                        'VIP',
+                        'Unsure'
+                    ]
                     )
 
 
@@ -39,8 +56,7 @@ class CellTypeLocal(AnnotationSchema):
 
     classification_system = mm.fields.String(
                             required=True,
-                            description='Classification system followed',
-                            validate=OneOf(allowed_classification_systems))
+                            description='Classification system followed')
     cell_type = mm.fields.String(
                             required=True,
                             description='Cell type name')
@@ -48,8 +64,7 @@ class CellTypeLocal(AnnotationSchema):
                             required=True,
                             description='Location associated with classification')
     @mm.post_load
-    def validate_type( self, item):
-        assert item['type'] == 'cell_type_local'
+    def validate_type( self, item, **kwargs):
 
         system = item['classification_system']
         if system in allowed_types.keys():

@@ -1,4 +1,4 @@
-from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
+from emannotationschemas.schemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
 
 
@@ -11,8 +11,4 @@ class GliaContact(AnnotationSchema):
                                order=2)
     size = mm.fields.Float(description="size of contact", required=False)
 
-    @mm.post_load
-    def validate_type(self, item):
-        # check that the annotation type is present in the object as 'synapse'
-        assert item['type'] == 'glia_contact'
-        return item
+

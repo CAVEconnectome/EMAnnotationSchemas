@@ -1,5 +1,6 @@
 import pytest
 from emannotationschemas import create_app
+import os
 
 @pytest.fixture(scope='session')
 def app():
@@ -9,4 +10,7 @@ def app():
 
 @pytest.fixture(scope='session')
 def client(app):
-    return app.test_client()
+    client=app.test_client()
+    token = os.environ.get('MIDDLE_AUTH_TOKEN', '')
+    client.environ_base['HTTP_AUTHORIZATION'] = 'Bearer ' + token
+    return client

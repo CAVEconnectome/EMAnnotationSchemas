@@ -1,13 +1,13 @@
-from emannotationschemas.models import make_all_models, Base
-from emannotationschemas.base import flatten_dict
+from emannotationschemas.models import make_annotation_model, Base
+from emannotationschemas.flatten import flatten_dict
 from emannotationschemas import get_schema
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # example of initializing mapping of database
-DATABASE_URI = "postgres://postgres:synapsedb@localhost:5432/postgres"
+DATABASE_URI = "postgres://postgres:synapsedb@localhost:5432/minnie"
 engine = create_engine(DATABASE_URI, echo=True)
-model_dict = make_all_models(['test', 'test2'])
+model_dict = make_annotation_model('test', 'synapse')
 # assures that all the tables are created
 # would be done as a db management task in general
 Base.metadata.create_all(engine)
@@ -41,15 +41,12 @@ SynapseSchema = get_schema('synapse')
 schema = SynapseSchema(context={'postgis': True})
 
 # use the schema to deserialize the schema
-d = schema.load(synapse_d).data
+d = schema.load(synapse_d)
 d = flatten_dict(d)
 
 # get the appropriate sqlalchemy model
 # for the annotation type and dataset
 SynapseModel = model_dict['test']['synapse']
-
-# remove the type field because we don't want it as a column
-d.pop('type', None)
 
 # # create a new model instance with data
 synapse = SynapseModel(**d)
