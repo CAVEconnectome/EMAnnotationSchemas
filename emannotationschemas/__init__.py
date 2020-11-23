@@ -17,6 +17,7 @@ type_mapping = {
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
     'microns_func_coreg': FunctionalCoregistration,
+    'microns_func_unit_coreg': FunctionalUnitCoregistration
     'cell_type_local': CellTypeLocal,
     'flat_segmentation_reference': FlatSegmentationReference,
     'bound_tag': BoundTagAnnotation,

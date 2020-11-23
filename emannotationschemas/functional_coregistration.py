@@ -23,4 +23,4 @@ class FunctionalUnitCoregistration(AnnotationSchema):
     @mm.post_load
     def validate_type(self, item):
         # check that the annotation type is present in the object as 'functional_coregistration'
-        assert item['type'] == 'microns_func_coreg'
+        assert item['type'] == 'microns_func_unit_coreg'
