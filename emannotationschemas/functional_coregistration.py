@@ -12,3 +12,15 @@ class FunctionalCoregistration(AnnotationSchema):
     def validate_type(self, item):
         # check that the annotation type is present in the object as 'functional_coregistration'
         assert item['type'] == 'microns_func_coreg'
+
+class FunctionalUnitCoregistration(AnnotationSchema):
+    pt = mm.fields.Nested(BoundSpatialPoint, required=True,
+                          description="location of cell body of functional cell")
+    scan_session = mm.fields.Int(required=True, description="functional scan session")
+    scan_idx = mm.fields.Int(required=True, description="scan idx within the scan session")
+    unit_id = mm.fields.Int(required=True, description="unique functional cell ID within the scan")
+
+    @mm.post_load
+    def validate_type(self, item):
+        # check that the annotation type is present in the object as 'functional_coregistration'
+        assert item['type'] == 'microns_func_coreg'
