@@ -16,8 +16,8 @@ class FunctionalCoregistration(AnnotationSchema):
 class FunctionalUnitCoregistration(AnnotationSchema):
     pt = mm.fields.Nested(BoundSpatialPoint, required=True,
                           description="location of cell body of functional cell")
-    scan_session = mm.fields.Int(required=True, description="functional scan session")
-    scan_idx = mm.fields.Int(required=True, description="scan idx within the scan session")
+    session = mm.fields.Int(required=True, description="session ID of imaging")
+    scan_idx = mm.fields.Int(required=True, description="index of the scan within the session")
     unit_id = mm.fields.Int(required=True, description="unique functional cell ID within the scan")
 
     @mm.post_load
