@@ -20,7 +20,7 @@ type_mapping = {
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
     'microns_func_coreg': FunctionalCoregistration,
-    'microns_func_unit_coreg': FunctionalUnitCoregistration
+    'microns_func_unit_coreg': FunctionalUnitCoregistration,
     'cell_type_local': CellTypeLocal,
     'nucleus_detection': NucleusDetection,
     'bound_tag': BoundTagAnnotation,
