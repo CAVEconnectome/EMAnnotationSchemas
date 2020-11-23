@@ -300,7 +300,6 @@ def add_column(columns: dict,
     
     field_type = type(field)
     do_index = field.metadata.get('index', False)
-
     if field_type in field_column_map:
         if field_type == PostGISField:
             postgis_geom = field.metadata.get('postgis_geometry', 'POINTZ')
@@ -374,35 +373,34 @@ def make_annotation_model(table_name: str,
                                              Schema)
 
 def make_flat_model_from_schema(table_name: str,
-                                Schema):
+                                schema: str,
+                                segmentation_source: dict=None):
     
-    if not annotation_models.contains_model(table_name):
+    if not annotation_models.contains_model(table_name, flat=True):
         
-        flat_schema = get_flat_schema(Schema)
+        flat_schema = get_flat_schema(schema)
         
         annotation_dict = create_table_dict(
             table_name=table_name,
             Schema=flat_schema,
-            segmentation_source=None,
+            segmentation_source=segmentation_source,
             table_metadata=None,
             with_crud_columns=False,
         )
         FlatAnnotationModel = type(table_name, (Base,), annotation_dict)   
         
         annotation_models.set_model(table_name,
-                                    FlatAnnotationModel)
+                                    FlatAnnotationModel, flat=True)
 
-    return annotation_models.get_model(table_name)
+    return annotation_models.get_model(table_name, flat=True)
 
 
 def make_flat_model(table_name: str,
                     schema_type: str,
                     segmentation_source: dict=None):
-    
-    Schema = get_schema(schema_type)
-    
+
     return make_flat_model_from_schema(table_name,
-                                       Schema)
+                                       schema_type)
 
 
 def make_dataset_models(aligned_volume: str,
