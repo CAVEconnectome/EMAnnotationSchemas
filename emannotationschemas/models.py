@@ -193,7 +193,8 @@ def create_segmentation_model(table_name: str,
 
 
 def create_annotation_model(table_name: str,
-                            annotation_columns: dict):
+                            annotation_columns: dict,
+                            with_crud_columns: bool=True):
     """ Create an declarative sqlalchemy annotation model.
 
     Parameters
@@ -211,7 +212,7 @@ def create_annotation_model(table_name: str,
     """
     annotation_dict = create_table_dict(table_name, 
                                         annotation_columns,
-                                        with_crud_columns=True)
+                                        with_crud_columns=with_crud_columns)
  
     annotation_name = annotation_dict.get('__tablename__')
    
@@ -330,14 +331,16 @@ def make_segmentation_model_from_schema(table_name: str,
     return annotation_models.get_model(segmentation_table_name)
 
 def make_annotation_model_from_schema(table_name: str,
-                                      Schema):
+                                      Schema,
+                                      with_crud_columns: bool=True):
     
     if not annotation_models.contains_model(table_name):
         
         annotation_columns, __ = split_annotation_schema(Schema)
 
         anno_model = create_annotation_model(table_name,
-                                       annotation_columns)       
+                                       annotation_columns,
+                                       with_crud_columns)       
         
         annotation_models.set_model(table_name,
                                     anno_model)
@@ -355,7 +358,8 @@ def make_segmentation_model(table_name: str,
                                                Schema)
 
 def make_annotation_model(table_name: str,
-                          schema_type: str):
+                          schema_type: str,
+                          with_crud_columns: bool=True):
     """make an annotation model
 
     Args:
@@ -370,7 +374,8 @@ def make_annotation_model(table_name: str,
     Schema = get_schema(schema_type)
     
     return make_annotation_model_from_schema(table_name,
-                                             Schema)
+                                             Schema,
+                                             with_crud_columns)
 
 def make_flat_model_from_schema(table_name: str,
                                 schema: str,
@@ -400,7 +405,8 @@ def make_flat_model(table_name: str,
                     segmentation_source: dict=None):
 
     return make_flat_model_from_schema(table_name,
-                                       schema_type)
+                                       schema_type,
+                                       segmentation_source)
 
 
 def make_dataset_models(aligned_volume: str,
