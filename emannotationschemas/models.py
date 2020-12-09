@@ -17,7 +17,6 @@ from typing import Sequence
 import logging
 
 Base = declarative_base()
-FlatBase = declarative_base()
 
 field_column_map = {
     # SegmentationField: Numeric,
@@ -393,7 +392,7 @@ def make_flat_model_from_schema(table_name: str,
             table_metadata=None,
             with_crud_columns=False,
         )
-        FlatAnnotationModel = type(table_name, (FlatBase,), annotation_dict)   
+        FlatAnnotationModel = type(table_name, (Base,), annotation_dict)   
         
         annotation_models.set_model(table_name,
                                     FlatAnnotationModel, flat=True)
