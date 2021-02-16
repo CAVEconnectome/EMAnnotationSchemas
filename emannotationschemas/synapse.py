@@ -48,7 +48,7 @@ class BuhmannSynapseSchema(BaseSynapseSchema):
                                   "segmentation from Heinrich et al. 2018")
 
 
-class BuhmannEcksteinSchema(BuhmannSynapseSchema):
+class BuhmannEcksteinSynapseSchema(BuhmannSynapseSchema):
     gaba = mm.fields.Float(description="Gaba probability by Eckstein et al. 2020")
     acetylcholine = mm.fields.Float(description="Acetylcholine probability by Eckstein et al. 2020")
     glutamate = mm.fields.Float(description="Glutamate probability by Eckstein et al. 2020")
