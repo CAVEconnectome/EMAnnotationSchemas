@@ -1,4 +1,4 @@
-from emannotationschemas.synapse import SynapseSchema, PlasticSynapse, BuhmannSynapseSchema
+from emannotationschemas.synapse import SynapseSchema, PlasticSynapse, BuhmannSynapseSchema, BuhmannEcksteinSchema
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.presynaptic_bouton_type import PresynapticBoutonType
@@ -15,7 +15,7 @@ __version__ = '2.0.2'
 type_mapping = {
     'synapse': SynapseSchema,
     'fly_synapse': BuhmannSynapseSchema,
-    'fly_nt_synapse': BuhmannSynapseSchema,
+    'fly_nt_synapse': BuhmannEcksteinSchema,
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
     'microns_func_coreg': FunctionalCoregistration,
