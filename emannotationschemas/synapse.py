@@ -50,11 +50,11 @@ class BuhmannSynapseSchema(BaseSynapseSchema):
 
 class BuhmannEcksteinSynapseSchema(BuhmannSynapseSchema):
     gaba = mm.fields.Float(description="Gaba probability by Eckstein et al. 2020")
-    acetylcholine = mm.fields.Float(description="Acetylcholine probability by Eckstein et al. 2020")
-    glutamate = mm.fields.Float(description="Glutamate probability by Eckstein et al. 2020")
-    octopamine = mm.fields.Float(description="Octopamine probability by Eckstein et al. 2020")
-    serotonin = mm.fields.Float(description="Serotonin probability by Eckstein et al. 2020")
-    dopamine = mm.fields.Float(description="Dopamine probability by Eckstein et al. 2020")
+    ach = mm.fields.Float(description="Acetylcholine probability by Eckstein et al. 2020")
+    gut = mm.fields.Float(description="Glutamate probability by Eckstein et al. 2020")
+    oct = mm.fields.Float(description="Octopamine probability by Eckstein et al. 2020")
+    ser = mm.fields.Float(description="Serotonin probability by Eckstein et al. 2020")
+    da = mm.fields.Float(description="Dopamine probability by Eckstein et al. 2020")
     valid_nt = mm.fields.Bool(description="False = no neurotransmitter prediction available.")
 
 
