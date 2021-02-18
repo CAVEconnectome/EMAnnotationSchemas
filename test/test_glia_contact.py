@@ -1,15 +1,13 @@
-from emannotationschemas.glia_contact import GliaContact
+from emannotationschemas.schemas.glia_contact import GliaContact
 
 contact_size = 12.2
 good_glia_contact_annotation = {
-    'type' : 'glia_contact',
     'glia_pt': {'position': [1,2,3]},
     'object_pt': {'position': [4,5,6]},
     'size': contact_size,
     }
 
 also_good_glia_contact_annotation = {
-    'type' : 'glia_contact',
     'glia_pt': {'position': [1,2,3]},
     'object_pt': {'position': [4,5,6]},
     }
@@ -21,8 +19,8 @@ def annotation_import( item ):
 def test_glia_import():
     schema = GliaContact(context={'bsp_fn':annotation_import})
     result = schema.load( good_glia_contact_annotation )
-    assert( result.data['size'] == contact_size)
+    assert( result['size'] == contact_size)
 
     result = schema.load( also_good_glia_contact_annotation )
-    assert( result.data['glia_pt']['supervoxel_id'] == 5)
-    assert( result.data['object_pt']['supervoxel_id'] == 5)
+    assert( result['glia_pt']['supervoxel_id'] == 5)
+    assert( result['object_pt']['supervoxel_id'] == 5)

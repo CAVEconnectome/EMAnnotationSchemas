@@ -1,4 +1,4 @@
-from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
+from emannotationschemas.schemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
 
 class BoundTagAnnotation(AnnotationSchema):
@@ -7,7 +7,6 @@ class BoundTagAnnotation(AnnotationSchema):
                          description='Location associated with the tag')
     tag = mm.fields.String(required=True,
                            description='Arbitrary text tag')
-    @mm.post_load
-    def validate_type(self, item):
-        assert item['type'] == 'bound_tag'
-        return item
+    
+
+

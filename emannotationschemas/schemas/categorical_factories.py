@@ -1,4 +1,4 @@
-from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
+from emannotationschemas.schemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
 
 def BoundCategoricalFactory(allowed_categories,
@@ -12,8 +12,7 @@ def BoundCategoricalFactory(allowed_categories,
                               description='Location in space')
 
         @mm.post_load
-        def validate_type(self, item):
-            assert item['type'] == schema_type_name
+        def validate_type(self, item, **kwargs):
             if item[category_name] in allowed_categories:
                 item['valid'] = True
             else:
@@ -38,8 +37,7 @@ def BoundCategoricalSystemFactory(allowed_category_dict,
                                     description='Classification system used')
 
         @mm.post_load
-        def validate_type(self, item):
-            assert item['type'] == schema_type_name
+        def validate_type(self, item, **kwargs):
             if item[category_name] in allowed_category_dict[item['classification_system']]:
                 item['valid'] = True
             else:
