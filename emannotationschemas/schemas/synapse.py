@@ -26,8 +26,8 @@ class BaseSynapseSchema(AnnotationSchema):
         if pre_id is not None:
             data['valid'] = False if pre_id == post_id else True
         else:
-            item.pop('valid', None)
-        return item
+            data.pop('valid', None)
+        return data
 
 class SynapseSchema(BaseSynapseSchema):
     ctr_pt = mm.fields.Nested(SpatialPoint, required=True,
