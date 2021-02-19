@@ -15,7 +15,7 @@ from emannotationschemas.schemas.nucleus_detection import NucleusDetection
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = '2.1.0'
+__version__ = '3.0.0'
 
 type_mapping = {
     'synapse': SynapseSchema,
