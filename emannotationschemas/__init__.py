@@ -2,7 +2,6 @@ from emannotationschemas.schemas.synapse import SynapseSchema
 from emannotationschemas.schemas.synapse import PlasticSynapse
 from emannotationschemas.schemas.synapse import BuhmannSynapseSchema
 from emannotationschemas.schemas.synapse import BuhmannEcksteinSynapseSchema
-from emannotationschemas.schemas.synapse import SynapseSchema, PlasticSynapse
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.schemas.functional_coregistration import FunctionalCoregistration
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
