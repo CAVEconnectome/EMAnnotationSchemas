@@ -2,12 +2,6 @@ from emannotationschemas.schemas.base import BoundSpatialPoint, AnnotationSchema
 import marshmallow as mm
 from marshmallow.validate import OneOf
 
-allowed_classification_systems = ['ivscc_m',
-                             'valence',
-                             'classical',
-                             'allen_cortex_excitatory',
-                             'allen_cortex_inhibitory'
-                             ]
 
 allowed_types = dict(
                     valence=['e',
