@@ -1,6 +1,9 @@
-from emannotationschemas.base import ReferenceAnnotation
+from emannotationschemas.schemas.base import ReferenceAnnotation
 import marshmallow as mm
 from marshmallow.validate import OneOf
+from marshmallow import validates_schema, ValidationError
+
+
 
 allowed_compartments = ['soma',
                         'dendrite',
@@ -33,6 +36,3 @@ class PostsynapticCompartment( ReferenceAnnotation ):
         validate=OneOf(allowed_dendrite_classes),
         description='Type of dendritic branch, e.g. basal or apical')
 
-    @mm.post_load
-    def validate_type(self, item):
-        assert item['type'] == 'postsynaptic_compartment'

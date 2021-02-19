@@ -1,4 +1,4 @@
-from emannotationschemas.base import ReferenceAnnotation
+from emannotationschemas.schemas.base import ReferenceAnnotation
 import marshmallow as mm
 from marshmallow.validate import OneOf
 
@@ -15,7 +15,4 @@ class BoutonShape(ReferenceAnnotation):
         validate=OneOf(["pancake", "basmati", "potato"]),
         description="first example of description of a bouton shape")
 
-    @mm.post_load
-    def validate_type(self, item):
-        # check that the annotation type is present in the object as 'synapse'
-        assert item['type'] == 'bouton_shape'
+
