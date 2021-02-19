@@ -1,4 +1,7 @@
-from emannotationschemas.schemas.synapse import SynapseSchema, PlasticSynapse
+from emannotationschemas.schemas.synapse import SynapseSchema
+from emannotationschemas.schemas.synapse import PlasticSynapse
+from emannotationschemas.schemas.synapse import BuhmannSynapseSchema
+from emannotationschemas.schemas.synapse import BuhmannEcksteinSynapseSchema
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.schemas.functional_coregistration import FunctionalCoregistration
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
@@ -16,6 +19,8 @@ __version__ = '2.1.0'
 
 type_mapping = {
     'synapse': SynapseSchema,
+    'fly_synapse': BuhmannSynapseSchema,
+    'fly_nt_synapse': BuhmannEcksteinSynapseSchema,
     'presynaptic_bouton_type': PresynapticBoutonType,
     'postsynaptic_compartment': PostsynapticCompartment,
     'microns_func_coreg': FunctionalCoregistration,

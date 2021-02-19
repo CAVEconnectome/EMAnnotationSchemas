@@ -5,17 +5,13 @@ from marshmallow import ValidationError
 import marshmallow as mm
 
 
-class SynapseSchema(AnnotationSchema):
+class BaseSynapseSchema(AnnotationSchema):
     pre_pt = mm.fields.Nested(BoundSpatialPoint, required=True,
                               description="a nearby point located in the presynaptic compartment of the synase",
                               order=0)
-    ctr_pt = mm.fields.Nested(SpatialPoint, required=True,
-                              description="a point located near/on the synaptic contact",
-                              order=1)
     post_pt = mm.fields.Nested(BoundSpatialPoint, required=True,
                                description="a nearby point located in the postsynaptic compartment of the synapse",
                                order=2)
-    size = mm.fields.Float(description="size of synapse", missing=None)
 
 
     @mm.post_load
@@ -32,7 +28,30 @@ class SynapseSchema(AnnotationSchema):
         else:
             data.pop('valid', None)
         return data
-    
+
+class SynapseSchema(BaseSynapseSchema):
+    ctr_pt = mm.fields.Nested(SpatialPoint, required=True,
+                              description="central point",
+                              order=1)
+    size = mm.fields.Float(description="size of synapse")
+
+
+class BuhmannSynapseSchema(BaseSynapseSchema):
+    score = mm.fields.Float(description="score assigned by Buhmann et al. 2019")
+    cleft_score = mm.fields.Float(description="score derived by Buhmann et al. 2019 " \
+                                  "by combining their synapses with the synapse " \
+                                  "segmentation from Heinrich et al. 2018")
+
+
+class BuhmannEcksteinSynapseSchema(BuhmannSynapseSchema):
+    gaba = mm.fields.Float(description="Gaba probability by Eckstein et al. 2020")
+    ach = mm.fields.Float(description="Acetylcholine probability by Eckstein et al. 2020")
+    glut = mm.fields.Float(description="Glutamate probability by Eckstein et al. 2020")
+    oct = mm.fields.Float(description="Octopamine probability by Eckstein et al. 2020")
+    ser = mm.fields.Float(description="Serotonin probability by Eckstein et al. 2020")
+    da = mm.fields.Float(description="Dopamine probability by Eckstein et al. 2020")
+    valid_nt = mm.fields.Bool(description="False = no neurotransmitter prediction available.")
+
 
 class PlasticSynapse(SynapseSchema):
     plasticity = mm.fields.Int(required=True,
