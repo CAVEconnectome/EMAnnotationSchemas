@@ -37,7 +37,7 @@ class SynapseSchema(BaseSynapseSchema):
 
 
 class BuhmannSynapseSchema(BaseSynapseSchema):
-    score = mm.fields.Float(description="score assigned by Buhmann et al. 2019")
+    connection_score = mm.fields.Float(description="score assigned by Buhmann et al. 2019")
     cleft_score = mm.fields.Float(description="score derived by Buhmann et al. 2019 " \
                                   "by combining their synapses with the synapse " \
                                   "segmentation from Heinrich et al. 2018")
