@@ -16,7 +16,7 @@ from emannotationschemas.schemas.derived_spatial_point import DerivedSpatialPoin
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = '3.1.1'
+__version__ = '3.1.2'
 
 type_mapping = {
     'synapse': SynapseSchema,
