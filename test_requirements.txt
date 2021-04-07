@@ -1,4 +1,4 @@
-coverage>=4.1
+-r requirements.txt
 pytest>=3.0.5
 pytest-cov>=2.2.1
-codecov
+pytest-env
