@@ -10,7 +10,7 @@ import marshmallow as mm
 import pandas as pd
 
 
-__version__ = '3.1.5'
+__version__ = '3.1.6'
 
 authorizations = {
     'apikey': {
