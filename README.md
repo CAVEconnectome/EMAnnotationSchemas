@@ -1,4 +1,4 @@
-[![Build Status](https://www.travis-ci.com/seung-lab/EMAnnotationSchemas.svg?branch=master)](https://www.travis-ci.com/seung-lab/EMAnnotationSchemas)
+[![Actions Status](https://github.com/seung-lab/EMAnnotationSchemas/workflows/EMAnnotationSchemas/badge.svg)](https://github.com/seung-lab/EMAnnotationSchemas/actions)
 [![codecov](https://codecov.io/gh/seung-lab/EMAnnotationSchemas/branch/master/graph/badge.svg)](https://codecov.io/gh/seung-lab/EMAnnotationSchemas)
 
 # EMAnnotationSchemas

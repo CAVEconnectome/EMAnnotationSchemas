@@ -15,11 +15,11 @@ def test_model_creation():
                                               ('postsynaptic_compartment', 'spinecall')],
                                               include_contacts=True)
     model = model_dict['synapse']
-    assert(model.__name__ == "annov1__test__synapse")
+    assert(model.__name__ == "synapse")
     model = model_dict['contact']
-    assert(model.__name__ == "annov1__test__contact")
+    assert(model.__name__ == "test__contact")
     model = model_dict['spinecall']
-    assert(model.__name__ == 'annov1__test__spinecall')
+    assert(model.__name__ == 'spinecall')
     assert(issubclass(model, Base))
 
     # TODO better tests here

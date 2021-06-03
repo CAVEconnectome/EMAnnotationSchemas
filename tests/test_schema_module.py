@@ -1,6 +1,6 @@
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.errors import UnknownAnnotationTypeException
-from emannotationschemas.schemas.base import AnnotationSchema
+from emannotationschemas.schemas.base import AnnotationSchema, SpatialPoint
 import pytest
 
 
@@ -8,7 +8,7 @@ def test_get_types():
     types = get_types()
     for type_ in types:
         schema = get_schema(type_)
-        assert issubclass(schema, AnnotationSchema)
+        assert issubclass(schema, AnnotationSchema) or issubclass(schema, SpatialPoint)
 
 
 def test_bad_type():
