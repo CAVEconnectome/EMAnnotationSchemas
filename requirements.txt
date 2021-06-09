@@ -1,5 +1,5 @@
 Flask
-middle-auth-client==3.3.0
+middle-auth-client>=3.3.0
 GeoAlchemy2
 marshmallow==3.5.1
 marshmallow-jsonschema==0.10.0
