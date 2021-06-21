@@ -13,6 +13,7 @@ from emannotationschemas.schemas.contact import Contact
 from emannotationschemas.schemas.extended_classical_cell_type import ExtendedClassicalCellType
 from emannotationschemas.schemas.nucleus_detection import NucleusDetection
 from emannotationschemas.schemas.derived_spatial_point import DerivedSpatialPoint, DerivedTag
+from emannotationschemas.schemas.proofreading import CompartmentProofreadStatus, ProofreadStatus
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
@@ -35,6 +36,8 @@ type_mapping = {
     'contact': Contact,
     'derived_spatial_point': DerivedSpatialPoint,
     'derived_tag': DerivedTag,
+    'proofread_status': ProofreadStatus,
+    'compartment_proofread_status': CompartmentProofreadStatus,
 }
 
 
