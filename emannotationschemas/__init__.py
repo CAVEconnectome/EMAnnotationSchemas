@@ -17,7 +17,7 @@ from emannotationschemas.schemas.proofreading import CompartmentProofreadStatus,
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = '3.1.9'
+__version__ = '3.1.10'
 
 type_mapping = {
     'synapse': SynapseSchema,
