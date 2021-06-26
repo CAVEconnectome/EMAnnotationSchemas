@@ -7,26 +7,26 @@ from marshmallow import ValidationError
 
 good_base_data = {
     "pt": {"position": [1, 2, 3]},
-    "valid_root_id": 1234567,
+    "valid_id": 1234567,
     "status": "clean",
 }
 
 bad_base_data = {
     "pt": {"position": [1, 2, 3]},
-    "valid_root_id": 1234567,
+    "valid_id": 1234567,
     "status": "some_nonsense",
 }
 
 good_comp_data = {
     "pt": {"position": [1, 2, 3]},
-    "valid_root_id": 1234567,
+    "valid_id": 1234567,
     "status_axon": "clean",
     "status_dendrite": "extended",
 }
 
 bad_comp_data = {
     "pt": {"position": [1, 2, 3]},
-    "valid_root_id": 1234567,
+    "valid_id": 1234567,
     "status_dendrite": "clean",
 }
 

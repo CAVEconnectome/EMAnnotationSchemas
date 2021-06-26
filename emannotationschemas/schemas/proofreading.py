@@ -15,7 +15,7 @@ class PointWithValid(AnnotationSchema):
         required=True,
         description="Core location on proofread object",
     )
-    valid_root_id = NumericField(
+    valid_id = NumericField(
         required=True,
         description="Root id of the object when proofread status was assigned. If the pt_root_id of the cell differs, the proofreading status may not apply.",
     )
