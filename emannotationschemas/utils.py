@@ -1,7 +1,7 @@
 import marshmallow as mm
 from emannotationschemas.schemas.base import BoundSpatialPoint
 import os
-
+import marshmallow as mm
 
 def get_app_base_path():
     return os.path.dirname(os.path.realpath(__file__))
@@ -27,3 +27,11 @@ def get_flattened_bsp_keys_from_schema(schema):
             keys.append("{}.{}".format(key, "position"))
 
     return keys
+
+def get_bsp_columns(Schema):
+    columns = []
+    for k, v in Schema._declared_fields.items():
+        if isinstance(v, mm.fields.Nested):
+            if isinstance(v.schema, BoundSpatialPoint):
+                columns.append(k)
+    return columns
