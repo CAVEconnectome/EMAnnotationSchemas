@@ -7,7 +7,7 @@ from geoalchemy2 import Geometry
 import marshmallow as mm
 from emannotationschemas import get_schema, get_types, get_flat_schema
 from emannotationschemas.schemas.base import NumericField, PostGISField, \
-                                     ReferenceAnnotation # SegmentationField
+                                     ReferenceAnnotation, BoundSpatialPoint # SegmentationField
 from emannotationschemas.schemas.contact import Contact
 from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.errors import UnknownAnnotationTypeException, \
@@ -116,8 +116,28 @@ def convert_dict_to_schema(schema_name: str, schema_dict: dict):
     """
     return type(f'Flat{schema_name}', (mm.Schema,), schema_dict)
 
+def get_flat_sv_and_root_id_columns(schema):
+    """Returns the flattened keys of BoundSpatialPoints in a schema
+
+    :param schema: schema
+    :return: list
+    """
+    keys = []
+
+    for key in schema.declared_fields.keys():
+        field = schema.declared_fields[key]
+
+        if isinstance(field, mm.fields.Nested) and isinstance(
+            field.schema, BoundSpatialPoint
+        ):
+            keys.append("{}_{}".format(key, "supervoxel_id"))
+            keys.append("{}_{}".format(key, "root_id"))
+
+    return keys
+
+
 def split_annotation_schema(Schema):
-    """ Split an EM Annotation schema into seperate annotation (spatial position) and 
+    """Split an EM Annotation schema into seperate annotation (spatial position) and
     segmentation (supervoxel and root_id) schemas
 
     Parameters
@@ -143,24 +163,31 @@ def split_annotation_schema(Schema):
 
     annotation_columns = {}
     segmentation_columns = {}
+    sv_and_root_id_column_keys = get_flat_sv_and_root_id_columns(Schema())
 
     for key, field in flat_schema._declared_fields.items():
         if isinstance(field, mm.fields.Nested):
             raise Exception(f"Schema {flat_schema} must be flattened before splitting")
         field_type = type(field)
 
-        if field_type is not NumericField:
-            annotation_columns[key] = field   
+        # pick off the columns which are the supervoxel and rootid of
+        # BoundSpatialPoint fields, and seperate them as segmentation columns
+        # TODO: make NumericFields illegal and/or fix logic to pick out
+        # actual fields associated with BoundSpatialPoints
+        if key not in sv_and_root_id_column_keys:
+            annotation_columns[key] = field
         else:
             segmentation_columns[key] = field
 
-    schema_name = Schema.__name__ if hasattr(Schema, '__name__') else Schema
-    flat_annotation_schema = convert_dict_to_schema(f'{schema_name}_annotation',
-                                                    annotation_columns)
-    flat_segmentation_schema = convert_dict_to_schema(f'{schema_name}_segmentation',
-                                                      segmentation_columns)
+    schema_name = Schema.__name__ if hasattr(Schema, "__name__") else Schema
+    flat_annotation_schema = convert_dict_to_schema(
+        f"{schema_name}_annotation", annotation_columns
+    )
+    flat_segmentation_schema = convert_dict_to_schema(
+        f"{schema_name}_segmentation", segmentation_columns
+    )
 
-    return flat_annotation_schema, flat_segmentation_schema   
+    return flat_annotation_schema, flat_segmentation_schema
 
 
 def create_segmentation_model(table_name: str,
