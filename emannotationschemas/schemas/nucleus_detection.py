@@ -1,6 +1,8 @@
-from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
-from emannotationschemas.schemas.base import SpatialPoint
 import marshmallow as mm
+from emannotationschemas.schemas.base import (
+    FlatSegmentationReferenceSinglePoint,
+    SpatialPoint,
+)
 
 
 class NucleusDetection(FlatSegmentationReferenceSinglePoint):
