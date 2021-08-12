@@ -156,8 +156,8 @@ def get_flat_sv_and_root_id_columns(schema):
 
 
 def split_annotation_schema(Schema):
-    """Split an EM Annotation schema into seperate annotation (spatial position) and
-    segmentation (supervoxel and root_id) schemas
+    """Split an EM Annotation schema into separate annotation
+    (spatial position) and segmentation (supervoxel and root_id) schemas
 
     Parameters
     ----------
@@ -189,8 +189,8 @@ def split_annotation_schema(Schema):
             raise Exception(f"Schema {flat_schema} must be flattened before splitting")
         field_type = type(field)
 
-        # pick off the columns which are the supervoxel and rootid of
-        # BoundSpatialPoint fields, and seperate them as segmentation columns
+        # pick off the columns which are the supervoxel and root id of
+        # BoundSpatialPoint fields, and separate them as segmentation columns
         # TODO: make NumericFields illegal and/or fix logic to pick out
         # actual fields associated with BoundSpatialPoints
         if key not in sv_and_root_id_column_keys:
@@ -428,7 +428,7 @@ def make_annotation_model(
         table_name (str): name of table in database
         schema_type (str): schema type for table
         version (int, optional): version number. Defaults to None.
-        with_crud_columns (bool, optional): whether to include created, deleted colums. Defaults to True.
+        with_crud_columns (bool, optional): whether to include created, deleted columns. Defaults to True.
 
     Returns:
         SqlAlchemy.Model: a sqlalchemy model
@@ -494,7 +494,7 @@ def make_dataset_models(
         option to include created, deleted, and supersceded_id
 
     version: int
-        option to include version number to use for making models, for legacy compatiabilty
+        option to include version number to use for making models, for legacy compatibility
     Returns
     -------
     dict:

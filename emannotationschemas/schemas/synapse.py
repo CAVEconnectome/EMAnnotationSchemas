@@ -10,7 +10,7 @@ class BaseSynapseSchema(AnnotationSchema):
     pre_pt = mm.fields.Nested(
         BoundSpatialPoint,
         required=True,
-        description="a nearby point located in the presynaptic compartment of the synase",
+        description="a nearby point located in the presynaptic compartment of the synapse",
         order=0,
     )
     post_pt = mm.fields.Nested(

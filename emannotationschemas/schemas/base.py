@@ -40,7 +40,7 @@ def get_geom_from_wkb(wkb):
 class IdSchema(mm.Schema):
     """schema with a unique identifier"""
 
-    oid = mm.fields.Int(description="identifier for annotation, " "unique in type")
+    oid = mm.fields.Int(description="identifier for annotation, unique in type")
 
 
 class AnnotationSchema(mm.Schema):
@@ -82,7 +82,7 @@ class SpatialPoint(mm.Schema):
 
     position = PostGISField(
         required=True,
-        description="spatial position in voxels of " "x,y,z of annotation",
+        description="spatial position in voxels of x,y,z of annotation",
         postgis_geometry="POINTZ",
     )
 
