@@ -1,7 +1,7 @@
+import pytest
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.schemas.base import AnnotationSchema, SpatialPoint
-import pytest
 
 
 def test_get_types():
@@ -13,4 +13,4 @@ def test_get_types():
 
 def test_bad_type():
     with pytest.raises(UnknownAnnotationTypeException):
-        get_schema('NOTAVALIDTYPE')
+        get_schema("NOTAVALIDTYPE")
