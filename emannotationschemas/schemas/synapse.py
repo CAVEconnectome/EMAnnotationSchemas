@@ -29,6 +29,9 @@ class BaseSynapseSchema(AnnotationSchema):
             data.pop('valid', None)
         return data
 
+class NoCleftSynapse(BaseSynapseSchema):
+    score = mm.fields.Float(description="synapse score (see table metadata for description of score)")
+
 class SynapseSchema(BaseSynapseSchema):
     ctr_pt = mm.fields.Nested(SpatialPoint, required=True,
                               description="central point",

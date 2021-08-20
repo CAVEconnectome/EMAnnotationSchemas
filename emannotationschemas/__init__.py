@@ -2,6 +2,7 @@ from emannotationschemas.schemas.synapse import SynapseSchema
 from emannotationschemas.schemas.synapse import PlasticSynapse
 from emannotationschemas.schemas.synapse import BuhmannSynapseSchema
 from emannotationschemas.schemas.synapse import BuhmannEcksteinSynapseSchema
+from emannotationschemas.schemas.synapse import NoCleftSynapse
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
@@ -32,6 +33,7 @@ __version__ = "3.2.3"
 
 type_mapping = {
     "synapse": SynapseSchema,
+    "nocleft_synapse": NoCleftSynapse,
     "fly_synapse": BuhmannSynapseSchema,
     "fly_nt_synapse": BuhmannEcksteinSynapseSchema,
     "presynaptic_bouton_type": PresynapticBoutonType,
