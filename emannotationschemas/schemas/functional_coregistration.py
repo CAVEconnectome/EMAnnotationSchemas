@@ -24,4 +24,4 @@ class FunctionalUnitCoregistrationExtended(AnnotationSchema):
     nucleus_id =  mm.fields.Int(required=True, description="matched id of nucleus")
     field = mm.fields.Int(required=False, description="index of imaging field of cell within the scan")
     residual = mm.fields.Float(required=False, description="distance between nucleus centroid and functional centroid after transformation")
-    score = mm.field.Float(required=False, description='confidence score associated with match')
+    score = mm.fields.Float(required=False, description='confidence score associated with match')
