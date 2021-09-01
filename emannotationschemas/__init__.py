@@ -7,6 +7,7 @@ from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBouto
 from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
+    FunctionalUnitCoregistrationExtended
 )
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
@@ -40,6 +41,7 @@ type_mapping = {
     "postsynaptic_compartment": PostsynapticCompartment,
     "microns_func_coreg": FunctionalCoregistration,
     "microns_func_unit_coreg": FunctionalUnitCoregistration,
+    "microns_func_unit_ext_coreg": FunctionalUnitCoregistrationExtended,
     "cell_type_local": CellTypeLocal,
     "nucleus_detection": NucleusDetection,
     "bound_tag": BoundTagAnnotation,
