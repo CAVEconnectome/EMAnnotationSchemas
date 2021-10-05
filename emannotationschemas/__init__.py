@@ -7,7 +7,7 @@ from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBouto
 from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
-    FunctionalUnitCoregistrationExtended
+    FunctionalUnitCoregistrationExtended,
 )
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
@@ -22,6 +22,7 @@ from emannotationschemas.schemas.nucleus_detection import NucleusDetection
 from emannotationschemas.schemas.derived_spatial_point import (
     DerivedSpatialPoint,
     DerivedTag,
+    DerivedNumeric,
 )
 from emannotationschemas.schemas.proofreading import (
     CompartmentProofreadStatus,
@@ -51,6 +52,7 @@ type_mapping = {
     "contact": Contact,
     "derived_spatial_point": DerivedSpatialPoint,
     "derived_tag": DerivedTag,
+    "derived_numeric_value": DerivedNumeric,
     "proofread_status": ProofreadStatus,
     "compartment_proofread_status": CompartmentProofreadStatus,
 }
