@@ -1,6 +1,6 @@
+import pytest
 from emannotationschemas import get_flat_schema, get_types
 from emannotationschemas.errors import UnknownAnnotationTypeException
-import pytest
 
 
 def test_flatten_all():
@@ -11,4 +11,4 @@ def test_flatten_all():
 
 def test_bad_flatten():
     with pytest.raises(UnknownAnnotationTypeException):
-        get_flat_schema('NOT A REAL TYPE')
+        get_flat_schema("NOT A REAL TYPE")

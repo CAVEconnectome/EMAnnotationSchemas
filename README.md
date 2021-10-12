@@ -14,6 +14,6 @@ In order to add a new annotation type to this repository you must do the followi
    * You should add a mm.post_load validation methods to the schema that ensure everything is what you would expect. For example that the type field is what you want it to be, and that any reference_annotation_type are what they should be. It should set the 'valid' flag of the annotation when the necessary information to validation the annotation is present, and remove that key from the dictionary when the information is not yet present.  For example, upon posting new annotations to the annotationengine, root_id's are not available, and so synapses cannot be 'valid' based upon their having different pre/post IDs, but later, when materialized, they should have those IDs.
 2. Import this schema into [__init__.py](emannotationschemas/__init__.py), and add the schema to the type_mapping dictionary, giving it a string based key.  This will be the annotation_type of your new class of annotation. 
 
-3. You should add a test to the [testing suite](test/) that uses this schema, and checks that you can correctly detect potential problems with annotation data that is sent into the system. 
+3. You should add a test to the [testing suite](tests/) that uses this schema, and checks that you can correctly detect potential problems with annotation data that is sent into the system. 
 
 An example of a proper schema is [emannotationschemas.schemas.synapse.SynapseSchema](emannotationschemas/schemas/synapse.py).

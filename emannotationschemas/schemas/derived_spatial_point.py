@@ -1,9 +1,9 @@
+import marshmallow as mm
 from emannotationschemas.schemas.base import (
+    AnnotationSchema,
     BoundSpatialPoint,
     NumericField,
-    AnnotationSchema,
 )
-import marshmallow as mm
 
 
 class DerivedSpatialPoint(BoundSpatialPoint):

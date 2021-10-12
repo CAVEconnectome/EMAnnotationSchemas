@@ -1,14 +1,10 @@
-from flask import Blueprint, jsonify, request, abort, current_app, g
-from flask_restx import Namespace, Resource, reqparse, fields
-from flask_accepts import accepts, responds
-from middle_auth_client import auth_required, auth_requires_permission
-
+from flask import abort
+from flask_restx import Namespace, Resource
 from marshmallow_jsonschema import JSONSchema
-from emannotationschemas.errors import UnknownAnnotationTypeException
-from emannotationschemas import get_schema, get_types
-import marshmallow as mm
-import pandas as pd
+from middle_auth_client import auth_required
 
+from emannotationschemas import get_schema, get_types
+from emannotationschemas.errors import UnknownAnnotationTypeException
 
 __version__ = "3.2.5"
 

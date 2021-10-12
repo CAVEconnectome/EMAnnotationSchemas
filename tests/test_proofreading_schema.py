@@ -1,8 +1,6 @@
-from emannotationschemas.schemas.proofreading import (
-    ProofreadStatus,
-    CompartmentProofreadStatus,
-)
 import pytest
+from emannotationschemas.schemas.proofreading import (
+    CompartmentProofreadStatus, ProofreadStatus)
 from marshmallow import ValidationError
 
 good_base_data = {

@@ -1,9 +1,9 @@
-from marshmallow import fields, validate
 from emannotationschemas.schemas.base import (
-    BoundSpatialPoint,
     AnnotationSchema,
+    BoundSpatialPoint,
     NumericField,
 )
+from marshmallow import fields, validate
 
 proofread_choices = ["non", "clean", "extended"]
 options_text = "Options are: 'non' to indicate no comprehensive proofreading, 'clean' to indicate comprehensive removal of false merges, and 'extended' to mean comprehensive extension of neurite tips"

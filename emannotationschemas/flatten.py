@@ -15,7 +15,7 @@ def flatten_fields(schema, root=None, sep="_"):
     return fields
 
 
-def flatten_dict(d, root=None, sep='_'):
+def flatten_dict(d, root=None, sep="_"):
     if root is None:
         root = ""
     else:
@@ -29,13 +29,12 @@ def flatten_dict(d, root=None, sep='_'):
             d_out[root + k] = v
     return d_out
 
+
 def create_flattened_schema(BaseSchema, sep="_"):
     new_fields = flatten_fields(BaseSchema, sep=sep)
-    
-    schema_name = BaseSchema.__name__ if hasattr(BaseSchema, '__name__') else BaseSchema
 
-    FlatSchema = type('Flat{}'.format(schema_name),
-                      (mm.Schema,),
-                      new_fields)
+    schema_name = BaseSchema.__name__ if hasattr(BaseSchema, "__name__") else BaseSchema
+
+    FlatSchema = type("Flat{}".format(schema_name), (mm.Schema,), new_fields)
 
     return FlatSchema
