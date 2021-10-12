@@ -60,7 +60,7 @@ def test_derived_tag():
     assert result["valid"] == True
 
 
-def test_derived_tag():
+def test_derived_numeric():
     schema = DerivedNumeric()
     result = schema.load(derived_numeric_data)
     assert result["pt"]["position"] == [31, 31, 0]
