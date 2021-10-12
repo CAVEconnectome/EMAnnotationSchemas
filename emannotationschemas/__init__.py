@@ -2,10 +2,12 @@ from emannotationschemas.schemas.synapse import SynapseSchema
 from emannotationschemas.schemas.synapse import PlasticSynapse
 from emannotationschemas.schemas.synapse import BuhmannSynapseSchema
 from emannotationschemas.schemas.synapse import BuhmannEcksteinSynapseSchema
+from emannotationschemas.schemas.synapse import NoCleftSynapse
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
+    FunctionalUnitCoregistrationExtended,
 )
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
@@ -20,6 +22,7 @@ from emannotationschemas.schemas.nucleus_detection import NucleusDetection
 from emannotationschemas.schemas.derived_spatial_point import (
     DerivedSpatialPoint,
     DerivedTag,
+    DerivedNumeric,
 )
 from emannotationschemas.schemas.proofreading import (
     CompartmentProofreadStatus,
@@ -28,16 +31,18 @@ from emannotationschemas.schemas.proofreading import (
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = "3.2.4"
+__version__ = "3.2.5"
 
 type_mapping = {
     "synapse": SynapseSchema,
+    "nocleft_synapse": NoCleftSynapse,
     "fly_synapse": BuhmannSynapseSchema,
     "fly_nt_synapse": BuhmannEcksteinSynapseSchema,
     "presynaptic_bouton_type": PresynapticBoutonType,
     "postsynaptic_compartment": PostsynapticCompartment,
     "microns_func_coreg": FunctionalCoregistration,
     "microns_func_unit_coreg": FunctionalUnitCoregistration,
+    "microns_func_unit_ext_coreg": FunctionalUnitCoregistrationExtended,
     "cell_type_local": CellTypeLocal,
     "nucleus_detection": NucleusDetection,
     "bound_tag": BoundTagAnnotation,
@@ -47,6 +52,7 @@ type_mapping = {
     "contact": Contact,
     "derived_spatial_point": DerivedSpatialPoint,
     "derived_tag": DerivedTag,
+    "derived_numeric_value": DerivedNumeric,
     "proofread_status": ProofreadStatus,
     "compartment_proofread_status": CompartmentProofreadStatus,
 }

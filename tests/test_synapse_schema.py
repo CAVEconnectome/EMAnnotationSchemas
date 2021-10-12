@@ -6,6 +6,7 @@ from emannotationschemas.schemas.synapse import (
     BaseSynapseSchema,
     BuhmannEcksteinSynapseSchema,
     BuhmannSynapseSchema,
+    NoCleftSynapse,
     PlasticSynapse,
     SynapseSchema,
 )
@@ -13,6 +14,13 @@ from emannotationschemas.schemas.synapse import (
 good_base_synapse = {
     "pre_pt": {"position": [31, 31, 0], "supervoxel_id": 95, "root_id": 4},
     "post_pt": {"position": [33, 33, 0], "supervoxel_id": 101, "root_id": 5},
+}
+
+
+good_no_cleft_synapse = {
+    'pre_pt': {'position': [31, 31, 0], 'supervoxel_id': 95, 'root_id': 4},
+    'post_pt': {'position': [33, 33, 0], 'supervoxel_id': 101, 'root_id': 5},
+    'score': 50
 }
 
 good_synapse = {
@@ -88,6 +96,24 @@ def test_base_synapse_schema():
     result = schema.load(good_base_synapse)
     assert result["pre_pt"]["position"] == [31, 31, 0]
     assert result["pre_pt"]["supervoxel_id"] == 95
+    assert result["pre_pt"]["root_id"] == 4
+    assert result["post_pt"]["position"] == [33, 33, 0]
+    assert result["post_pt"]["supervoxel_id"] == 101
+    assert result["post_pt"]["root_id"] == 5
+
+    assert "rootId" not in result["pre_pt"].keys()
+
+
+def test_no_cleft_synapse_schema():
+    schema = NoCleftSynapse()
+    result = schema.load(good_no_cleft_synapse)
+    assert result["pre_pt"]["position"] == [31, 31, 0]
+    assert result["pre_pt"]["supervoxel_id"] == 95
+    assert result["pre_pt"]["root_id"] == 4
+    assert result["post_pt"]["position"] == [33, 33, 0]
+    assert result["post_pt"]["supervoxel_id"] == 101
+    assert result["post_pt"]["root_id"] == 5
+    assert result["score"] == 50.0
     assert "rootId" not in result["pre_pt"].keys()
 
 

@@ -19,3 +19,12 @@ class DerivedTag(AnnotationSchema):
 
     pt = mm.fields.Nested(DerivedSpatialPoint, required=True)
     tag = mm.fields.String(required=True, description="Description of point")
+
+
+class DerivedNumeric(AnnotationSchema):
+    """Floating point numeric value associated with a specific segmentation"""
+
+    pt = mm.fields.Nested(DerivedSpatialPoint, required=True)
+    value = mm.fields.Float(
+        description="Numerical value specified by the table description"
+    )
