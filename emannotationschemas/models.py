@@ -233,9 +233,10 @@ def create_segmentation_model(
     """
 
     segmentation_dict = create_table_dict(
-        table_name,
-        segmentation_columns,
+        table_name=table_name,
+        Schema=segmentation_columns,
         segmentation_source=segmentation_source,
+        table_metadata=None,
         with_crud_columns=False,
     )
 
@@ -279,44 +280,6 @@ def create_annotation_model(
     AnnotationModel = type(annotation_name, (Base,), annotation_dict)
 
     return AnnotationModel
-
-
-def create_reference_annotation_model(
-    table_name: str,
-    reference_annotation_columns: dict,
-    table_metadata: dict,
-    with_crud_columns: bool = False,
-):
-    """Create an declarative sqlalchemy annotation model.
-
-    Parameters
-    ----------
-    table_name : str
-        Specified table_name.
-
-    annotation_columns : dict
-        Dictionary of annotation SQL fields
-
-    Returns
-    -------
-    SqlAlchemy Declarative Base Model
-        Annotation SqlAlchemy model
-    """
-    reference_annotation_dict = create_table_dict(
-        table_name=table_name,
-        Schema=reference_annotation_columns,
-        segmentation_source=None,
-        table_metadata=table_metadata,
-        with_crud_columns=with_crud_columns,
-    )
-
-    reference_annotation_name = reference_annotation_dict.get("__tablename__")
-
-    ReferenceAnnotationModel = type(
-        reference_annotation_name, (Base,), reference_annotation_dict
-    )
-
-    return ReferenceAnnotationModel
 
 
 def create_table_dict(
@@ -386,7 +349,6 @@ def create_table_dict(
             }
         )
     if issubclass(Schema, ReferenceAnnotation):
-        print("is_reference")
         if type(table_metadata) is not dict:
             msg = "no metadata provided for reference annotation"
             raise (InvalidTableMetaDataException(msg))
@@ -453,32 +415,19 @@ def make_annotation_model_from_schema(
 
     if not annotation_models.contains_model(table_name):
 
-        annotation_columns, __ = split_annotation_schema(Schema)
+        if issubclass(Schema, ReferenceAnnotation):
+            with_crud_columns = False
+        else:
+            Schema, __ = split_annotation_schema(Schema)
 
         anno_model = create_annotation_model(
             table_name,
-            annotation_columns,
+            Schema,
             table_metadata,
             with_crud_columns,
         )
 
         annotation_models.set_model(table_name, anno_model)
-
-    return annotation_models.get_model(table_name)
-
-
-def make_reference_annotation_model_from_schema(
-    table_name: str,
-    Schema,
-    table_metadata: dict,
-    with_crud_columns: bool = False,
-):
-    if not annotation_models.contains_model(table_name):
-        reference_anno_model = create_reference_annotation_model(
-            table_name, Schema, table_metadata, with_crud_columns
-        )
-
-        annotation_models.set_model(table_name, reference_anno_model)
 
     return annotation_models.get_model(table_name)
 
@@ -512,24 +461,6 @@ def make_annotation_model(
     Schema = get_schema(schema_type)
 
     return make_annotation_model_from_schema(
-        table_name, Schema, table_metadata, with_crud_columns
-    )
-
-
-def make_reference_annotation_model(
-    table_name: str,
-    schema_type: str,
-    table_metadata: dict,
-    with_crud_columns: bool = False,
-):
-    Schema = get_schema(schema_type)
-    if not table_metadata:
-        raise KeyError(
-            "Table metadata is empty dict, requires key 'reference_table' key to be defined"
-        )
-    if not issubclass(Schema, ReferenceAnnotation):
-        raise TypeError("Schema type must be subclassed as a ReferenceAnnotation")
-    return make_reference_annotation_model_from_schema(
         table_name, Schema, table_metadata, with_crud_columns
     )
 
