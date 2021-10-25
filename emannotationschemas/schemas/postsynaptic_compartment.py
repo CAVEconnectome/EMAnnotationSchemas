@@ -13,12 +13,6 @@ allowed_dendrite_classes = ["basal", "apical"]
 
 class PostsynapticCompartment(ReferenceAnnotation):
 
-    target_id = mm.fields.Int(
-        required=True,
-        description="Synapse annotation id reference",
-        reference_type="synapse",
-    )
-
     compartment = mm.fields.Str(
         required=True,
         validate=OneOf(allowed_compartments),
