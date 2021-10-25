@@ -498,6 +498,7 @@ def make_dataset_models(
     aligned_volume: str,
     schemas_and_tables: Sequence[tuple],
     include_contacts: bool = False,
+    metadata_dict: dict = None,
     version: int = None,
     with_crud_columns: bool = True,
 ) -> dict:
@@ -517,11 +518,12 @@ def make_dataset_models(
     include_contacts:
         option to include the model for cell contacts
 
+    version: int
+        option to include version number to use for making models, for legacy compatibility
+
     with_crud_columns:
         option to include created, deleted, and supersceded_id
 
-    version: int
-        option to include version number to use for making models, for legacy compatibility
     Returns
     -------
     dict:
@@ -537,7 +539,8 @@ def make_dataset_models(
 
     for schema_name, table_name in schemas_and_tables:
         model_key = table_name
-        dataset_dict[model_key] = make_annotation_model(table_name, schema_name)
+        table_metadata = metadata_dict.get(model_key)
+        dataset_dict[model_key] = make_annotation_model(table_name, schema_name, table_metadata)
     if include_contacts:
         table_name = f"{aligned_volume}__contact"
         contact_model = make_annotation_model_from_schema(table_name, Contact)
