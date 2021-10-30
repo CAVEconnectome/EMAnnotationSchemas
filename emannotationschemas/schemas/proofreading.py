@@ -40,3 +40,22 @@ class CompartmentProofreadStatus(PointWithValid):
         validate=validate.OneOf(proofread_choices),
         description=f"Proofread status of the axon only. {options_text}",
     )
+
+
+class ProofreadingBoolStatus(PointWithValid):
+    backbone_proofread = fields.Bool(
+        required=True,
+        description=f"Proofread status of cell.",
+    )
+    non_neuronal = fields.Bool(
+        required=True,
+        default=False,
+        description=f"Whether this is a non-neuronal cell.",
+    )
+
+
+class ProofreadingBoolStatusUser(ProofreadingBoolStatus):
+    user_id = fields.Int(
+        required=True,
+        description=f"User who assessed the proofreading status.",
+    )

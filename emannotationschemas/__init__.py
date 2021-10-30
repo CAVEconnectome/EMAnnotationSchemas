@@ -27,6 +27,7 @@ from emannotationschemas.schemas.derived_spatial_point import (
 from emannotationschemas.schemas.proofreading import (
     CompartmentProofreadStatus,
     ProofreadStatus,
+    ProofreadingBoolStatusUser,
 )
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
@@ -55,6 +56,7 @@ type_mapping = {
     "derived_numeric_value": DerivedNumeric,
     "proofread_status": ProofreadStatus,
     "compartment_proofread_status": CompartmentProofreadStatus,
+    "proofreading_boolstatus_user": ProofreadingBoolStatusUser,
 }
 
 
