@@ -32,7 +32,7 @@ from emannotationschemas.schemas.proofreading import (
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = "3.3.0"
+__version__ = "3.4.0"
 
 type_mapping = {
     "synapse": SynapseSchema,
