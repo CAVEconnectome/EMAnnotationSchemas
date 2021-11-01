@@ -1,6 +1,9 @@
 import pytest
 from emannotationschemas.schemas.proofreading import (
-    CompartmentProofreadStatus, ProofreadStatus)
+    CompartmentProofreadStatus,
+    ProofreadStatus,
+    ProofreadingBoolStatusUser,
+)
 from marshmallow import ValidationError
 
 good_base_data = {
@@ -28,6 +31,25 @@ bad_comp_data = {
     "status_dendrite": "clean",
 }
 
+good_booluser_data = {
+    "pt": {"position": [1, 2, 3]},
+    "valid_id": 1234567,
+    "proofread": True,
+    "user_id": 42,
+}
+
+bad_booluser_data_1 = {
+    "pt": {"position": [1, 2, 3]},
+    "valid_id": 1234567,
+    "user_id": 42,
+}
+
+bad_booluser_data_2 = {
+    "pt": {"position": [1, 2, 3]},
+    "valid_id": 1234567,
+    "proofread": True,
+}
+
 
 def annotation_import(item):
     item["supervoxel_id"] = None
@@ -50,3 +72,27 @@ def test_compartment_proofreading_validation():
 
     with pytest.raises(ValidationError):
         schema.load(bad_comp_data)
+
+
+def test_bool_proofreading_user_validation_1():
+    schema = ProofreadingBoolStatusUser(context={"bsp_fn": annotation_import})
+    result = schema.load(good_booluser_data)
+    assert result["proofread"]
+
+    with pytest.raises(ValidationError):
+        schema.load(bad_booluser_data_1)
+
+    with pytest.raises(ValidationError):
+        schema.load(bad_booluser_data_2)
+
+
+def test_bool_proofreading_user_validation_2():
+    schema = ProofreadingBoolStatusUser(context={"bsp_fn": annotation_import})
+    result = schema.load(good_booluser_data)
+    assert result["user_id"] == 42
+
+    with pytest.raises(ValidationError):
+        schema.load(bad_booluser_data_1)
+
+    with pytest.raises(ValidationError):
+        schema.load(bad_booluser_data_2)

@@ -43,14 +43,9 @@ class CompartmentProofreadStatus(PointWithValid):
 
 
 class ProofreadingBoolStatus(PointWithValid):
-    backbone_proofread = fields.Bool(
+    proofread = fields.Bool(
         required=True,
         description=f"Proofread status of cell.",
-    )
-    non_neuronal = fields.Bool(
-        required=True,
-        default=False,
-        description=f"Whether this is a non-neuronal cell.",
     )
 
 
