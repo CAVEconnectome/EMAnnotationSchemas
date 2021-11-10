@@ -466,7 +466,10 @@ def make_annotation_model(
 
 
 def make_flat_model_from_schema(
-    table_name: str, schema: str, segmentation_source: dict = None
+    table_name: str,
+    schema: str,
+    segmentation_source: dict = None,
+    table_metadata: dict = None,
 ):
 
     if not annotation_models.contains_model(table_name, flat=True):
@@ -477,7 +480,7 @@ def make_flat_model_from_schema(
             table_name=table_name,
             Schema=flat_schema,
             segmentation_source=segmentation_source,
-            table_metadata=None,
+            table_metadata=table_metadata,
             with_crud_columns=False,
         )
         FlatAnnotationModel = type(table_name, (FlatBase,), annotation_dict)
@@ -488,10 +491,15 @@ def make_flat_model_from_schema(
 
 
 def make_flat_model(
-    table_name: str, schema_type: str, segmentation_source: dict = None
+    table_name: str,
+    schema_type: str,
+    segmentation_source: dict = None,
+    table_metadata: dict = None,
 ):
 
-    return make_flat_model_from_schema(table_name, schema_type, segmentation_source)
+    return make_flat_model_from_schema(
+        table_name, schema_type, segmentation_source, table_metadata
+    )
 
 
 def make_dataset_models(
@@ -540,7 +548,9 @@ def make_dataset_models(
     for schema_name, table_name in schemas_and_tables:
         model_key = table_name
         table_metadata = metadata_dict.get(model_key)
-        dataset_dict[model_key] = make_annotation_model(table_name, schema_name, table_metadata)
+        dataset_dict[model_key] = make_annotation_model(
+            table_name, schema_name, table_metadata
+        )
     if include_contacts:
         table_name = f"{aligned_volume}__contact"
         contact_model = make_annotation_model_from_schema(table_name, Contact)
