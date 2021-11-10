@@ -467,14 +467,16 @@ def make_annotation_model(
 
 def make_flat_model_from_schema(
     table_name: str,
-    schema: str,
+    Schema: str,
     segmentation_source: dict = None,
     table_metadata: dict = None,
 ):
 
     if not annotation_models.contains_model(table_name, flat=True):
-
-        flat_schema = get_flat_schema(schema)
+        if issubclass(Schema, ReferenceAnnotation):
+            flat_schema = Schema
+        else:
+            flat_schema = create_flattened_schema(Schema)
 
         annotation_dict = create_table_dict(
             table_name=table_name,
@@ -496,9 +498,10 @@ def make_flat_model(
     segmentation_source: dict = None,
     table_metadata: dict = None,
 ):
+    Schema = get_schema(schema_type)
 
     return make_flat_model_from_schema(
-        table_name, schema_type, segmentation_source, table_metadata
+        table_name, Schema, segmentation_source, table_metadata
     )
 
 
