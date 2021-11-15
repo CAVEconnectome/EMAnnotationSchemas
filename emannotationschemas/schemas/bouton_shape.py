@@ -5,12 +5,6 @@ from marshmallow.validate import OneOf
 
 class BoutonShape(ReferenceAnnotation):
 
-    target_id = mm.fields.Int(
-        required=True,
-        description="annotation this references",
-        reference_type="synapse",
-    )
-
     shape = mm.fields.Str(
         required=True,
         validate=OneOf(["pancake", "basmati", "potato"]),

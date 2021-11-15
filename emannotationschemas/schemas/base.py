@@ -3,6 +3,7 @@ import numpy as np
 from geoalchemy2.shape import to_shape
 from geoalchemy2.types import WKBElement, WKTElement
 from marshmallow import INCLUDE
+from sqlalchemy.sql.sqltypes import Integer
 
 
 class NumericField(mm.fields.Int):
@@ -37,6 +38,15 @@ def get_geom_from_wkb(wkb):
     return wkb_element
 
 
+class ReferenceTableField(mm.fields.Field):
+    def _deserialize(self, value, attr, obj, **kwargs):
+        if not isinstance(value, Integer):
+            return int(value)
+        return value
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        return int(value)
+
 class IdSchema(mm.Schema):
     """schema with a unique identifier"""
 
@@ -60,7 +70,7 @@ class AnnotationSchema(mm.Schema):
 class ReferenceAnnotation(AnnotationSchema):
     """a annotation that references another annotation"""
 
-    target_id = mm.fields.Int(required=True, description="annotation this references")
+    target_id = ReferenceTableField(required=True, description="annotation this references")
 
 
 class FlatSegmentationReference(AnnotationSchema):

@@ -25,6 +25,7 @@ from emannotationschemas.schemas.base import (  # SegmentationField
     BoundSpatialPoint,
     NumericField,
     PostGISField,
+    ReferenceTableField,
     ReferenceAnnotation,
 )
 from emannotationschemas.schemas.contact import Contact
@@ -33,6 +34,7 @@ Base = declarative_base()
 FlatBase = declarative_base()
 
 field_column_map = {
+    ReferenceTableField: BigInteger,
     # SegmentationField: Numeric,
     NumericField: BigInteger,
     PostGISField: Geometry,
@@ -213,7 +215,7 @@ def create_segmentation_model(
     table_name: str, segmentation_source: str, segmentation_columns: dict
 ):
     """Create an declarative sqlalchemy segmentation model that has
-    a foriegn key linked to the supplied annotation_table_name.
+    a foreign key linked to the supplied annotation_table_name.
 
     Parameters
     ----------
@@ -231,9 +233,10 @@ def create_segmentation_model(
     """
 
     segmentation_dict = create_table_dict(
-        table_name,
-        segmentation_columns,
+        table_name=table_name,
+        Schema=segmentation_columns,
         segmentation_source=segmentation_source,
+        table_metadata=None,
         with_crud_columns=False,
     )
 
@@ -244,7 +247,10 @@ def create_segmentation_model(
 
 
 def create_annotation_model(
-    table_name: str, annotation_columns: dict, with_crud_columns: bool = True
+    table_name: str,
+    annotation_columns: dict,
+    table_metadata: dict = None,
+    with_crud_columns: bool = True,
 ):
     """Create an declarative sqlalchemy annotation model.
 
@@ -262,7 +268,11 @@ def create_annotation_model(
         Annotation SqlAlchemy model
     """
     annotation_dict = create_table_dict(
-        table_name, annotation_columns, with_crud_columns=with_crud_columns
+        table_name=table_name,
+        Schema=annotation_columns,
+        segmentation_source=None,
+        table_metadata=table_metadata,
+        with_crud_columns=with_crud_columns,
     )
 
     annotation_name = annotation_dict.get("__tablename__")
@@ -338,42 +348,45 @@ def create_table_dict(
                 "superceded_id": Column(BigInteger),
             }
         )
-
-    for key, field in Schema._declared_fields.items():
-        if not field.metadata.get("drop_column", False):
-            model = add_column(model, key, field)
     if issubclass(Schema, ReferenceAnnotation):
-        target_field = Schema._declared_fields["target_id"]
         if type(table_metadata) is not dict:
             msg = "no metadata provided for reference annotation"
             raise (InvalidTableMetaDataException(msg))
         else:
             try:
-                reference_table_name = table_metadata["reference_table"]
-                reference_table = table_name.split("__")[-1]
+                model["reference_table_name"] = table_metadata["reference_table"]
             except KeyError:
                 msg = f"reference table not specified in metadata {table_metadata}"
                 raise InvalidTableMetaDataException(msg)
-            model["target_id"] = Column(Integer, ForeignKey(reference_table + ".id"))
+
+    for key, field in Schema._declared_fields.items():
+        if not field.metadata.get("drop_column", False):
+            model = add_column(model, key, field)
+
     return model
 
 
-def add_column(columns: dict, key: str, field: str) -> dict:
-
+def add_column(model: dict, key: str, field: str) -> dict:
     field_type = type(field)
     do_index = field.metadata.get("index", False)
     if field_type in field_column_map:
         if field_type == PostGISField:
             postgis_geom = field.metadata.get("postgis_geometry", "POINTZ")
-
-            columns[key] = Column(Geometry(geometry_type=postgis_geom, dimension=3))
+            model[key] = Column(
+                Geometry(geometry_type=postgis_geom, dimension=3, use_N_D_index=True)
+            )
+        elif field_type == ReferenceTableField:
+            reference_table_name = model.pop("reference_table_name")
+            model[key] = Column(
+                BigInteger, ForeignKey(f"{reference_table_name}.id"), index=True
+            )
         else:
-            columns[key] = Column(field_column_map[field_type], index=do_index)
+            model[key] = Column(field_column_map[field_type], index=do_index)
 
     else:
         raise InvalidSchemaField(f"field type {field_type} not supported")
 
-    return columns
+    return model
 
 
 def make_segmentation_model_from_schema(
@@ -394,15 +407,24 @@ def make_segmentation_model_from_schema(
 
 
 def make_annotation_model_from_schema(
-    table_name: str, Schema, with_crud_columns: bool = True
+    table_name: str,
+    Schema,
+    table_metadata: dict = None,
+    with_crud_columns: bool = True,
 ):
 
     if not annotation_models.contains_model(table_name):
 
-        annotation_columns, __ = split_annotation_schema(Schema)
+        if issubclass(Schema, ReferenceAnnotation):
+            with_crud_columns = False
+        else:
+            Schema, __ = split_annotation_schema(Schema)
 
         anno_model = create_annotation_model(
-            table_name, annotation_columns, with_crud_columns
+            table_name,
+            Schema,
+            table_metadata,
+            with_crud_columns,
         )
 
         annotation_models.set_model(table_name, anno_model)
@@ -420,14 +442,17 @@ def make_segmentation_model(
 
 
 def make_annotation_model(
-    table_name: str, schema_type: str, with_crud_columns: bool = True
+    table_name: str,
+    schema_type: str,
+    table_metadata: dict = None,
+    with_crud_columns: bool = True,
 ):
     """make an annotation model
 
     Args:
         table_name (str): name of table in database
         schema_type (str): schema type for table
-        version (int, optional): version number. Defaults to None.
+        table_metadata (dict, optional): table_metadata dict
         with_crud_columns (bool, optional): whether to include created, deleted columns. Defaults to True.
 
     Returns:
@@ -435,22 +460,29 @@ def make_annotation_model(
     """
     Schema = get_schema(schema_type)
 
-    return make_annotation_model_from_schema(table_name, Schema, with_crud_columns)
+    return make_annotation_model_from_schema(
+        table_name, Schema, table_metadata, with_crud_columns
+    )
 
 
 def make_flat_model_from_schema(
-    table_name: str, schema: str, segmentation_source: dict = None
+    table_name: str,
+    Schema: str,
+    segmentation_source: dict = None,
+    table_metadata: dict = None,
 ):
 
     if not annotation_models.contains_model(table_name, flat=True):
-
-        flat_schema = get_flat_schema(schema)
+        if issubclass(Schema, ReferenceAnnotation):
+            flat_schema = Schema
+        else:
+            flat_schema = create_flattened_schema(Schema)
 
         annotation_dict = create_table_dict(
             table_name=table_name,
             Schema=flat_schema,
             segmentation_source=segmentation_source,
-            table_metadata=None,
+            table_metadata=table_metadata,
             with_crud_columns=False,
         )
         FlatAnnotationModel = type(table_name, (FlatBase,), annotation_dict)
@@ -461,16 +493,23 @@ def make_flat_model_from_schema(
 
 
 def make_flat_model(
-    table_name: str, schema_type: str, segmentation_source: dict = None
+    table_name: str,
+    schema_type: str,
+    segmentation_source: dict = None,
+    table_metadata: dict = None,
 ):
+    Schema = get_schema(schema_type)
 
-    return make_flat_model_from_schema(table_name, schema_type, segmentation_source)
+    return make_flat_model_from_schema(
+        table_name, Schema, segmentation_source, table_metadata
+    )
 
 
 def make_dataset_models(
     aligned_volume: str,
     schemas_and_tables: Sequence[tuple],
     include_contacts: bool = False,
+    metadata_dict: dict = None,
     version: int = None,
     with_crud_columns: bool = True,
 ) -> dict:
@@ -490,11 +529,12 @@ def make_dataset_models(
     include_contacts:
         option to include the model for cell contacts
 
+    version: int
+        option to include version number to use for making models, for legacy compatibility
+
     with_crud_columns:
         option to include created, deleted, and supersceded_id
 
-    version: int
-        option to include version number to use for making models, for legacy compatibility
     Returns
     -------
     dict:
@@ -510,7 +550,10 @@ def make_dataset_models(
 
     for schema_name, table_name in schemas_and_tables:
         model_key = table_name
-        dataset_dict[model_key] = make_annotation_model(table_name, schema_name)
+        table_metadata = metadata_dict.get(model_key)
+        dataset_dict[model_key] = make_annotation_model(
+            table_name, schema_name, table_metadata
+        )
     if include_contacts:
         table_name = f"{aligned_volume}__contact"
         contact_model = make_annotation_model_from_schema(table_name, Contact)
