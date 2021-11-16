@@ -1,0 +1,17 @@
+Flask<2.0.0
+middle-auth-client>=3.6.4
+GeoAlchemy2
+marshmallow==3.5.1
+marshmallow-jsonschema==0.10.0
+pandas>=1.0.3
+psycopg2-binary==2.8.5
+python-dateutil==2.8.1
+pytz==2020.1
+SQLAlchemy<1.4
+flask_cors
+flask-admin
+flask-restx
+flask-accepts
+numpy>=1.18.4
+shapely
+jsonschema<4.0
