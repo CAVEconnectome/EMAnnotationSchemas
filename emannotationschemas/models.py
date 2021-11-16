@@ -552,7 +552,7 @@ def make_dataset_models(
         model_key = table_name
         table_metadata = metadata_dict.get(model_key)
         dataset_dict[model_key] = make_annotation_model(
-            table_name, schema_name, table_metadata
+            table_name, schema_name, table_metadata, with_crud_columns
         )
     if include_contacts:
         table_name = f"{aligned_volume}__contact"
