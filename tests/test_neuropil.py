@@ -1,4 +1,4 @@
-from emannotationschemas.schemas.neuropil import Neuropil
+from emannotationschemas.schemas.neuropil import FlyNeuropil
 
 
 good_neuropil = [
@@ -10,7 +10,7 @@ good_neuropil = [
 
 
 def test_neuropil_type_schema():
-    schema = Neuropil()
+    schema = FlyNeuropil()
     results = schema.load(good_neuropil, many=True)
     for index, result in enumerate(results):
         assert result["target_id"] == good_neuropil[index]["target_id"]

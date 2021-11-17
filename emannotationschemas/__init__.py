@@ -30,6 +30,8 @@ from emannotationschemas.schemas.proofreading import (
     ProofreadStatus,
     ProofreadingBoolStatusUser,
 )
+from emannotationschemas.schemas.neuropil import FlyNeuropil
+
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
@@ -59,6 +61,7 @@ type_mapping = {
     "proofread_status": ProofreadStatus,
     "compartment_proofread_status": CompartmentProofreadStatus,
     "proofreading_boolstatus_user": ProofreadingBoolStatusUser,
+    "fly_neuropil": FlyNeuropil,
 }
 
 
