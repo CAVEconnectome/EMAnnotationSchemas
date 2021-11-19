@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, render_template
 
 from emannotationschemas import get_flat_schema, get_schema, get_types
 
-__version__ = "3.5.3"
+__version__ = "3.5.4"
 
 
 views_bp = Blueprint("views", __name__, url_prefix="/schema/views")
