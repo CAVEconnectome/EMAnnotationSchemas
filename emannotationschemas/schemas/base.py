@@ -39,6 +39,11 @@ def get_geom_from_wkb(wkb):
 
 
 class ReferenceTableField(mm.fields.Field):
+    def _jsonschema_type_mapping(self):
+        return {
+            "type": "integer",
+        }
+
     def _deserialize(self, value, attr, obj, **kwargs):
         if not isinstance(value, Integer):
             return int(value)
@@ -46,6 +51,7 @@ class ReferenceTableField(mm.fields.Field):
 
     def _serialize(self, value, attr, obj, **kwargs):
         return int(value)
+
 
 class IdSchema(mm.Schema):
     """schema with a unique identifier"""
@@ -70,7 +76,9 @@ class AnnotationSchema(mm.Schema):
 class ReferenceAnnotation(AnnotationSchema):
     """a annotation that references another annotation"""
 
-    target_id = ReferenceTableField(required=True, description="annotation this references")
+    target_id = ReferenceTableField(
+        required=True, description="annotation this references"
+    )
 
 
 class FlatSegmentationReference(AnnotationSchema):
