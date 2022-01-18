@@ -6,7 +6,7 @@ from middle_auth_client import auth_required
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.errors import UnknownAnnotationTypeException
 
-__version__ = "3.5.6"
+__version__ = "3.5.7"
 
 authorizations = {
     "apikey": {"type": "apiKey", "in": "query", "name": "middle_auth_token"}
