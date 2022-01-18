@@ -6,7 +6,7 @@ marshmallow-jsonschema==0.10.0
 pandas>=1.0.3
 psycopg2-binary==2.8.5
 python-dateutil==2.8.1
-pytz==2020.1
+pytz
 SQLAlchemy<1.4
 flask_cors
 flask-admin
