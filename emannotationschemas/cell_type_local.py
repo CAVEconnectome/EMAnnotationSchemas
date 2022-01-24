@@ -1,4 +1,4 @@
-from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema
+from emannotationschemas.base import BoundSpatialPoint, AnnotationSchema, ReferenceAnnotation
 import marshmallow as mm
 from marshmallow.validate import OneOf
 
@@ -47,6 +47,31 @@ class CellTypeLocal(AnnotationSchema):
     pt = mm.fields.Nested( BoundSpatialPoint, 
                             required=True,
                             description='Location associated with classification')
+    @mm.post_load
+    def validate_type( self, item):
+        assert item['type'] == 'cell_type_local'
+
+        system = item['classification_system']
+        if system in allowed_types.keys():
+            if item['cell_type'] not in allowed_types[system]:
+                item['valid'] = False
+            else:
+                item['valid'] = True
+        else:
+            item['valid'] = True
+
+        return item
+    
+class CellTypeLocalReference(ReferenceAnnotation):
+
+    classification_system = mm.fields.String(
+                            required=True,
+                            description='Classification system followed',
+                            validate=OneOf(allowed_classification_systems))
+    cell_type = mm.fields.String(
+                            required=True,
+                            description='Cell type name')
+  
     @mm.post_load
     def validate_type( self, item):
         assert item['type'] == 'cell_type_local'
