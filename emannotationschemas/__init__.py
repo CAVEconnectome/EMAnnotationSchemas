@@ -12,7 +12,7 @@ from emannotationschemas.schemas.functional_coregistration import (
 )
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
-from emannotationschemas.schemas.cell_type_local import CellTypeLocal
+from emannotationschemas.schemas.cell_type_local import CellTypeLocal, CellTypeLocalReference
 from emannotationschemas.schemas.bound_text_tag import BoundTagAnnotation
 from emannotationschemas.schemas.glia_contact import GliaContact
 from emannotationschemas.schemas.contact import Contact
@@ -49,6 +49,7 @@ type_mapping = {
     "microns_func_unit_coreg": FunctionalUnitCoregistration,
     "microns_func_unit_ext_coreg": FunctionalUnitCoregistrationExtended,
     "cell_type_local": CellTypeLocal,
+    "cell_type_reference":CellTypeLocalReference,
     "nucleus_detection": NucleusDetection,
     "bound_tag": BoundTagAnnotation,
     "extended_classical_cell_type": ExtendedClassicalCellType,
