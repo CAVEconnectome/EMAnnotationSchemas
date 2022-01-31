@@ -17,14 +17,14 @@ class Bound2TagAnnotation(BoundTagAnnotation):
 
 
 class BoundTagAnnotationUser(BoundTagAnnotation):
-    user_id = fields.Int(
+    user_id = mm.fields.Int(
         required=True,
         description=f"User who created the tag.",
     )
 
 
 class Bound2TagAnnotationUser(Bound2TagAnnotation):
-    user_id = fields.Int(
+    user_id = mm.fields.Int(
         required=True,
         description=f"User who created the tag.",
     )
