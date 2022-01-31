@@ -10,7 +10,7 @@ class BoundTagAnnotation(AnnotationSchema):
 
 
 class Bound2TagAnnotation(BoundTagAnnotation):
-    pt = mm.fields.Nested(
+    pt2 = mm.fields.Nested(
         BoundSpatialPoint, required=True, description="Location associated with the tag"
     )
     tag2 = mm.fields.String(required=True, description="Arbitrary text tag")
