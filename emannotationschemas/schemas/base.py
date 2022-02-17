@@ -137,6 +137,10 @@ class BoundSpatialPoint(SpatialPoint):
         return item
 
 
+class ReferenceBoundSpatialPoint(ReferenceAnnotation, BoundSpatialPoint):
+    """Bound spatial point reference to another annotation"""
+
+
 class FlatSegmentationReferenceSinglePoint(FlatSegmentationReference):
     pt = mm.fields.Nested(
         BoundSpatialPoint,
