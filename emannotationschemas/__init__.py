@@ -11,7 +11,10 @@ from emannotationschemas.schemas.functional_coregistration import (
     FunctionalUnitCoregistrationExtended,
 )
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
-from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
+from emannotationschemas.schemas.base import (
+    FlatSegmentationReferenceSinglePoint,
+    ReferenceBoundSpatialPoint,
+)
 from emannotationschemas.schemas.cell_type_local import CellTypeLocal, CellTypeReference
 from emannotationschemas.schemas.bound_text_tag import (
     BoundTagAnnotation,
@@ -71,6 +74,7 @@ type_mapping = {
     "compartment_proofread_status": CompartmentProofreadStatus,
     "proofreading_boolstatus_user": ProofreadingBoolStatusUser,
     "fly_neuropil": FlyNeuropil,
+    "reference_point": ReferenceBoundSpatialPoint,
 }
 
 
