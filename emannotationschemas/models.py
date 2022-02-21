@@ -417,8 +417,7 @@ def make_annotation_model_from_schema(
 
         if issubclass(Schema, ReferenceAnnotation):
             with_crud_columns = False
-        else:
-            Schema, __ = split_annotation_schema(Schema)
+        Schema, __ = split_annotation_schema(Schema)
 
         anno_model = create_annotation_model(
             table_name,
