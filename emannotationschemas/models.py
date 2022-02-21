@@ -251,6 +251,7 @@ def create_annotation_model(
     annotation_columns: dict,
     table_metadata: dict = None,
     with_crud_columns: bool = True,
+    is_reference: bool = False,
 ):
     """Create an declarative sqlalchemy annotation model.
 
@@ -273,6 +274,7 @@ def create_annotation_model(
         segmentation_source=None,
         table_metadata=table_metadata,
         with_crud_columns=with_crud_columns,
+        is_reference=is_reference,
     )
 
     annotation_name = annotation_dict.get("__tablename__")
@@ -288,6 +290,7 @@ def create_table_dict(
     segmentation_source: str = None,
     table_metadata: dict = None,
     with_crud_columns: bool = True,
+    is_reference=False,
 ):
     """Generate a dictionary of SQLAlchemy Columns that represent a table
 
@@ -349,6 +352,8 @@ def create_table_dict(
             }
         )
     if issubclass(Schema, ReferenceAnnotation):
+        is_reference = True
+    if is_reference:
         if type(table_metadata) is not dict:
             msg = "no metadata provided for reference annotation"
             raise (InvalidTableMetaDataException(msg))
@@ -417,6 +422,9 @@ def make_annotation_model_from_schema(
 
         if issubclass(Schema, ReferenceAnnotation):
             with_crud_columns = False
+            is_reference = True
+        else:
+            is_reference = False
         Schema, __ = split_annotation_schema(Schema)
 
         anno_model = create_annotation_model(
@@ -424,6 +432,7 @@ def make_annotation_model_from_schema(
             Schema,
             table_metadata,
             with_crud_columns,
+            is_reference=is_reference,
         )
 
         annotation_models.set_model(table_name, anno_model)
