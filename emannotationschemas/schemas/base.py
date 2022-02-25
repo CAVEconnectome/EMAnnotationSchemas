@@ -1,9 +1,19 @@
+from enum import Enum
+
 import marshmallow as mm
 import numpy as np
 from geoalchemy2.shape import to_shape
 from geoalchemy2.types import WKBElement, WKTElement
 from marshmallow import INCLUDE
 from sqlalchemy.sql.sqltypes import Integer
+
+
+class MetaDataTypes(Enum):
+    REFERENCE = "reference"
+    ROOT_ID = "root_id"
+    SPATIAL_POINT = "spatial_point"
+    SUPERVOXEL_ID = "supervoxel_id"
+
 
 
 class NumericField(mm.fields.Int):
@@ -77,7 +87,10 @@ class ReferenceAnnotation(AnnotationSchema):
     """a annotation that references another annotation"""
 
     target_id = ReferenceTableField(
-        required=True, description="annotation this references", metadata="reference"
+        required=True,
+        description="annotation this references",
+        metadata=MetaDataTypes.REFERENCE.value,
+        index=True,
     )
 
 
@@ -102,7 +115,8 @@ class SpatialPoint(mm.Schema):
         required=True,
         description="spatial position in voxels of x,y,z of annotation",
         postgis_geometry="POINTZ",
-        metadata="spatial_point"
+        metadata=MetaDataTypes.SPATIAL_POINT.value,
+        index=True,
     )
 
     @mm.post_load
@@ -126,14 +140,14 @@ class BoundSpatialPoint(SpatialPoint):
     supervoxel_id = NumericField(
         missing=None,
         description="supervoxel id of this point",
-        metadata="supervoxel_id",
-        segment=True,
+        metadata=MetaDataTypes.SUPERVOXEL_ID.value,
+        segmentation_field=True,
     )
     root_id = NumericField(
         description="root id of the bound point",
         missing=None,
-        metadata="root_id",
-        segment=True,
+        metadata=MetaDataTypes.ROOT_ID.value,
+        segmentation_field=True,
         index=True,
     )
 
