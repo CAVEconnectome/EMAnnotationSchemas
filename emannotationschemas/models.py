@@ -14,20 +14,18 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 
-from emannotationschemas import get_flat_schema, get_schema, get_types
+from emannotationschemas import get_schema, get_types
 from emannotationschemas.errors import (
     InvalidSchemaField,
     InvalidTableMetaDataException,
     UnknownAnnotationTypeException,
 )
 from emannotationschemas.flatten import create_flattened_schema
-from emannotationschemas.schemas.base import (  # SegmentationField
-    BoundSpatialPoint,
+from emannotationschemas.schemas.base import (
+    MetaDataTypes,
     NumericField,
     PostGISField,
     ReferenceTableField,
-    ReferenceAnnotation,
-    MetaDataTypes
 )
 from emannotationschemas.schemas.contact import Contact
 
@@ -36,7 +34,6 @@ FlatBase = declarative_base()
 
 field_column_map = {
     ReferenceTableField: BigInteger,
-    # SegmentationField: Numeric,
     NumericField: BigInteger,
     PostGISField: Geometry,
     mm.fields.Int: Integer,
@@ -337,6 +334,7 @@ def validate_metadata(model, field, table_metadata):
                 raise InvalidTableMetaDataException(msg)
     return model
 
+
 def make_model_from_schema(
     table_name: str,
     Schema,
@@ -476,7 +474,11 @@ def make_dataset_models(
         model_key = table_name
         table_metadata = metadata_dict.get(model_key)
         dataset_dict[model_key] = make_sqlalchemy_model(
-            table_name, schema_name, segmentation_source, table_metadata, with_crud_columns
+            table_name,
+            schema_name,
+            segmentation_source,
+            table_metadata,
+            with_crud_columns,
         )
     if include_contacts:
         table_name = f"{aligned_volume}__contact"
