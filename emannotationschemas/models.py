@@ -27,6 +27,7 @@ from emannotationschemas.schemas.base import (  # SegmentationField
     PostGISField,
     ReferenceTableField,
     ReferenceAnnotation,
+    MetaDataTypes
 )
 from emannotationschemas.schemas.contact import Contact
 
@@ -186,8 +187,9 @@ def split_annotation_schema(Schema):
 
 def create_sqlalchemy_model(
     table_name: str,
-    segmentation_source: str,
-    segmentation_columns: dict,
+    Schema: dict,
+    segmentation_source: str = None,
+    table_metadata: dict = None,
     with_crud_columns: bool = False,
 ):
     """Create an declarative sqlalchemy segmentation model that has
@@ -210,8 +212,9 @@ def create_sqlalchemy_model(
 
     table_dict = create_table_dict(
         table_name=table_name,
-        Schema=segmentation_columns,
+        Schema=Schema,
         segmentation_source=segmentation_source,
+        table_metadata=table_metadata,
         with_crud_columns=with_crud_columns,
     )
 
@@ -224,6 +227,7 @@ def create_table_dict(
     table_name: str,
     Schema: dict,
     segmentation_source: str = None,
+    table_metadata: dict = None,
     with_crud_columns: bool = True,
 ):
     """Generate a dictionary of SQLAlchemy Columns that represent a table
@@ -285,7 +289,43 @@ def create_table_dict(
                 "superceded_id": Column(BigInteger),
             }
         )
-    if issubclass(Schema, ReferenceAnnotation):
+
+    for key, field in Schema._declared_fields.items():
+        if not field.metadata.get("drop_column", False):
+            model = validate_metadata(model, field, table_metadata)
+            model = add_column(model, key, field)
+
+    return model
+
+
+def add_column(model: dict, key: str, field: str) -> dict:
+    field_type = type(field)
+    has_index = field.metadata.get("index", False)
+    if field_type in field_column_map:
+        if field_type == PostGISField:
+            postgis_geom = field.metadata.get("postgis_geometry", "POINTZ")
+            model[key] = Column(
+                Geometry(
+                    geometry_type=postgis_geom, dimension=3, use_N_D_index=has_index
+                )
+            )
+        elif field_type == ReferenceTableField:
+            reference_table_name = model.pop("reference_table_name")
+            model[key] = Column(
+                BigInteger, ForeignKey(f"{reference_table_name}.id"), index=has_index
+            )
+        else:
+            model[key] = Column(field_column_map[field_type], index=has_index)
+
+    else:
+        raise InvalidSchemaField(f"field type {field_type} not supported")
+
+    return model
+
+
+def validate_metadata(model, field, table_metadata):
+    field_metadata = field.metadata.get("metadata")
+    if field_metadata == MetaDataTypes.REFERENCE.value:
         if type(table_metadata) is not dict:
             msg = "no metadata provided for reference annotation"
             raise (InvalidTableMetaDataException(msg))
@@ -295,40 +335,11 @@ def create_table_dict(
             except KeyError:
                 msg = f"reference table not specified in metadata {table_metadata}"
                 raise InvalidTableMetaDataException(msg)
-
-    for key, field in Schema._declared_fields.items():
-        if not field.metadata.get("drop_column", False):
-            model = add_column(model, key, field)
-
     return model
-
-
-def add_column(model: dict, key: str, field: str) -> dict:
-    field_type = type(field)
-    do_index = field.metadata.get("index", False)
-    if field_type in field_column_map:
-        if field_type == PostGISField:
-            postgis_geom = field.metadata.get("postgis_geometry", "POINTZ")
-            model[key] = Column(
-                Geometry(geometry_type=postgis_geom, dimension=3, use_N_D_index=True)
-            )
-        elif field_type == ReferenceTableField:
-            reference_table_name = model.pop("reference_table_name")
-            model[key] = Column(
-                BigInteger, ForeignKey(f"{reference_table_name}.id"), index=True
-            )
-        else:
-            model[key] = Column(field_column_map[field_type], index=do_index)
-
-    else:
-        raise InvalidSchemaField(f"field type {field_type} not supported")
-
-    return model
-
 
 def make_model_from_schema(
     table_name: str,
-    schema_type,
+    Schema,
     segmentation_source: str = None,
     table_metadata: dict = None,
     with_crud_columns: bool = True,
@@ -338,17 +349,19 @@ def make_model_from_schema(
         annotation_columns, segmentation_columns = split_annotation_schema(Schema)
         if segmentation_source:
             model = create_sqlalchemy_model(
-                table_name,
-                segmentation_columns,
-                table_metadata,
-                with_crud_columns,
+                table_name=table_name,
+                Schema=segmentation_columns,
+                segmentation_source=segmentation_source,
+                table_metadata=table_metadata,
+                with_crud_columns=with_crud_columns,
             )
         else:
             model = create_sqlalchemy_model(
-                table_name,
-                annotation_columns,
-                table_metadata,
-                with_crud_columns,
+                table_name=table_name,
+                Schema=annotation_columns,
+                segmentation_source=None,
+                table_metadata=table_metadata,
+                with_crud_columns=with_crud_columns,
             )
         sqlalchemy_models.set_model(table_name, model)
 
@@ -422,6 +435,7 @@ def make_flat_model(
 def make_dataset_models(
     aligned_volume: str,
     schemas_and_tables: Sequence[tuple],
+    segmentation_source: str = None,
     include_contacts: bool = False,
     metadata_dict: dict = None,
     with_crud_columns: bool = True,
@@ -462,10 +476,10 @@ def make_dataset_models(
         model_key = table_name
         table_metadata = metadata_dict.get(model_key)
         dataset_dict[model_key] = make_sqlalchemy_model(
-            table_name, schema_name, table_metadata, with_crud_columns
+            table_name, schema_name, segmentation_source, table_metadata, with_crud_columns
         )
     if include_contacts:
         table_name = f"{aligned_volume}__contact"
-        contact_model = make_annotation_model_from_schema(table_name, Contact)
+        contact_model = make_model_from_schema(table_name, Contact)
         dataset_dict["contact"] = contact_model
     return dataset_dict
