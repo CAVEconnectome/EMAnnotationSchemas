@@ -77,7 +77,7 @@ class ReferenceAnnotation(AnnotationSchema):
     """a annotation that references another annotation"""
 
     target_id = ReferenceTableField(
-        required=True, description="annotation this references"
+        required=True, description="annotation this references", metadata="reference"
     )
 
 
@@ -102,6 +102,7 @@ class SpatialPoint(mm.Schema):
         required=True,
         description="spatial position in voxels of x,y,z of annotation",
         postgis_geometry="POINTZ",
+        metadata="spatial_point"
     )
 
     @mm.post_load
@@ -123,10 +124,17 @@ class BoundSpatialPoint(SpatialPoint):
     """a position in the segmented volume that is associated with an object"""
 
     supervoxel_id = NumericField(
-        missing=None, description="supervoxel id of this point", segment=True
+        missing=None,
+        description="supervoxel id of this point",
+        metadata="supervoxel_id",
+        segment=True,
     )
     root_id = NumericField(
-        description="root id of the bound point", missing=None, segment=True, index=True
+        description="root id of the bound point",
+        missing=None,
+        metadata="root_id",
+        segment=True,
+        index=True,
     )
 
     @mm.post_load
