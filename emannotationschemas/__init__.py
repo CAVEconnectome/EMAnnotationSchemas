@@ -15,8 +15,10 @@ from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoin
 from emannotationschemas.schemas.cell_type_local import CellTypeLocal, CellTypeReference
 from emannotationschemas.schemas.bound_text_tag import (
     BoundTagAnnotation,
+    BoundDoubleTagAnnotation,
     Bound2TagAnnotation,
     BoundTagAnnotationUser,
+    BoundDoubleTagAnnotationUser,
     Bound2TagAnnotationUser,
 )
 from emannotationschemas.schemas.glia_contact import GliaContact
@@ -57,8 +59,10 @@ type_mapping = {
     "cell_type_reference": CellTypeReference,
     "nucleus_detection": NucleusDetection,
     "bound_tag": BoundTagAnnotation,
+    "bound_double_tag": BoundDoubleTagAnnotation,
     "bound_2tag": Bound2TagAnnotation,
     "bound_tag_user": BoundTagAnnotationUser,
+    "bound_double_tag_user": BoundDoubleTagAnnotationUser,
     "bound_2tag_user": Bound2TagAnnotationUser,
     "extended_classical_cell_type": ExtendedClassicalCellType,
     "plastic_synapse": PlasticSynapse,

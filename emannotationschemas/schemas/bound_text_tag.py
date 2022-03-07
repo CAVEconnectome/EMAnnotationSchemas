@@ -9,6 +9,10 @@ class BoundTagAnnotation(AnnotationSchema):
     tag = mm.fields.String(required=True, description="Arbitrary text tag")
 
 
+class BoundDoubleTagAnnotation(BoundTagAnnotation):
+    tag2 = mm.fields.String(required=True, description="Arbitrary text tag")
+
+
 class Bound2TagAnnotation(BoundTagAnnotation):
     pt2 = mm.fields.Nested(
         BoundSpatialPoint, required=True, description="Location associated with the tag"
@@ -17,6 +21,13 @@ class Bound2TagAnnotation(BoundTagAnnotation):
 
 
 class BoundTagAnnotationUser(BoundTagAnnotation):
+    user_id = mm.fields.Int(
+        required=True,
+        description=f"User who created the tag.",
+    )
+
+
+class BoundDoubleTagAnnotationUser(BoundDoubleTagAnnotation):
     user_id = mm.fields.Int(
         required=True,
         description=f"User who created the tag.",
