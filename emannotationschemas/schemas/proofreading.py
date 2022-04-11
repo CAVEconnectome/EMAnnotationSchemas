@@ -45,12 +45,12 @@ class CompartmentProofreadStatus(PointWithValid):
 class ProofreadingBoolStatus(PointWithValid):
     proofread = fields.Bool(
         required=True,
-        description=f"Proofread status of cell.",
+        description="Proofread status of cell.",
     )
 
 
 class ProofreadingBoolStatusUser(ProofreadingBoolStatus):
     user_id = fields.Int(
         required=True,
-        description=f"User who assessed the proofreading status.",
+        description="User who assessed the proofreading status.",
     )
