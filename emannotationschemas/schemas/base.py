@@ -101,7 +101,7 @@ class ReferenceAnnotation(AnnotationSchema):
     target_id = ReferenceTableField(
         required=True,
         description="annotation this references",
-        metadata=MetaDataTypes.REFERENCE.value,
+        metadata={"field_type": MetaDataTypes.REFERENCE.value},
         index=True,
     )
 
@@ -127,7 +127,7 @@ class SpatialPoint(mm.Schema):
         required=True,
         description="spatial position in voxels of x,y,z of annotation",
         postgis_geometry="POINTZ",
-        metadata=MetaDataTypes.SPATIAL_POINT.value,
+        metadata={"field_type": MetaDataTypes.SPATIAL_POINT.value},
         index=True,
     )
 
@@ -152,13 +152,13 @@ class BoundSpatialPoint(SpatialPoint):
     supervoxel_id = SegmentationField(
         missing=None,
         description="supervoxel id of this point",
-        metadata=MetaDataTypes.SUPERVOXEL_ID.value,
+        metadata={"field_type": MetaDataTypes.SUPERVOXEL_ID.value},
         segmentation_field=True,
     )
     root_id = SegmentationField(
         description="root id of the bound point",
         missing=None,
-        metadata=MetaDataTypes.ROOT_ID.value,
+        metadata={"field_type": MetaDataTypes.ROOT_ID.value},
         segmentation_field=True,
         index=True,
     )

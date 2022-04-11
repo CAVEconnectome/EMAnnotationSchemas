@@ -372,7 +372,15 @@ def validate_reference_table_metadata(
     InvalidTableMetaDataException
         The reference table metadata is missing or not a dict.
     """
-    field_metadata = field.metadata.get("metadata")
+
+    if field.metadata.get("field_type"):
+        field_metadata = field.metadata.get("field_type")
+    elif field.metadata.get("metadata"):
+        metadata_dict = field.metadata.get("metadata")
+        field_metadata = metadata_dict.get("field_type")
+    else:
+        field_metadata = None
+
     if field_metadata == MetaDataTypes.REFERENCE.value:
         if type(table_metadata) is not dict:
             msg = "no metadata provided for reference annotation"
