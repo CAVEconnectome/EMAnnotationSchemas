@@ -9,11 +9,14 @@ from sqlalchemy.sql.sqltypes import Integer
 
 
 class MetaDataTypes(Enum):
+    """Enum to hold custom marshmallow
+    fields to facilitate SQLAlchemy model creation.
+    """
+
     REFERENCE = "reference"
     ROOT_ID = "root_id"
     SPATIAL_POINT = "spatial_point"
     SUPERVOXEL_ID = "supervoxel_id"
-
 
 
 class NumericField(mm.fields.Int):
@@ -21,6 +24,15 @@ class NumericField(mm.fields.Int):
         return {
             "type": "integer",
         }
+
+
+class SegmentationField(NumericField):
+    """Custom marshmallow field to specify the
+    SQLAlchemy column is of a 'segmentation' type,
+    i.e. a 'root_id' column or a 'supervoxel_id'
+    """
+
+    pass
 
 
 class PostGISField(mm.fields.Field):
@@ -137,13 +149,13 @@ class SpatialPoint(mm.Schema):
 class BoundSpatialPoint(SpatialPoint):
     """a position in the segmented volume that is associated with an object"""
 
-    supervoxel_id = NumericField(
+    supervoxel_id = SegmentationField(
         missing=None,
         description="supervoxel id of this point",
         metadata=MetaDataTypes.SUPERVOXEL_ID.value,
         segmentation_field=True,
     )
-    root_id = NumericField(
+    root_id = SegmentationField(
         description="root id of the bound point",
         missing=None,
         metadata=MetaDataTypes.ROOT_ID.value,
