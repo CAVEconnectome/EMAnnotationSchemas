@@ -187,27 +187,32 @@ def split_annotation_schema(Schema):
 
 def create_sqlalchemy_model(
     table_name: str,
-    Schema: dict,
+    Schema: mm.Schema,
     segmentation_source: str = None,
     table_metadata: dict = None,
     with_crud_columns: bool = False,
-):
-    """Create an declarative sqlalchemy segmentation model that has
-    a foreign key linked to the supplied annotation_table_name.
+) -> DeclarativeMeta:
+    """Create a SQLAlchemy model from supplied
+    marshmallow schema.
 
     Parameters
     ----------
     table_name : str
-        Combined name of an aligned_volume and specified table_name.
-    pcg_table_name : str
-    segmentation_columns : dict
-    version : int, optional
-        [description], by default 0
+        Name of SQLAlchemy table.
+    Schema : mm.Schema
+        Marshmallow schema. Must be a valid type (hint see :func:`emannotationschemas.get_types`)
+    segmentation_source : str, optional
+        Filter model by segmentation columns, by default None
+    table_metadata : dict, optional
+        Supply additional columns, i.e. Reference Annotation Table, by default None
+    with_crud_columns : bool, optional
+        add additional created, deleted and superceded_id columns on
+        an table model, by default False
 
-    Raises
-    ------
-    SqlAlchemy Declarative Base Model
-        Segmentation SqlAlchemy model
+    Returns
+    -------
+    DeclarativeMeta
+        SQLAlchemy Model
     """
 
     table_dict = create_table_dict(
@@ -228,23 +233,21 @@ def create_table_dict(
     Schema: dict,
     segmentation_source: str = None,
     table_metadata: dict = None,
-    with_crud_columns: bool = True,
-):
+    with_crud_columns: bool = False,
+) -> dict:
     """Generate a dictionary of SQLAlchemy Columns that represent a table
 
     Parameters
     ----------
     table_name : str
         Combined name of an aligned_volume and specified table_name.
-
     Schema : EMAnnotation Schema
         A Schema defined by EMAnnotationSchemas
-
     table_metadata : dict, optional
-        [description], by default None
-
+        Supply additional columns, i.e. Reference Annotation Table, by default None
     with_crud_columns : bool, optional
-        [description], by default True
+        add additional created, deleted and superceded_id columns on
+        an table model, by default False
 
     Returns
     -------
@@ -444,7 +447,6 @@ def make_segmentation_model(
     with_crud_columns: bool = False,
 ) -> DeclarativeMeta:
     """Make a SQLAlchemy segmentation model from schema type.
-
 
     Parameters
     ----------
