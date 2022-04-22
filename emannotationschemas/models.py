@@ -263,7 +263,7 @@ def create_table_dict(
     if segmentation_source:
         model_dict.update(
             {
-                "__tablename__": f"{table_name}",
+                "__tablename__": f"{table_name}__{segmentation_source}",
                 "id": Column(
                     BigInteger, ForeignKey(f"{table_name}.id"), primary_key=True
                 ),
@@ -573,12 +573,12 @@ def make_model_from_schema(
         SQLAlchemy Model instance of either the annotation
         or segmentation columns of the schema
     """
+    Schema = get_schema(schema_type)
+    annotation_columns, segmentation_columns = split_annotation_schema(Schema)
     if segmentation_source:
-        table_name = f"{table_name}__{segmentation_source}"
-    if not sqlalchemy_models.contains_model(table_name):
-        Schema = get_schema(schema_type)
-        annotation_columns, segmentation_columns = split_annotation_schema(Schema)
-        if segmentation_source:
+        seg_table_name = f"{table_name}__{segmentation_source}"
+        if not sqlalchemy_models.contains_model(seg_table_name):
+
             model = create_sqlalchemy_model(
                 table_name=table_name,
                 Schema=segmentation_columns,
@@ -586,17 +586,21 @@ def make_model_from_schema(
                 table_metadata=table_metadata,
                 with_crud_columns=with_crud_columns,
             )
-        else:
-            model = create_sqlalchemy_model(
-                table_name=table_name,
-                Schema=annotation_columns,
-                segmentation_source=None,
-                table_metadata=table_metadata,
-                with_crud_columns=with_crud_columns,
-            )
+            sqlalchemy_models.set_model(seg_table_name, model)
+            return sqlalchemy_models.get_model(seg_table_name)
+
+    elif not sqlalchemy_models.contains_model(table_name):
+
+        model = create_sqlalchemy_model(
+            table_name=table_name,
+            Schema=annotation_columns,
+            segmentation_source=None,
+            table_metadata=table_metadata,
+            with_crud_columns=with_crud_columns,
+        )
         sqlalchemy_models.set_model(table_name, model)
 
-    return sqlalchemy_models.get_model(table_name)
+        return sqlalchemy_models.get_model(table_name)
 
 
 def make_flat_model(
