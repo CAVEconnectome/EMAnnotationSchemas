@@ -587,18 +587,19 @@ def make_model_from_schema(
                 with_crud_columns=with_crud_columns,
             )
             sqlalchemy_models.set_model(seg_table_name, model)
-            return sqlalchemy_models.get_model(seg_table_name)
+        return sqlalchemy_models.get_model(seg_table_name)
 
-    elif not sqlalchemy_models.contains_model(table_name):
+    else:
+        if not sqlalchemy_models.contains_model(table_name):
 
-        model = create_sqlalchemy_model(
-            table_name=table_name,
-            Schema=annotation_columns,
-            segmentation_source=None,
-            table_metadata=table_metadata,
-            with_crud_columns=with_crud_columns,
-        )
-        sqlalchemy_models.set_model(table_name, model)
+            model = create_sqlalchemy_model(
+                table_name=table_name,
+                Schema=annotation_columns,
+                segmentation_source=None,
+                table_metadata=table_metadata,
+                with_crud_columns=with_crud_columns,
+            )
+            sqlalchemy_models.set_model(table_name, model)
 
         return sqlalchemy_models.get_model(table_name)
 
