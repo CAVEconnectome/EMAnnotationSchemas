@@ -1,3 +1,5 @@
+from enum import Enum
+
 import marshmallow as mm
 import numpy as np
 from geoalchemy2.shape import to_shape
@@ -6,11 +8,31 @@ from marshmallow import INCLUDE
 from sqlalchemy.sql.sqltypes import Integer
 
 
+class MetaDataTypes(Enum):
+    """Enum to hold custom marshmallow
+    fields to facilitate SQLAlchemy model creation.
+    """
+
+    REFERENCE = "reference"
+    ROOT_ID = "root_id"
+    SPATIAL_POINT = "spatial_point"
+    SUPERVOXEL_ID = "supervoxel_id"
+
+
 class NumericField(mm.fields.Int):
     def _jsonschema_type_mapping(self):
         return {
             "type": "integer",
         }
+
+
+class SegmentationField(NumericField):
+    """Custom marshmallow field to specify the
+    SQLAlchemy column is of a 'segmentation' type,
+    i.e. a 'root_id' column or a 'supervoxel_id'
+    """
+
+    pass
 
 
 class PostGISField(mm.fields.Field):
@@ -77,7 +99,10 @@ class ReferenceAnnotation(AnnotationSchema):
     """a annotation that references another annotation"""
 
     target_id = ReferenceTableField(
-        required=True, description="annotation this references"
+        required=True,
+        description="annotation this references",
+        metadata={"field_type": MetaDataTypes.REFERENCE.value},
+        index=True,
     )
 
 
@@ -102,6 +127,8 @@ class SpatialPoint(mm.Schema):
         required=True,
         description="spatial position in voxels of x,y,z of annotation",
         postgis_geometry="POINTZ",
+        metadata={"field_type": MetaDataTypes.SPATIAL_POINT.value},
+        index=True,
     )
 
     @mm.post_load
@@ -122,11 +149,18 @@ class SpatialPoint(mm.Schema):
 class BoundSpatialPoint(SpatialPoint):
     """a position in the segmented volume that is associated with an object"""
 
-    supervoxel_id = NumericField(
-        missing=None, description="supervoxel id of this point", segment=True
+    supervoxel_id = SegmentationField(
+        missing=None,
+        description="supervoxel id of this point",
+        metadata={"field_type": MetaDataTypes.SUPERVOXEL_ID.value},
+        segmentation_field=True,
     )
-    root_id = NumericField(
-        description="root id of the bound point", missing=None, segment=True, index=True
+    root_id = SegmentationField(
+        description="root id of the bound point",
+        missing=None,
+        metadata={"field_type": MetaDataTypes.ROOT_ID.value},
+        segmentation_field=True,
+        index=True,
     )
 
     @mm.post_load

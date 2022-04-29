@@ -1,7 +1,6 @@
 from flask import abort
 from flask_restx import Namespace, Resource
 from marshmallow_jsonschema import JSONSchema
-from middle_auth_client import auth_required
 
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.errors import UnknownAnnotationTypeException
@@ -21,7 +20,6 @@ api_bp = Namespace(
 
 @api_bp.route("/type")
 class SchemasTypes(Resource):
-    @auth_required
     @api_bp.doc("get_types", security="apikey")
     def get(self):
         return get_types()
@@ -38,7 +36,6 @@ def get_type_schema(annotation_type):
 
 @api_bp.route("/type/<string:annotation_type>")
 class SchemaAnnotationType(Resource):
-    @auth_required
     @api_bp.doc("get_annotation_type", security="apikey")
     def get(self, annotation_type: str):
         return get_type_schema(annotation_type)

@@ -35,6 +35,6 @@ def create_flattened_schema(BaseSchema, sep="_"):
 
     schema_name = BaseSchema.__name__ if hasattr(BaseSchema, "__name__") else BaseSchema
 
-    FlatSchema = type("Flat{}".format(schema_name), (mm.Schema,), new_fields)
+    FlatSchema = type(f"Flat{schema_name}", (mm.Schema,), new_fields)
 
     return FlatSchema

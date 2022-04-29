@@ -16,12 +16,6 @@ class Contact(AnnotationSchema):
     )
     ctr_pt = mm.fields.Nested(SpatialPoint, description="point on contact interface")
 
-    @mm.validates_schema
-    def validate_type(self, data, **kwargs):
-        # check that the annotation type is present in the object as 'contact'
-        if data["type"] != "contact":
-            raise mm.ValidationError("Type must be 'contact'")
-
     @mm.post_load
     def check_contact_sides(self, data, **kwargs):
         sidea_id = data["sidea_pt"].get("root_id", None)

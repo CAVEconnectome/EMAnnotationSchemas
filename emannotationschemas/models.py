@@ -12,31 +12,30 @@ from sqlalchemy import (
     Integer,
     String,
 )
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
-from emannotationschemas import get_flat_schema, get_schema, get_types
+from emannotationschemas import get_schema, get_types
 from emannotationschemas.errors import (
     InvalidSchemaField,
     InvalidTableMetaDataException,
     UnknownAnnotationTypeException,
 )
 from emannotationschemas.flatten import create_flattened_schema
-from emannotationschemas.schemas.base import (  # SegmentationField
-    BoundSpatialPoint,
+from emannotationschemas.schemas.base import (
+    MetaDataTypes,
     NumericField,
+    SegmentationField,
     PostGISField,
     ReferenceTableField,
-    ReferenceAnnotation,
 )
-from emannotationschemas.schemas.contact import Contact
 
 Base = declarative_base()
 FlatBase = declarative_base()
 
 field_column_map = {
     ReferenceTableField: BigInteger,
-    # SegmentationField: Numeric,
     NumericField: BigInteger,
+    SegmentationField: BigInteger,
     PostGISField: Geometry,
     mm.fields.Int: Integer,
     mm.fields.Integer: Integer,
@@ -72,7 +71,7 @@ class ModelStore:
             self.container[table_name] = model
 
 
-annotation_models = ModelStore()
+sqlalchemy_models = ModelStore()
 
 
 def format_database_name(aligned_volume: str, version: int = 0):
@@ -105,8 +104,8 @@ def validate_types(schemas_and_tables: list):
     """
 
     all_types = get_types()
-    if not (
-        all(schema_name in all_types for schema_name, table_name in schemas_and_tables)
+    if any(
+        schema_name not in all_types for schema_name, table_name in schemas_and_tables
     ):
 
         bad_types = [
@@ -137,26 +136,6 @@ def convert_dict_to_schema(schema_name: str, schema_dict: dict):
     return type(f"Flat{schema_name}", (mm.Schema,), schema_dict)
 
 
-def get_flat_sv_and_root_id_columns(schema):
-    """Returns the flattened keys of BoundSpatialPoints in a schema
-
-    :param schema: schema
-    :return: list
-    """
-    keys = []
-
-    for key in schema.declared_fields.keys():
-        field = schema.declared_fields[key]
-
-        if isinstance(field, mm.fields.Nested) and isinstance(
-            field.schema, BoundSpatialPoint
-        ):
-            keys.append("{}_{}".format(key, "supervoxel_id"))
-            keys.append("{}_{}".format(key, "root_id"))
-
-    return keys
-
-
 def split_annotation_schema(Schema):
     """Split an EM Annotation schema into separate annotation
     (spatial position) and segmentation (supervoxel and root_id) schemas
@@ -176,7 +155,7 @@ def split_annotation_schema(Schema):
 
     Raises
     ------
-    Exception
+    TypeError
         Schema is not flattened, i.e. nested schema type
     """
 
@@ -184,22 +163,17 @@ def split_annotation_schema(Schema):
 
     annotation_columns = {}
     segmentation_columns = {}
-    sv_and_root_id_column_keys = get_flat_sv_and_root_id_columns(Schema())
 
     for key, field in flat_schema._declared_fields.items():
         if isinstance(field, mm.fields.Nested):
-            raise Exception(f"Schema {flat_schema} must be flattened before splitting")
-        field_type = type(field)
+            raise TypeError(
+                f"Schema {flat_schema} must be flattened before splitting but contains nested fields"
+            )
 
-        # pick off the columns which are the supervoxel and root id of
-        # BoundSpatialPoint fields, and separate them as segmentation columns
-        # TODO: make NumericFields illegal and/or fix logic to pick out
-        # actual fields associated with BoundSpatialPoints
-        if key not in sv_and_root_id_column_keys:
-            annotation_columns[key] = field
-        else:
+        if isinstance(field, SegmentationField):
             segmentation_columns[key] = field
-
+        else:
+            annotation_columns[key] = field
     schema_name = Schema.__name__ if hasattr(Schema, "__name__") else Schema
     flat_annotation_schema = convert_dict_to_schema(
         f"{schema_name}_annotation", annotation_columns
@@ -211,77 +185,47 @@ def split_annotation_schema(Schema):
     return flat_annotation_schema, flat_segmentation_schema
 
 
-def create_segmentation_model(
-    table_name: str, segmentation_source: str, segmentation_columns: dict
-):
-    """Create an declarative sqlalchemy segmentation model that has
-    a foreign key linked to the supplied annotation_table_name.
-
-    Parameters
-    ----------
-    table_name : str
-        Combined name of an aligned_volume and specified table_name.
-    pcg_table_name : str
-    segmentation_columns : dict
-    version : int, optional
-        [description], by default 0
-
-    Raises
-    ------
-    SqlAlchemy Declarative Base Model
-        Segmentation SqlAlchemy model
-    """
-
-    segmentation_dict = create_table_dict(
-        table_name=table_name,
-        Schema=segmentation_columns,
-        segmentation_source=segmentation_source,
-        table_metadata=None,
-        with_crud_columns=False,
-    )
-
-    segmentation_table_name = segmentation_dict.get("__tablename__")
-
-    SegmentationModel = type(segmentation_table_name, (Base,), segmentation_dict)
-    return SegmentationModel
-
-
-def create_annotation_model(
+def create_sqlalchemy_model(
     table_name: str,
-    annotation_columns: dict,
+    Schema: mm.Schema,
+    segmentation_source: str = None,
     table_metadata: dict = None,
-    with_crud_columns: bool = True,
-    is_reference: bool = False,
-):
-    """Create an declarative sqlalchemy annotation model.
+    with_crud_columns: bool = False,
+) -> DeclarativeMeta:
+    """Create a SQLAlchemy model from supplied
+    marshmallow schema.
 
     Parameters
     ----------
     table_name : str
-        Specified table_name.
-
-    annotation_columns : dict
-        Dictionary of annotation SQL fields
+        Name of SQLAlchemy table.
+    Schema : mm.Schema
+        Marshmallow schema. Must be a valid type (hint see :func:`emannotationschemas.get_types`)
+    segmentation_source : str, optional
+        Filter model by segmentation columns, by default None
+    table_metadata : dict, optional
+        Supply additional columns, i.e. Reference Annotation Table, by default None
+    with_crud_columns : bool, optional
+        add additional created, deleted and superceded_id columns on
+        an table model, by default False
 
     Returns
     -------
-    SqlAlchemy Declarative Base Model
-        Annotation SqlAlchemy model
+    DeclarativeMeta
+        SQLAlchemy Model
     """
-    annotation_dict = create_table_dict(
+
+    table_dict = create_table_dict(
         table_name=table_name,
-        Schema=annotation_columns,
-        segmentation_source=None,
+        Schema=Schema,
+        segmentation_source=segmentation_source,
         table_metadata=table_metadata,
         with_crud_columns=with_crud_columns,
-        is_reference=is_reference,
     )
 
-    annotation_name = annotation_dict.get("__tablename__")
+    table_name = table_dict.get("__tablename__")
 
-    AnnotationModel = type(annotation_name, (Base,), annotation_dict)
-
-    return AnnotationModel
+    return type(table_name, (Base,), table_dict)
 
 
 def create_table_dict(
@@ -289,24 +233,21 @@ def create_table_dict(
     Schema: dict,
     segmentation_source: str = None,
     table_metadata: dict = None,
-    with_crud_columns: bool = True,
-    is_reference=False,
-):
+    with_crud_columns: bool = False,
+) -> dict:
     """Generate a dictionary of SQLAlchemy Columns that represent a table
 
     Parameters
     ----------
     table_name : str
         Combined name of an aligned_volume and specified table_name.
-
     Schema : EMAnnotation Schema
         A Schema defined by EMAnnotationSchemas
-
     table_metadata : dict, optional
-        [description], by default None
-
+        Supply additional columns, i.e. Reference Annotation Table, by default None
     with_crud_columns : bool, optional
-        [description], by default True
+        add additional created, deleted and superceded_id columns on
+        an table model, by default False
 
     Returns
     -------
@@ -318,22 +259,22 @@ def create_table_dict(
     InvalidTableMetaDataException
     """
 
-    model = {}
+    model_dict = {}
     if segmentation_source:
-        model.update(
+        model_dict.update(
             {
                 "__tablename__": f"{table_name}__{segmentation_source}",
                 "id": Column(
                     BigInteger, ForeignKey(f"{table_name}.id"), primary_key=True
                 ),
                 "__mapper_args__": {
-                    "polymorphic_identity": f"{table_name}__{segmentation_source}",
+                    "polymorphic_identity": f"{table_name}",
                     "concrete": True,
                 },
             }
         )
     else:
-        model.update(
+        model_dict.update(
             {
                 "__tablename__": table_name,
                 "id": Column(BigInteger, primary_key=True),
@@ -344,109 +285,116 @@ def create_table_dict(
             }
         )
     if with_crud_columns:
-        model.update(
+        model_dict.update(
             {
                 "created": Column(DateTime, index=True, nullable=False),
                 "deleted": Column(DateTime, index=True),
                 "superceded_id": Column(BigInteger),
             }
         )
-    if issubclass(Schema, ReferenceAnnotation):
-        is_reference = True
-    if is_reference:
+
+    for key, field in Schema._declared_fields.items():
+        if not field.metadata.get("drop_column", False):
+            model_dict = validate_reference_table_metadata(
+                model_dict, field, table_metadata
+            )
+            model_dict = add_column(model_dict, key, field)
+
+    return model_dict
+
+
+def add_column(model_dict: dict, key: str, field: str) -> dict:
+    """Updates a dictionary with table column names as keys and
+    the values being SqlAlchemy columns.
+
+    Parameters
+    ----------
+    model_dict : dict
+        dictionary of column name and types.
+    key : str
+        column name.
+    field : str
+        marshmallow schema field.
+
+    Returns
+    -------
+    model_dict : dict
+        dictionary of names and sqlalchemy columns.
+
+    Raises
+    ------
+    InvalidSchemaField
+        unsupported field type, not found in :data:`field_column_map`
+    """
+    field_type = type(field)
+    has_index = field.metadata.get("index", False)
+    if field_type in field_column_map:
+        if field_type == PostGISField:
+            postgis_geom = field.metadata.get("postgis_geometry", "POINTZ")
+            model_dict[key] = Column(
+                Geometry(
+                    geometry_type=postgis_geom, dimension=3, use_N_D_index=has_index
+                )
+            )
+        elif field_type == ReferenceTableField:
+            reference_table_name = model_dict.pop("reference_table_name")
+            model_dict[key] = Column(
+                BigInteger, ForeignKey(f"{reference_table_name}.id"), index=has_index
+            )
+        else:
+            model_dict[key] = Column(field_column_map[field_type], index=has_index)
+
+    else:
+        raise InvalidSchemaField(f"field type {field_type} not supported")
+
+    return model_dict
+
+
+def validate_reference_table_metadata(
+    model_dict: dict, field: str, table_metadata: dict = None
+) -> dict:
+    """Check if a supplied table metadata dict has correct
+    formatting.
+
+    Parameters
+    ----------
+    model_dict : dict
+        dictionary of column name and types.
+    field : str
+        name of schema field.
+    table_metadata : dict
+        reference_table_name
+
+    Returns
+    -------
+    model_dict: dict
+        updates model_dict mapping to include 'reference_table_name'
+
+    Raises
+    ------
+    InvalidTableMetaDataException
+        The reference table metadata is missing or not a dict.
+    """
+
+    if field.metadata.get("field_type"):
+        field_metadata = field.metadata.get("field_type")
+    elif field.metadata.get("metadata"):
+        metadata_dict = field.metadata.get("metadata")
+        field_metadata = metadata_dict.get("field_type")
+    else:
+        field_metadata = None
+
+    if field_metadata == MetaDataTypes.REFERENCE.value:
         if type(table_metadata) is not dict:
             msg = "no metadata provided for reference annotation"
             raise (InvalidTableMetaDataException(msg))
         else:
             try:
-                model["reference_table_name"] = table_metadata["reference_table"]
-            except KeyError:
-                msg = f"reference table not specified in metadata {table_metadata}"
+                model_dict["reference_table_name"] = table_metadata["reference_table"]
+            except KeyError as e:
+                msg = f"reference table not specified in metadata {table_metadata}: {e}"
                 raise InvalidTableMetaDataException(msg)
-
-    for key, field in Schema._declared_fields.items():
-        if not field.metadata.get("drop_column", False):
-            model = add_column(model, key, field)
-
-    return model
-
-
-def add_column(model: dict, key: str, field: str) -> dict:
-    field_type = type(field)
-    do_index = field.metadata.get("index", False)
-    if field_type in field_column_map:
-        if field_type == PostGISField:
-            postgis_geom = field.metadata.get("postgis_geometry", "POINTZ")
-            model[key] = Column(
-                Geometry(geometry_type=postgis_geom, dimension=3, use_N_D_index=True)
-            )
-        elif field_type == ReferenceTableField:
-            reference_table_name = model.pop("reference_table_name")
-            model[key] = Column(
-                BigInteger, ForeignKey(f"{reference_table_name}.id"), index=True
-            )
-        else:
-            model[key] = Column(field_column_map[field_type], index=do_index)
-
-    else:
-        raise InvalidSchemaField(f"field type {field_type} not supported")
-
-    return model
-
-
-def make_segmentation_model_from_schema(
-    table_name: str, segmentation_source: str, Schema
-):
-    segmentation_table_name = f"{table_name}__{segmentation_source}"
-    make_annotation_model_from_schema(table_name, Schema)
-
-    if not annotation_models.contains_model(segmentation_table_name):
-        __, segmentation_columns = split_annotation_schema(Schema)
-
-        seg_model = create_segmentation_model(
-            table_name, segmentation_source, segmentation_columns
-        )
-        annotation_models.set_model(segmentation_table_name, seg_model)
-
-    return annotation_models.get_model(segmentation_table_name)
-
-
-def make_annotation_model_from_schema(
-    table_name: str,
-    Schema,
-    table_metadata: dict = None,
-    with_crud_columns: bool = True,
-):
-
-    if not annotation_models.contains_model(table_name):
-
-        if issubclass(Schema, ReferenceAnnotation):
-            with_crud_columns = False
-            is_reference = True
-        else:
-            is_reference = False
-        Schema, __ = split_annotation_schema(Schema)
-
-        anno_model = create_annotation_model(
-            table_name,
-            Schema,
-            table_metadata,
-            with_crud_columns,
-            is_reference=is_reference,
-        )
-
-        annotation_models.set_model(table_name, anno_model)
-
-    return annotation_models.get_model(table_name)
-
-
-def make_segmentation_model(
-    table_name: str, schema_type: str, segmentation_source: dict = None
-):
-
-    Schema = get_schema(schema_type)
-
-    return make_segmentation_model_from_schema(table_name, segmentation_source, Schema)
+    return model_dict
 
 
 def make_annotation_model(
@@ -454,37 +402,237 @@ def make_annotation_model(
     schema_type: str,
     table_metadata: dict = None,
     with_crud_columns: bool = True,
-):
-    """make an annotation model
+) -> DeclarativeMeta:
+    """Make a SQLAlchemy annotation model from schema type.
 
-    Args:
-        table_name (str): name of table in database
-        schema_type (str): schema type for table
-        table_metadata (dict, optional): table_metadata dict
-        with_crud_columns (bool, optional): whether to include created, deleted columns. Defaults to True.
+    Parameters
+    ----------
+    table_name : str
+        name of the annotation table
+    schema_type : str
+        schema type, must be a valid type (hint see :func:`emannotationschemas.get_types`)
+    table_metadata : dict, optional
+        optional metadata, by default None
+    with_crud_columns : bool, optional
+        add additional created, deleted and superceded_id columns on
+        an annotation table model, by default True
 
-    Returns:
-        SqlAlchemy.Model: a sqlalchemy model
+    Returns
+    -------
+    DeclarativeMeta
+        SQLAlchemy Model instance of the annotation
+        columns of the schema
     """
-    Schema = get_schema(schema_type)
+    import warnings
 
-    return make_annotation_model_from_schema(
-        table_name, Schema, table_metadata, with_crud_columns
+    warnings.simplefilter("default")
+    warnings.warn(
+        "This method will be depreciated in future releases, see :func:'make_model_from_schema'",
+        DeprecationWarning,
+    )
+    return make_model_from_schema(
+        table_name=table_name,
+        schema_type=schema_type,
+        segmentation_source=None,
+        table_metadata=table_metadata,
+        with_crud_columns=with_crud_columns,
     )
 
 
-def make_flat_model_from_schema(
+def make_segmentation_model(
     table_name: str,
-    Schema: str,
-    segmentation_source: dict = None,
+    schema_type: str,
+    segmentation_source: str,
     table_metadata: dict = None,
-):
+    with_crud_columns: bool = False,
+) -> DeclarativeMeta:
+    """Make a SQLAlchemy segmentation model from schema type.
 
-    if not annotation_models.contains_model(table_name, flat=True):
-        if issubclass(Schema, ReferenceAnnotation):
-            flat_schema = Schema
-        else:
-            flat_schema = create_flattened_schema(Schema)
+    Parameters
+    ----------
+
+    table_name : str
+        name of the table
+    schema_type :
+        schema type, must be a valid type (hint see :func:`emannotationschemas.get_types`)
+    segmentation_source : str, optional
+        pcg table to use for root id lookups will return the
+        segmentation model if not None, by default None
+    table_metadata : dict, optional
+        optional metadata dict, by default None
+    with_crud_columns : bool, optional
+        add additional created, deleted and superceded_id columns on
+        an annotation table model, by default False
+
+    Returns
+    -------
+    DeclarativeMeta
+        SQLAlchemy Model instance of the segmentation columns of the schema
+    """
+    import warnings
+
+    warnings.simplefilter("default")
+    warnings.warn(
+        "This method will be depreciated in future releases",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return make_model_from_schema(
+        table_name=table_name,
+        schema_type=schema_type,
+        segmentation_source=segmentation_source,
+        table_metadata=table_metadata,
+        with_crud_columns=with_crud_columns,
+    )
+
+
+def make_reference_annotation_model(
+    table_name: str,
+    schema_type: str,
+    target_table: str,
+    segmentation_source: str = None,
+    with_crud_columns: bool = False,
+) -> DeclarativeMeta:
+    """Helper method to create reference annotation tables.
+
+    Parameters
+    ----------
+
+    table_name : str
+        name of the table
+    schema_type :
+        schema type, must be a valid type (hint see :func:`emannotationschemas.get_types`)
+    target_table : str
+        name of table to reference as a foreign key to its 'id' column
+    segmentation_source : str, optional
+        pcg table to use for root id lookups will return the
+        segmentation model if not None, by default None
+    with_crud_columns : bool, optional
+        add additional created, deleted and superceded_id columns on
+        an annotation table model, by default True
+
+    Returns
+    -------
+    DeclarativeMeta
+        SQLAlchemy Model instance of either the annotation
+        or segmentation columns of the schema
+    """
+    import warnings
+
+    warnings.simplefilter("default")
+    warnings.warn(
+        "This method will be depreciated in future releases",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return make_model_from_schema(
+        table_name=table_name,
+        schema_type=schema_type,
+        segmentation_source=segmentation_source,
+        table_metadata={"reference_table": target_table},
+        with_crud_columns=with_crud_columns,
+    )
+
+
+def make_model_from_schema(
+    table_name: str,
+    schema_type: str,
+    segmentation_source: str = None,
+    table_metadata: dict = None,
+    with_crud_columns: bool = True,
+) -> DeclarativeMeta:
+    """Create either the annotation or segmentation
+    SQLAlchemy model from the supplied schema type.
+
+    Notes
+    -----
+    If a segmentation source is included as an arg it will return
+    the segmentation model of the schema.
+    Will return either the columns that are defined as part of the annotations
+    or segmentations but not both. To get a combined model see
+    :func:`emannotationschemas.models.make_flat_model`
+
+    Parameters
+    ----------
+    table_name : str
+        name of the table
+    schema_type :
+        schema type, must be a valid type (hint see :func:`emannotationschemas.get_types`)
+    segmentation_source : str, optional
+        pcg table to use for root id lookups will return the
+        segmentation model if not None, by default None
+    table_metadata : dict, optional
+        optional metadata dict, by default None
+    with_crud_columns : bool, optional
+        add additional created, deleted and superceded_id columns on
+        an annotation table model, by default True
+
+    Returns
+    -------
+    DeclarativeMeta
+        SQLAlchemy Model instance of either the annotation
+        or segmentation columns of the schema
+    """
+    Schema = get_schema(schema_type)
+    annotation_columns, segmentation_columns = split_annotation_schema(Schema)
+    if segmentation_source:
+        seg_table_name = f"{table_name}__{segmentation_source}"
+        if not sqlalchemy_models.contains_model(seg_table_name):
+
+            model = create_sqlalchemy_model(
+                table_name=table_name,
+                Schema=segmentation_columns,
+                segmentation_source=segmentation_source,
+                table_metadata=table_metadata,
+                with_crud_columns=with_crud_columns,
+            )
+            sqlalchemy_models.set_model(seg_table_name, model)
+        return sqlalchemy_models.get_model(seg_table_name)
+
+    else:
+        if not sqlalchemy_models.contains_model(table_name):
+
+            model = create_sqlalchemy_model(
+                table_name=table_name,
+                Schema=annotation_columns,
+                segmentation_source=None,
+                table_metadata=table_metadata,
+                with_crud_columns=with_crud_columns,
+            )
+            sqlalchemy_models.set_model(table_name, model)
+
+        return sqlalchemy_models.get_model(table_name)
+
+
+def make_flat_model(
+    table_name: str,
+    schema_type: str,
+    segmentation_source: dict,
+    table_metadata: dict = None,
+) -> DeclarativeMeta:
+    """Create a flattend model of combining both the annotation
+    and segmentation columns into a single SQLAlchemy Model.
+
+    Parameters
+    ----------
+    table_name : str
+        name of the table
+    schema_type : str
+        schema type, must be a valid type (hint see :func:`emannotationschemas.get_types`)
+    segmentation_source : dict
+        pcg table to use for root id lookups
+    table_metadata : dict, optional
+        optional metadata to attach to table, by default None
+
+    Returns
+    -------
+    DeclarativeMeta
+        SQLAlchemy Model instance
+    """
+    if not sqlalchemy_models.contains_model(table_name, flat=True):
+        Schema = get_schema(schema_type)
+
+        flat_schema = create_flattened_schema(Schema)
 
         annotation_dict = create_table_dict(
             table_name=table_name,
@@ -495,30 +643,17 @@ def make_flat_model_from_schema(
         )
         FlatAnnotationModel = type(table_name, (FlatBase,), annotation_dict)
 
-        annotation_models.set_model(table_name, FlatAnnotationModel, flat=True)
+        sqlalchemy_models.set_model(table_name, FlatAnnotationModel, flat=True)
 
-    return annotation_models.get_model(table_name, flat=True)
-
-
-def make_flat_model(
-    table_name: str,
-    schema_type: str,
-    segmentation_source: dict = None,
-    table_metadata: dict = None,
-):
-    Schema = get_schema(schema_type)
-
-    return make_flat_model_from_schema(
-        table_name, Schema, segmentation_source, table_metadata
-    )
+    return sqlalchemy_models.get_model(table_name, flat=True)
 
 
 def make_dataset_models(
     aligned_volume: str,
     schemas_and_tables: Sequence[tuple],
+    segmentation_source: str = None,
     include_contacts: bool = False,
     metadata_dict: dict = None,
-    version: int = None,
     with_crud_columns: bool = True,
 ) -> dict:
     """Bulk create models for a given aligned_volume
@@ -536,9 +671,6 @@ def make_dataset_models(
 
     include_contacts:
         option to include the model for cell contacts
-
-    version: int
-        option to include version number to use for making models, for legacy compatibility
 
     with_crud_columns:
         option to include created, deleted, and supersceded_id
@@ -559,11 +691,15 @@ def make_dataset_models(
     for schema_name, table_name in schemas_and_tables:
         model_key = table_name
         table_metadata = metadata_dict.get(model_key)
-        dataset_dict[model_key] = make_annotation_model(
-            table_name, schema_name, table_metadata, with_crud_columns
+        dataset_dict[model_key] = make_model_from_schema(
+            table_name,
+            schema_name,
+            segmentation_source,
+            table_metadata,
+            with_crud_columns,
         )
     if include_contacts:
         table_name = f"{aligned_volume}__contact"
-        contact_model = make_annotation_model_from_schema(table_name, Contact)
+        contact_model = make_model_from_schema(table_name, "contact")
         dataset_dict["contact"] = contact_model
     return dataset_dict
