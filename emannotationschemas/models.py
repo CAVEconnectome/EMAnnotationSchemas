@@ -491,7 +491,7 @@ def make_reference_annotation_model(
     schema_type: str,
     target_table: str,
     segmentation_source: str = None,
-    with_crud_columns: bool = False,
+    with_crud_columns: bool = True,
 ) -> DeclarativeMeta:
     """Helper method to create reference annotation tables.
 
