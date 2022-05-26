@@ -3,6 +3,7 @@ from emannotationschemas.schemas.base import (
     AnnotationSchema,
     BoundSpatialPoint,
     SpatialPoint,
+    ReferenceAnnotation,
 )
 
 
@@ -79,4 +80,11 @@ class PlasticSynapse(SynapseSchema):
         required=True,
         validate=mm.validate.OneOf([0, 1, 2, 3, 4]),
         description="plasticity state 0:not synapse 1:normal 2:mild 3:strong 4:not rated",
+    )
+
+
+class ValidSynapse(ReferenceAnnotation):
+    is_valid = mm.fields.Bool(
+        required=True,
+        description="Valid annotation for synapses",
     )

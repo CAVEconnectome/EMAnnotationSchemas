@@ -1,5 +1,6 @@
 from emannotationschemas.schemas.synapse import SynapseSchema
 from emannotationschemas.schemas.synapse import PlasticSynapse
+from emannotationschemas.schemas.synapse import ValidSynapse
 from emannotationschemas.schemas.synapse import BuhmannSynapseSchema
 from emannotationschemas.schemas.synapse import BuhmannEcksteinSynapseSchema
 from emannotationschemas.schemas.synapse import NoCleftSynapse
@@ -72,6 +73,7 @@ type_mapping = {
     "proofreading_boolstatus_user": ProofreadingBoolStatusUser,
     "fly_neuropil": FlyNeuropil,
     "reference_point": FlatSegmentationReferenceSinglePoint,
+    "reference_synapse_valid": ValidSynapse,
 }
 
 
