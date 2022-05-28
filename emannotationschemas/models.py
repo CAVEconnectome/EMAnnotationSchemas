@@ -261,16 +261,15 @@ def create_table_dict(
 
     model_dict = {}
     if segmentation_source:
-        table_name = f"{table_name}__{segmentation_source}"
         foreign_key_name = f"{table_name}.id"
         model_dict.update(
             {
-                "__tablename__": table_name,
+                "__tablename__": f"{table_name}__{segmentation_source}",
                 "id": Column(
                     BigInteger, ForeignKey(foreign_key_name), primary_key=True
                 ),
                 "__mapper_args__": {
-                    "polymorphic_identity": table_name,
+                    "polymorphic_identity": f"{table_name}__{segmentation_source}",
                     "concrete": True,
                 },
             }
