@@ -261,14 +261,16 @@ def create_table_dict(
 
     model_dict = {}
     if segmentation_source:
+        table_name = f"{table_name}__{segmentation_source}"
+        foreign_key_name = f"{table_name}.id"
         model_dict.update(
             {
-                "__tablename__": f"{table_name}__{segmentation_source}",
+                "__tablename__": table_name,
                 "id": Column(
-                    BigInteger, ForeignKey(f"{table_name}.id"), primary_key=True
+                    BigInteger, ForeignKey(foreign_key_name), primary_key=True
                 ),
                 "__mapper_args__": {
-                    "polymorphic_identity": f"{table_name}",
+                    "polymorphic_identity": table_name,
                     "concrete": True,
                 },
             }
@@ -338,8 +340,9 @@ def add_column(model_dict: dict, key: str, field: str) -> dict:
             )
         elif field_type == ReferenceTableField:
             reference_table_name = model_dict.pop("reference_table_name")
+            foreign_key_name = f"{reference_table_name}.id"
             model_dict[key] = Column(
-                BigInteger, ForeignKey(f"{reference_table_name}.id"), index=has_index
+                BigInteger, ForeignKey(foreign_key_name), index=has_index
             )
         else:
             model_dict[key] = Column(field_column_map[field_type], index=has_index)
@@ -574,14 +577,14 @@ def make_model_from_schema(
         or segmentation columns of the schema
     """
     Schema = get_schema(schema_type)
-    annotation_columns, segmentation_columns = split_annotation_schema(Schema)
+    annotation_schema, segmentation_schema = split_annotation_schema(Schema)
     if segmentation_source:
         seg_table_name = f"{table_name}__{segmentation_source}"
         if not sqlalchemy_models.contains_model(seg_table_name):
 
             model = create_sqlalchemy_model(
                 table_name=table_name,
-                Schema=segmentation_columns,
+                Schema=segmentation_schema,
                 segmentation_source=segmentation_source,
                 table_metadata=table_metadata,
                 with_crud_columns=with_crud_columns,
@@ -594,7 +597,7 @@ def make_model_from_schema(
 
             model = create_sqlalchemy_model(
                 table_name=table_name,
-                Schema=annotation_columns,
+                Schema=annotation_schema,
                 segmentation_source=None,
                 table_metadata=table_metadata,
                 with_crud_columns=with_crud_columns,
