@@ -41,7 +41,7 @@ from emannotationschemas.schemas.neuropil import FlyNeuropil
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = "4.0.0"
+__version__ = "4.1.0"
 
 type_mapping = {
     "synapse": SynapseSchema,
