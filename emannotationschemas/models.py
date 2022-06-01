@@ -29,6 +29,8 @@ from emannotationschemas.schemas.base import (
     ReferenceTableField,
 )
 
+from emannotationschemas.utils import create_segmentation_table_name
+
 Base = declarative_base()
 FlatBase = declarative_base()
 
@@ -81,7 +83,7 @@ def format_database_name(aligned_volume: str, version: int = 0):
 def format_version_db_uri(sql_uri: str, aligned_volume: str, version: int = None):
     sql_uri_base = "/".join(sql_uri.split("/")[:-1])
     new_db_name = format_database_name(aligned_volume, version)
-    return sql_uri_base + f"/{new_db_name}"
+    return f"{sql_uri_base}/{new_db_name}"
 
 
 def validate_types(schemas_and_tables: list):
@@ -261,15 +263,18 @@ def create_table_dict(
 
     model_dict = {}
     if segmentation_source:
-        foreign_key_name = f"{table_name}.id"
         model_dict.update(
             {
-                "__tablename__": f"{table_name}__{segmentation_source}",
+                "__tablename__": create_segmentation_table_name(
+                    table_name, segmentation_source
+                ),
                 "id": Column(
-                    BigInteger, ForeignKey(foreign_key_name), primary_key=True
+                    BigInteger, ForeignKey(f"{table_name}.id"), primary_key=True
                 ),
                 "__mapper_args__": {
-                    "polymorphic_identity": f"{table_name}__{segmentation_source}",
+                    "polymorphic_identity": create_segmentation_table_name(
+                        table_name, segmentation_source
+                    ),
                     "concrete": True,
                 },
             }
@@ -578,7 +583,7 @@ def make_model_from_schema(
     Schema = get_schema(schema_type)
     annotation_schema, segmentation_schema = split_annotation_schema(Schema)
     if segmentation_source:
-        seg_table_name = f"{table_name}__{segmentation_source}"
+        seg_table_name = create_segmentation_table_name(table_name, segmentation_source)
         if not sqlalchemy_models.contains_model(seg_table_name):
 
             model = create_sqlalchemy_model(
@@ -675,7 +680,7 @@ def make_dataset_models(
         option to include the model for cell contacts
 
     with_crud_columns:
-        option to include created, deleted, and supersceded_id
+        option to include created, deleted, and superseded_id
 
     Returns
     -------

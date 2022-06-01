@@ -39,3 +39,7 @@ def get_bsp_columns(Schema):
             if isinstance(v.schema, BoundSpatialPoint):
                 columns.append(k)
     return columns
+
+
+def create_segmentation_table_name(table_name: str, segmentation_source: str):
+    return f"{table_name}__{segmentation_source}"
