@@ -13,7 +13,7 @@ class BaseConfig(object):
     proj_dir = os.path.split(get_app_base_path())[0]
 
     LOGGING_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
-    LOGGING_LOCATION = HOME + "/emannotationschema/bookshelf.log"
+    LOGGING_LOCATION = f"{HOME}/emannotationschema/bookshelf.log"
     LOGGING_LEVEL = logging.DEBUG
 
 

@@ -110,10 +110,9 @@ def get_schema(schema_type: str):
 def get_flat_schema(schema_type: str):
     try:
         Schema = type_mapping[schema_type]
-        FlatSchema = create_flattened_schema(Schema)
-        return FlatSchema
-    except KeyError:
-        msg = f"Schema type: {schema_type} is not a known annotation type"
+        return create_flattened_schema(Schema)
+    except KeyError as e:
+        msg = f"Schema type: {schema_type} is not a known annotation type: {e}"
         raise UnknownAnnotationTypeException(msg)
 
 

@@ -47,7 +47,7 @@ class PostGISField(mm.fields.Field):
         return value
 
     def _serialize(self, value, attr, obj, **kwargs):
-        value = "POINTZ({} {} {})".format(value[0], value[1], value[2])
+        value = f"POINTZ({value[0]} {value[1]} {value[2]})"
         return value
 
 
@@ -134,9 +134,10 @@ class SpatialPoint(mm.Schema):
     @mm.post_load
     def transform_position(self, data, **kwargs):
         if self.context.get("postgis", False):
-            data["position"] = "POINTZ({} {} {})".format(
-                data["position"][0], data["position"][1], data["position"][2]
-            )
+            data[
+                "position"
+            ] = f'POINTZ({data["position"][0]} {data["position"][1]} {data["position"][2]})'
+
         return data
 
     @mm.post_load
