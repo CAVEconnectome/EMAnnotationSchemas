@@ -582,32 +582,31 @@ def make_model_from_schema(
     """
     Schema = get_schema(schema_type)
     annotation_schema, segmentation_schema = split_annotation_schema(Schema)
+
+    if not sqlalchemy_models.contains_model(table_name):
+        anno_model = create_sqlalchemy_model(
+            table_name=table_name,
+            Schema=annotation_schema,
+            segmentation_source=None,
+            table_metadata=table_metadata,
+            with_crud_columns=with_crud_columns,
+        )
+        sqlalchemy_models.set_model(table_name, anno_model)
+
     if segmentation_source:
         seg_table_name = create_segmentation_table_name(table_name, segmentation_source)
         if not sqlalchemy_models.contains_model(seg_table_name):
 
-            model = create_sqlalchemy_model(
+            seg_model = create_sqlalchemy_model(
                 table_name=table_name,
                 Schema=segmentation_schema,
                 segmentation_source=segmentation_source,
                 table_metadata=table_metadata,
                 with_crud_columns=with_crud_columns,
             )
-            sqlalchemy_models.set_model(seg_table_name, model)
+            sqlalchemy_models.set_model(seg_table_name, seg_model)
         return sqlalchemy_models.get_model(seg_table_name)
-
     else:
-        if not sqlalchemy_models.contains_model(table_name):
-
-            model = create_sqlalchemy_model(
-                table_name=table_name,
-                Schema=annotation_schema,
-                segmentation_source=None,
-                table_metadata=table_metadata,
-                with_crud_columns=with_crud_columns,
-            )
-            sqlalchemy_models.set_model(table_name, model)
-
         return sqlalchemy_models.get_model(table_name)
 
 
