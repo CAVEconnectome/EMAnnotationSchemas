@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from emannotationschemas import create_app
+from emannotationschemas.app import create_app
 
 
 @pytest.fixture(scope="session")
