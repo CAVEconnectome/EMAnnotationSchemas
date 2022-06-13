@@ -13,11 +13,6 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 
-class ReferenceTable(Base):
-    __tablename__ = "reference_table"
-    id = Column(BigInteger, primary_key=True)
-
-
 def parse_schemas():
     metadata_dict = {}
     for schema_name, schema_type in type_mapping.items():
