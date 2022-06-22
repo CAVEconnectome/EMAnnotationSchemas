@@ -18,7 +18,7 @@ depends_on = None
 
 
 def upgrade():
-    op.execute("CREATE EXTENSION postgis")
+    op.execute("CREATE EXTENSION IF NOT EXISTS postgis")
     # create placeholder reference annotation table target
     op.create_table('reference_table',
     sa.Column('id', sa.BigInteger(), nullable=False),
