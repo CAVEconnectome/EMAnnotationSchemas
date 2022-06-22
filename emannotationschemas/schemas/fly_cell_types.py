@@ -10,10 +10,6 @@ allowed_hemispheres = ["L", "R", "M", "U"]
 
 
 class FlyCellType(AnnotationSchema):
-
-    classification_system = mm.fields.String(
-        required=True, description="Classification system followed"
-    )
     pt = mm.fields.Nested(
         BoundSpatialPoint,
         required=True,
