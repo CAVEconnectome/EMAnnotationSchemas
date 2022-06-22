@@ -88,8 +88,8 @@ def run_migrations_online():
             render_item=render_item,
             include_object=include_object,
         )
-        # Base.metadata.bind = connectable
-        # Base.metadata.reflect()
+        target_metadata.bind = connectable
+        target_metadata.reflect()
 
         with context.begin_transaction():
             context.run_migrations()
