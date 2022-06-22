@@ -45,7 +45,7 @@ from emannotationschemas.schemas.fly_cell_types import FlyCellType, FlyCellTypeE
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = "4.1.1"
+__version__ = "4.2.0"
 
 type_mapping = {
     "synapse": SynapseSchema,
