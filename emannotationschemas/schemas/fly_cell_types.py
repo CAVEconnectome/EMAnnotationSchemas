@@ -20,7 +20,7 @@ class FlyCellType(AnnotationSchema):
         description="Location associated with classification",
     )
     cell_type = mm.fields.String(required=True, description="Cell type name")
-    hemisphere = mm.field.String(
+    hemisphere = mm.fields.String(
         required=True,
         default="U",
         description="Cell hemisphere",
