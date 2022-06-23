@@ -14,15 +14,15 @@ from emannotationschemas.models import (
 
 
 def test_format_database_name():
-    formated_name = format_database_name("test_aligned_volume", 1)
-    assert formated_name == "test_aligned_volume_v1"
+    formatted_name = format_database_name("test_aligned_volume", 1)
+    assert formatted_name == "test_aligned_volume_v1"
 
 
 def test_format_version_db_uri():
     sql_uri = "postgres://postgres:test@localhost:5432/test"
-    formated_db_name = format_version_db_uri(sql_uri, "test_aligned_volume", 1)
+    formatted_db_name = format_version_db_uri(sql_uri, "test_aligned_volume", 1)
     assert (
-        formated_db_name
+        formatted_db_name
         == "postgres://postgres:test@localhost:5432/test_aligned_volume_v1"
     )
 

@@ -1,6 +1,6 @@
 # Run a test server.
 from werkzeug.serving import WSGIRequestHandler
-from emannotationschemas import create_app
+from emannotationschemas.app import create_app
 import os
 
 HOME = os.path.expanduser("~")
