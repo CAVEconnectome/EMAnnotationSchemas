@@ -1,5 +1,5 @@
 Flask
-GeoAlchemy2
+geoalchemy2>=0.11.1<0.12.0
 marshmallow==3.5.1
 marshmallow-jsonschema==0.10.0
 pandas>=1.0.3
