@@ -10,6 +10,7 @@ from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
     FunctionalUnitCoregistrationExtended,
+    FunctionalUnitCoregistrationQC,
 )
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
@@ -57,7 +58,8 @@ type_mapping = {
     "postsynaptic_compartment": PostsynapticCompartment,
     "microns_func_coreg": FunctionalCoregistration,
     "microns_func_unit_coreg": FunctionalUnitCoregistration,
-    "microns_func_unit_ext_coreg": FunctionalUnitCoregistrationExtended,
+    "func_unit_ext_coreg": FunctionalUnitCoregistrationExtended,
+    "func_coreg_process_ref": FunctionalUnitCoregistrationQC,
     "cell_type_local": CellTypeLocal,
     "cell_type_reference": CellTypeReference,
     "nucleus_detection": NucleusDetection,
