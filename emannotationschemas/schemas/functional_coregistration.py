@@ -1,6 +1,9 @@
-from winreg import QueryReflectionKey
 import marshmallow as mm
-from emannotationschemas.schemas.base import AnnotationSchema, BoundSpatialPoint, ReferenceAnnotation
+from emannotationschemas.schemas.base import (
+    AnnotationSchema,
+    BoundSpatialPoint,
+    ReferenceAnnotation,
+)
 
 
 class FunctionalCoregistration(AnnotationSchema):
@@ -26,7 +29,7 @@ class FunctionalUnitCoregistration(AnnotationSchema):
         required=True, description="unique functional cell ID within the scan"
     )
 
-    
+
 class FunctionalUnitCoregistrationExtended(ReferenceAnnotation):
     session = mm.fields.Int(required=True, description="session ID of imaging")
     scan_idx = mm.fields.Int(
@@ -46,6 +49,6 @@ class FunctionalUnitCoregistrationExtended(ReferenceAnnotation):
         required=False, description="confidence score associated with match"
     )
 
+
 class FunctionalUnitCoregistrationQC(ReferenceAnnotation):
     pass
-
