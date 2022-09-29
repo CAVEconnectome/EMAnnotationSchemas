@@ -14,3 +14,4 @@ flask-accepts
 numpy>=1.18.4
 shapely
 jsonschema<4.0
+Werkzeug <= 2.1.2
