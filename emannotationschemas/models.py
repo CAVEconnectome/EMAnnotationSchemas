@@ -72,6 +72,10 @@ class ModelStore:
         else:
             self.container[table_name] = model
 
+    def reset_cache(self):
+        self.container = {}
+        self.flat_container = {}
+
 
 sqlalchemy_models = ModelStore()
 
@@ -193,6 +197,7 @@ def create_sqlalchemy_model(
     segmentation_source: str = None,
     table_metadata: dict = None,
     with_crud_columns: bool = False,
+    reset_cache: bool = False,
 ) -> DeclarativeMeta:
     """Create a SQLAlchemy model from supplied
     marshmallow schema.
@@ -223,10 +228,11 @@ def create_sqlalchemy_model(
         segmentation_source=segmentation_source,
         table_metadata=table_metadata,
         with_crud_columns=with_crud_columns,
+        reset_cache=reset_cache,
     )
-
+    if reset_cache:
+        Base.metadata.clear()
     table_name = table_dict.get("__tablename__")
-
     return type(table_name, (Base,), table_dict)
 
 
@@ -236,6 +242,7 @@ def create_table_dict(
     segmentation_source: str = None,
     table_metadata: dict = None,
     with_crud_columns: bool = False,
+    reset_cache: bool = False,
 ) -> dict:
     """Generate a dictionary of SQLAlchemy Columns that represent a table
 
@@ -260,7 +267,6 @@ def create_table_dict(
     ------
     InvalidTableMetaDataException
     """
-
     model_dict = {}
     if segmentation_source:
         model_dict.update(
@@ -290,6 +296,15 @@ def create_table_dict(
                 },
             }
         )
+    if reset_cache:
+        model_dict.update(
+            {
+                "__table_args__": {
+                    "extend_existing": True
+                },
+            }
+        )
+
     if with_crud_columns:
         model_dict.update(
             {
@@ -409,6 +424,7 @@ def make_annotation_model(
     schema_type: str,
     table_metadata: dict = None,
     with_crud_columns: bool = True,
+    reset_cache: bool = False
 ) -> DeclarativeMeta:
     """Make a SQLAlchemy annotation model from schema type.
 
@@ -443,6 +459,7 @@ def make_annotation_model(
         segmentation_source=None,
         table_metadata=table_metadata,
         with_crud_columns=with_crud_columns,
+        reset_cache=reset_cache
     )
 
 
@@ -452,6 +469,8 @@ def make_segmentation_model(
     segmentation_source: str,
     table_metadata: dict = None,
     with_crud_columns: bool = False,
+    reset_cache: bool = False
+
 ) -> DeclarativeMeta:
     """Make a SQLAlchemy segmentation model from schema type.
 
@@ -490,6 +509,7 @@ def make_segmentation_model(
         segmentation_source=segmentation_source,
         table_metadata=table_metadata,
         with_crud_columns=with_crud_columns,
+        reset_cache=reset_cache
     )
 
 
@@ -499,6 +519,7 @@ def make_reference_annotation_model(
     target_table: str,
     segmentation_source: str = None,
     with_crud_columns: bool = True,
+    reset_cache: bool = False
 ) -> DeclarativeMeta:
     """Helper method to create reference annotation tables.
 
@@ -538,6 +559,7 @@ def make_reference_annotation_model(
         segmentation_source=segmentation_source,
         table_metadata={"reference_table": target_table},
         with_crud_columns=with_crud_columns,
+        reset_cache=reset_cache
     )
 
 
@@ -547,6 +569,7 @@ def make_model_from_schema(
     segmentation_source: str = None,
     table_metadata: dict = None,
     with_crud_columns: bool = True,
+    reset_cache: bool = False,
 ) -> DeclarativeMeta:
     """Create either the annotation or segmentation
     SQLAlchemy model from the supplied schema type.
@@ -582,7 +605,8 @@ def make_model_from_schema(
     """
     Schema = get_schema(schema_type)
     annotation_schema, segmentation_schema = split_annotation_schema(Schema)
-
+    if reset_cache:
+        sqlalchemy_models.reset_cache()
     if not sqlalchemy_models.contains_model(table_name):
         anno_model = create_sqlalchemy_model(
             table_name=table_name,
@@ -590,6 +614,7 @@ def make_model_from_schema(
             segmentation_source=None,
             table_metadata=table_metadata,
             with_crud_columns=with_crud_columns,
+            reset_cache=reset_cache
         )
         sqlalchemy_models.set_model(table_name, anno_model)
 
@@ -603,6 +628,7 @@ def make_model_from_schema(
                 segmentation_source=segmentation_source,
                 table_metadata=table_metadata,
                 with_crud_columns=with_crud_columns,
+                reset_cache=reset_cache
             )
             sqlalchemy_models.set_model(seg_table_name, seg_model)
         return sqlalchemy_models.get_model(seg_table_name)
