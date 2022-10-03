@@ -687,6 +687,7 @@ def make_dataset_models(
     include_contacts: bool = False,
     metadata_dict: dict = None,
     with_crud_columns: bool = True,
+    reset_cache: bool = False
 ) -> dict:
     """Bulk create models for a given aligned_volume
 
@@ -729,6 +730,7 @@ def make_dataset_models(
             segmentation_source,
             table_metadata,
             with_crud_columns,
+            reset_cache
         )
     if include_contacts:
         table_name = f"{aligned_volume}__contact"
