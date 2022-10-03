@@ -596,6 +596,9 @@ def make_model_from_schema(
     with_crud_columns : bool, optional
         add additional created, deleted and superceded_id columns on
         an annotation table model, by default True
+    reset_cache: bool, optional
+        resets the sqlalchemy metadata and local cached model in case the target
+        model changes, by default False
 
     Returns
     -------
