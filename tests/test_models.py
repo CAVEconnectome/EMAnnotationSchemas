@@ -87,6 +87,20 @@ def test_make_model_annotation_from_schema():
     assert model_columns == columns
 
 
+def test_cache_not_updating():
+    model = make_model_from_schema("test_synapses", "synapse", with_crud_columns=False)
+    is_crud_col = [col.name for col in model.__table__.columns if col.name == "created"]
+    assert is_crud_col[0] == "created"
+
+
+def test_reset_cache_update():
+    model = make_model_from_schema(
+        "test_synapses", "synapse", with_crud_columns=False, reset_cache=True
+    )
+    is_crud_col = [col.name for col in model.__table__.columns if col.name == "created"]
+    assert not is_crud_col
+
+
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_make_segmentation_model():
     import warnings
