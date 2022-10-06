@@ -299,9 +299,7 @@ def create_table_dict(
     if reset_cache:
         model_dict.update(
             {
-                "__table_args__": {
-                    "extend_existing": True
-                },
+                "__table_args__": {"extend_existing": True},
             }
         )
 
@@ -424,7 +422,7 @@ def make_annotation_model(
     schema_type: str,
     table_metadata: dict = None,
     with_crud_columns: bool = True,
-    reset_cache: bool = False
+    reset_cache: bool = False,
 ) -> DeclarativeMeta:
     """Make a SQLAlchemy annotation model from schema type.
 
@@ -459,7 +457,7 @@ def make_annotation_model(
         segmentation_source=None,
         table_metadata=table_metadata,
         with_crud_columns=with_crud_columns,
-        reset_cache=reset_cache
+        reset_cache=reset_cache,
     )
 
 
@@ -469,8 +467,7 @@ def make_segmentation_model(
     segmentation_source: str,
     table_metadata: dict = None,
     with_crud_columns: bool = False,
-    reset_cache: bool = False
-
+    reset_cache: bool = False,
 ) -> DeclarativeMeta:
     """Make a SQLAlchemy segmentation model from schema type.
 
@@ -509,7 +506,7 @@ def make_segmentation_model(
         segmentation_source=segmentation_source,
         table_metadata=table_metadata,
         with_crud_columns=with_crud_columns,
-        reset_cache=reset_cache
+        reset_cache=reset_cache,
     )
 
 
@@ -519,7 +516,7 @@ def make_reference_annotation_model(
     target_table: str,
     segmentation_source: str = None,
     with_crud_columns: bool = True,
-    reset_cache: bool = False
+    reset_cache: bool = False,
 ) -> DeclarativeMeta:
     """Helper method to create reference annotation tables.
 
@@ -559,7 +556,7 @@ def make_reference_annotation_model(
         segmentation_source=segmentation_source,
         table_metadata={"reference_table": target_table},
         with_crud_columns=with_crud_columns,
-        reset_cache=reset_cache
+        reset_cache=reset_cache,
     )
 
 
@@ -617,7 +614,7 @@ def make_model_from_schema(
             segmentation_source=None,
             table_metadata=table_metadata,
             with_crud_columns=with_crud_columns,
-            reset_cache=reset_cache
+            reset_cache=reset_cache,
         )
         sqlalchemy_models.set_model(table_name, anno_model)
 
@@ -631,7 +628,7 @@ def make_model_from_schema(
                 segmentation_source=segmentation_source,
                 table_metadata=table_metadata,
                 with_crud_columns=with_crud_columns,
-                reset_cache=reset_cache
+                reset_cache=reset_cache,
             )
             sqlalchemy_models.set_model(seg_table_name, seg_model)
         return sqlalchemy_models.get_model(seg_table_name)
@@ -644,8 +641,9 @@ def make_flat_model(
     schema_type: str,
     segmentation_source: dict,
     table_metadata: dict = None,
+    reset_cache: bool = False,
 ) -> DeclarativeMeta:
-    """Create a flattend model of combining both the annotation
+    """Create a flattened model of combining both the annotation
     and segmentation columns into a single SQLAlchemy Model.
 
     Parameters
@@ -664,6 +662,8 @@ def make_flat_model(
     DeclarativeMeta
         SQLAlchemy Model instance
     """
+    if reset_cache:
+        sqlalchemy_models.reset_cache()
     if not sqlalchemy_models.contains_model(table_name, flat=True):
         Schema = get_schema(schema_type)
 
@@ -675,6 +675,7 @@ def make_flat_model(
             segmentation_source=segmentation_source,
             table_metadata=table_metadata,
             with_crud_columns=False,
+            reset_cache=reset_cache
         )
         FlatAnnotationModel = type(table_name, (FlatBase,), annotation_dict)
 
@@ -690,7 +691,7 @@ def make_dataset_models(
     include_contacts: bool = False,
     metadata_dict: dict = None,
     with_crud_columns: bool = True,
-    reset_cache: bool = False
+    reset_cache: bool = False,
 ) -> dict:
     """Bulk create models for a given aligned_volume
 
@@ -733,7 +734,7 @@ def make_dataset_models(
             segmentation_source,
             table_metadata,
             with_crud_columns,
-            reset_cache
+            reset_cache,
         )
     if include_contacts:
         table_name = f"{aligned_volume}__contact"
