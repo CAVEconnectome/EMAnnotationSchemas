@@ -664,6 +664,7 @@ def make_flat_model(
     """
     if reset_cache:
         sqlalchemy_models.reset_cache()
+        FlatBase.metadata.clear()
     if not sqlalchemy_models.contains_model(table_name, flat=True):
         Schema = get_schema(schema_type)
 
