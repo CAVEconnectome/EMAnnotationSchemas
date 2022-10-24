@@ -47,7 +47,7 @@ from emannotationschemas.schemas.braincircuits import BrainCircuitsBoundTagAnnot
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = "5.2.1"
+__version__ = "5.2.2"
 
 type_mapping = {
     "synapse": SynapseSchema,
