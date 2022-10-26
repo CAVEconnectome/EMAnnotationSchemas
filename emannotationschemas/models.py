@@ -575,8 +575,8 @@ def make_model_from_schema(
     -----
     If a segmentation source is included as an arg it will return
     the segmentation model of the schema.
-    Will return either the columns that are defined as part of the annotations
-    or segmentations but not both. To get a combined model see
+    Will return either the columns that are defined as part of the annotation
+    or segmentation model but not both. To get a combined model see
     :func:`emannotationschemas.models.make_flat_model`
 
     Parameters
@@ -639,7 +639,6 @@ def make_model_from_schema(
 def make_flat_model(
     table_name: str,
     schema_type: str,
-    segmentation_source: dict,
     table_metadata: dict = None,
     reset_cache: bool = False,
 ) -> DeclarativeMeta:
@@ -652,8 +651,6 @@ def make_flat_model(
         name of the table
     schema_type : str
         schema type, must be a valid type (hint see :func:`emannotationschemas.get_types`)
-    segmentation_source : dict
-        pcg table to use for root id lookups
     table_metadata : dict, optional
         optional metadata to attach to table, by default None
 
@@ -673,7 +670,7 @@ def make_flat_model(
         annotation_dict = create_table_dict(
             table_name=table_name,
             Schema=flat_schema,
-            segmentation_source=segmentation_source,
+            segmentation_source=None,
             table_metadata=table_metadata,
             with_crud_columns=False,
             reset_cache=reset_cache
