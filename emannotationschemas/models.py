@@ -11,6 +11,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
+    MetaData
 )
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
@@ -233,7 +234,7 @@ def create_sqlalchemy_model(
     if reset_cache:
         Base.metadata.clear()
     table_name = table_dict.get("__tablename__")
-    return type(table_name, (Base,), table_dict)
+    return type(table_name, (MetaData(),), table_dict)
 
 
 def create_table_dict(
@@ -676,9 +677,9 @@ def make_flat_model(
             segmentation_source=segmentation_source,
             table_metadata=table_metadata,
             with_crud_columns=False,
-            reset_cache=reset_cache
+            reset_cache=reset_cache,
         )
-        FlatAnnotationModel = type(table_name, (FlatBase,), annotation_dict)
+        FlatAnnotationModel = type(table_name, (MetaData(),), annotation_dict)
 
         sqlalchemy_models.set_model(table_name, FlatAnnotationModel, flat=True)
 
