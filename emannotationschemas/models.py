@@ -11,7 +11,8 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
-    MetaData
+    MetaData,
+    Table,
 )
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
@@ -32,8 +33,17 @@ from emannotationschemas.schemas.base import (
 
 from emannotationschemas.utils import create_segmentation_table_name
 
-Base = declarative_base()
-FlatBase = declarative_base()
+
+class ClassBase(object):
+    @classmethod
+    def __table_cls__(cls, *args, **kwargs):
+        t = Table(*args, **kwargs)
+        t.decl_class = cls
+        return t
+
+
+Base = declarative_base(cls=ClassBase)
+FlatBase = declarative_base(cls=ClassBase)
 
 field_column_map = {
     ReferenceTableField: BigInteger,
@@ -51,31 +61,28 @@ field_column_map = {
 
 
 class ModelStore:
-    def __init__(self):
-        self.container = {}
-        self.flat_container = {}
-
     def contains_model(self, table_name, flat=False):
+
         if flat:
-            return table_name in self.flat_container.keys()
+            metadata_table = FlatBase.metadata.tables.get(table_name)
         else:
-            return table_name in self.container.keys()
+            metadata_table = Base.metadata.tables.get(table_name)
+        if hasattr(metadata_table, "name"):
+            metadata_table_name = metadata_table.name
+        else:
+            return None
+        return table_name if table_name == metadata_table_name else None
 
     def get_model(self, table_name, flat=False):
         if flat:
-            return self.flat_container[table_name]
+            table = FlatBase.metadata.tables[table_name]
         else:
-            return self.container[table_name]
-
-    def set_model(self, table_name, model, flat=False):
-        if flat:
-            self.flat_container[table_name] = model
-        else:
-            self.container[table_name] = model
+            table = Base.metadata.tables[table_name]
+        return table.decl_class
 
     def reset_cache(self):
-        self.container = {}
-        self.flat_container = {}
+        Base.metadata.clear()
+        FlatBase.metadata.clear()
 
 
 sqlalchemy_models = ModelStore()
@@ -195,6 +202,7 @@ def split_annotation_schema(Schema):
 def create_sqlalchemy_model(
     table_name: str,
     Schema: mm.Schema,
+    metadata_base: declarative_base,
     segmentation_source: str = None,
     table_metadata: dict = None,
     with_crud_columns: bool = False,
@@ -232,9 +240,9 @@ def create_sqlalchemy_model(
         reset_cache=reset_cache,
     )
     if reset_cache:
-        Base.metadata.clear()
+        metadata_base.metadata.clear()
     table_name = table_dict.get("__tablename__")
-    return type(table_name, (MetaData(),), table_dict)
+    return type(table_name, (metadata_base,), table_dict)
 
 
 def create_table_dict(
@@ -612,13 +620,12 @@ def make_model_from_schema(
         anno_model = create_sqlalchemy_model(
             table_name=table_name,
             Schema=annotation_schema,
+            metadata_base=Base,
             segmentation_source=None,
             table_metadata=table_metadata,
             with_crud_columns=with_crud_columns,
             reset_cache=reset_cache,
         )
-        sqlalchemy_models.set_model(table_name, anno_model)
-
     if segmentation_source:
         seg_table_name = create_segmentation_table_name(table_name, segmentation_source)
         if not sqlalchemy_models.contains_model(seg_table_name):
@@ -626,12 +633,12 @@ def make_model_from_schema(
             seg_model = create_sqlalchemy_model(
                 table_name=table_name,
                 Schema=segmentation_schema,
+                metadata_base=Base,
                 segmentation_source=segmentation_source,
                 table_metadata=table_metadata,
                 with_crud_columns=with_crud_columns,
                 reset_cache=reset_cache,
             )
-            sqlalchemy_models.set_model(seg_table_name, seg_model)
         return sqlalchemy_models.get_model(seg_table_name)
     else:
         return sqlalchemy_models.get_model(table_name)
@@ -640,8 +647,8 @@ def make_model_from_schema(
 def make_flat_model(
     table_name: str,
     schema_type: str,
-    segmentation_source: dict,
     table_metadata: dict = None,
+    with_crud_columns: bool = False,
     reset_cache: bool = False,
 ) -> DeclarativeMeta:
     """Create a flattened model of combining both the annotation
@@ -653,11 +660,15 @@ def make_flat_model(
         name of the table
     schema_type : str
         schema type, must be a valid type (hint see :func:`emannotationschemas.get_types`)
-    segmentation_source : dict
-        pcg table to use for root id lookups
     table_metadata : dict, optional
         optional metadata to attach to table, by default None
-
+    with_crud_columns : bool, optional
+        add additional created, deleted and superceded_id columns on
+        an annotation table model, by default True
+    reset_cache: bool, optional
+        resets the sqlalchemy metadata and local cached model in case the target
+        model changes, by default False
+        
     Returns
     -------
     DeclarativeMeta
@@ -671,18 +682,15 @@ def make_flat_model(
 
         flat_schema = create_flattened_schema(Schema)
 
-        annotation_dict = create_table_dict(
+        flat_model = create_sqlalchemy_model(
             table_name=table_name,
             Schema=flat_schema,
-            segmentation_source=segmentation_source,
+            metadata_base=FlatBase,
+            segmentation_source=None,
             table_metadata=table_metadata,
-            with_crud_columns=False,
+            with_crud_columns=with_crud_columns,
             reset_cache=reset_cache,
         )
-        FlatAnnotationModel = type(table_name, (MetaData(),), annotation_dict)
-
-        sqlalchemy_models.set_model(table_name, FlatAnnotationModel, flat=True)
-
     return sqlalchemy_models.get_model(table_name, flat=True)
 
 
