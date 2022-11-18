@@ -12,7 +12,7 @@ from sqlalchemy import (
     Integer,
     String,
     MetaData,
-    Table
+    Table,
 )
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
@@ -33,12 +33,14 @@ from emannotationschemas.schemas.base import (
 
 from emannotationschemas.utils import create_segmentation_table_name
 
+
 class ClassBase(object):
     @classmethod
     def __table_cls__(cls, *args, **kwargs):
         t = Table(*args, **kwargs)
         t.decl_class = cls
         return t
+
 
 Base = declarative_base(cls=ClassBase)
 FlatBase = declarative_base(cls=ClassBase)
@@ -76,7 +78,7 @@ class ModelStore:
             table = FlatBase.metadata.tables[table_name]
         else:
             table = Base.metadata.tables[table_name]
-        return table.decl_class 
+        return table.decl_class
 
     def reset_cache(self):
         Base.metadata.clear()
@@ -658,11 +660,15 @@ def make_flat_model(
         name of the table
     schema_type : str
         schema type, must be a valid type (hint see :func:`emannotationschemas.get_types`)
-    segmentation_source : dict
-        pcg table to use for root id lookups
     table_metadata : dict, optional
         optional metadata to attach to table, by default None
-
+    with_crud_columns : bool, optional
+        add additional created, deleted and superceded_id columns on
+        an annotation table model, by default True
+    reset_cache: bool, optional
+        resets the sqlalchemy metadata and local cached model in case the target
+        model changes, by default False
+        
     Returns
     -------
     DeclarativeMeta
