@@ -11,7 +11,8 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
-    MetaData
+    MetaData,
+    Table
 )
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
@@ -32,8 +33,15 @@ from emannotationschemas.schemas.base import (
 
 from emannotationschemas.utils import create_segmentation_table_name
 
-Base = declarative_base()
-FlatBase = declarative_base()
+class ClassBase(object):
+    @classmethod
+    def __table_cls__(cls, *args, **kwargs):
+        t = Table(*args, **kwargs)
+        t.decl_class = cls
+        return t
+
+Base = declarative_base(cls=ClassBase)
+FlatBase = declarative_base(cls=ClassBase)
 
 field_column_map = {
     ReferenceTableField: BigInteger,
@@ -65,9 +73,10 @@ class ModelStore:
 
     def get_model(self, table_name, flat=False):
         if flat:
-            return FlatBase.metadata.tables[table_name]
+            table = FlatBase.metadata.tables[table_name]
         else:
-            return Base.metadata.tables[table_name]
+            table = Base.metadata.tables[table_name]
+        return table.decl_class 
 
     def reset_cache(self):
         Base.metadata.clear()
