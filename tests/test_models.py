@@ -1,7 +1,7 @@
 import marshmallow as mm
 import pytest
-from sqlalchemy import Table
 from emannotationschemas.models import (
+    Base,
     UnknownAnnotationTypeException,
     make_model_from_schema,
     make_flat_model,
@@ -10,7 +10,6 @@ from emannotationschemas.models import (
     make_annotation_model,
     format_database_name,
     format_version_db_uri,
-    sqlalchemy_models
 )
 
 
@@ -52,7 +51,7 @@ def test_make_annotation_model():
 
     with warnings.catch_warnings(record=True) as w:
         model = make_annotation_model("test_synapses", "synapse")
-    assert model.name == "test_synapses"
+    assert model.__name__ == "test_synapses"
 
     columns = [
         "id",
@@ -65,13 +64,13 @@ def test_make_annotation_model():
         "ctr_pt_position",
         "size",
     ]
-    model_columns = [column.name for column in model.columns]
+    model_columns = [column.name for column in model.__table__.columns]
     assert model_columns == columns
 
 
 def test_make_model_annotation_from_schema():
     model = make_model_from_schema("test_synapses", "synapse")
-    assert model.name == "test_synapses"
+    assert model.__name__ == "test_synapses"
 
     columns = [
         "id",
@@ -84,33 +83,13 @@ def test_make_model_annotation_from_schema():
         "ctr_pt_position",
         "size",
     ]
-    model_columns = [column.name for column in model.columns]
-    assert model_columns == columns
-
-
-def test_make_model_annotation_from_schema_with_reset_cache():
-    sqlalchemy_models.reset_cache()
-    model = make_model_from_schema("test_synapses", "synapse")
-    assert model.name == "test_synapses"
-
-    columns = [
-        "id",
-        "created",
-        "deleted",
-        "superceded_id",
-        "valid",
-        "pre_pt_position",
-        "post_pt_position",
-        "ctr_pt_position",
-        "size",
-    ]
-    model_columns = [column.name for column in model.columns]
+    model_columns = [column.name for column in model.__table__.columns]
     assert model_columns == columns
 
 
 def test_cache_not_updating():
     model = make_model_from_schema("test_synapses", "synapse", with_crud_columns=False)
-    is_crud_col = [col.name for col in model.columns if col.name == "created"]
+    is_crud_col = [col.name for col in model.__table__.columns if col.name == "created"]
     assert is_crud_col[0] == "created"
 
 
@@ -118,7 +97,7 @@ def test_reset_cache_update():
     model = make_model_from_schema(
         "test_synapses", "synapse", with_crud_columns=False, reset_cache=True
     )
-    is_crud_col = [col.name for col in model.columns if col.name == "created"]
+    is_crud_col = [col.name for col in model.__table__.columns if col.name == "created"]
     assert not is_crud_col
 
 
@@ -130,7 +109,7 @@ def test_make_segmentation_model():
         model = make_segmentation_model(
             "test_synapses", "synapse", "test_pcg", with_crud_columns=False
         )
-    assert model.name == "test_synapses__test_pcg"
+    assert model.__name__ == "test_synapses__test_pcg"
 
     columns = [
         "id",
@@ -139,7 +118,7 @@ def test_make_segmentation_model():
         "post_pt_supervoxel_id",
         "post_pt_root_id",
     ]
-    model_columns = [column.name for column in model.columns]
+    model_columns = [column.name for column in model.__table__.columns]
     assert model_columns == columns
 
 
@@ -147,7 +126,7 @@ def test_make_model_segmentation_from_schema():
     model = make_model_from_schema(
         "test_synapses", "synapse", "test_pcg", with_crud_columns=False
     )
-    assert model.name == "test_synapses__test_pcg"
+    assert model.__name__ == "test_synapses__test_pcg"
 
     columns = [
         "id",
@@ -156,13 +135,13 @@ def test_make_model_segmentation_from_schema():
         "post_pt_supervoxel_id",
         "post_pt_root_id",
     ]
-    model_columns = [column.name for column in model.columns]
+    model_columns = [column.name for column in model.__table__.columns]
     assert model_columns == columns
 
 
 def test_make_flat_model():
     model = make_flat_model("flat_synapses", "synapse", "test_pcg")
-    assert model.name == "flat_synapses"
+    assert model.__name__ == "flat_synapses"
     columns = [
         "id",
         "valid",
@@ -175,17 +154,17 @@ def test_make_flat_model():
         "ctr_pt_position",
         "size",
     ]
-    model_columns = [column.name for column in model.columns]
+    model_columns = [column.name for column in model.__table__.columns]
     assert model_columns == columns
 
 
 def check_model_dict(model_dict, schema_type, table_name):
     synapse_model = model_dict[schema_type]
-    assert synapse_model.name == table_name
-    assert isinstance(synapse_model, Table)
+    assert synapse_model.__name__ == table_name
+    assert issubclass(synapse_model, Base)
 
 
-def test_wrong_reference_schema():
+def test_wrong_reference_schmea():
     """Check that non-reference schema skips
     reference schema columns during model creation when
     optional metadata dict is passed with a reference"""
