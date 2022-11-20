@@ -636,7 +636,7 @@ def make_model_from_schema(
                 metadata_base=Base,
                 segmentation_source=segmentation_source,
                 table_metadata=table_metadata,
-                with_crud_columns=with_crud_columns,
+                with_crud_columns=False,
                 reset_cache=reset_cache,
             )
         return sqlalchemy_models.get_model(seg_table_name)
