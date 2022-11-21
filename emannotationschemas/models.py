@@ -365,6 +365,7 @@ def add_column(model_dict: dict, key: str, field: str) -> dict:
                 )
             )
         elif field_type == ReferenceTableField:
+            print(field_type)
             reference_table_name = model_dict.pop("reference_table_name")
             foreign_key_name = f"{reference_table_name}.id"
             model_dict[key] = Column(
@@ -415,7 +416,7 @@ def validate_reference_table_metadata(
 
     if field_metadata == MetaDataTypes.REFERENCE.value:
         if type(table_metadata) is not dict:
-            msg = "no metadata provided for reference annotation"
+            msg = 'Reference metadata must be supplied as a dict in the form {"reference_table": "your_target_table"}'
             raise (InvalidTableMetaDataException(msg))
         else:
             try:
@@ -668,7 +669,7 @@ def make_flat_model(
     reset_cache: bool, optional
         resets the sqlalchemy metadata and local cached model in case the target
         model changes, by default False
-        
+
     Returns
     -------
     DeclarativeMeta
