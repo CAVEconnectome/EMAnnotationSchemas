@@ -180,3 +180,13 @@ class FlatSegmentationReferenceSinglePoint(ReferenceAnnotation):
         required=True,
         description="the point to be used for attaching objects to the dynamic segmentation",
     )
+
+
+class RepresentativePoint(AnnotationSchema):
+    """Bound spatial point annotation"""
+
+    pt = mm.fields.Nested(
+        BoundSpatialPoint,
+        required=True,
+        description="the point to be used for attaching objects to the dynamic segmentation",
+    )
