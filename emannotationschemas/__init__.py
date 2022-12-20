@@ -10,10 +10,13 @@ from emannotationschemas.schemas.base import ReferenceAnnotation
 from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
-    FunctionalUnitCoregistrationExtended
+    FunctionalUnitCoregistrationExtended,
 )
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
-from emannotationschemas.schemas.base import FlatSegmentationReferenceSinglePoint
+from emannotationschemas.schemas.base import (
+    FlatSegmentationReferenceSinglePoint,
+    RepresentativePoint,
+)
 from emannotationschemas.schemas.cell_type_local import CellTypeLocal, CellTypeReference
 from emannotationschemas.schemas.bound_text_tag import (
     BoundTagAnnotation,
@@ -42,7 +45,9 @@ from emannotationschemas.schemas.proofreading import (
 from emannotationschemas.schemas.neuropil import FlyNeuropil
 from emannotationschemas.schemas.groups import SimpleGroup
 from emannotationschemas.schemas.fly_cell_types import FlyCellType, FlyCellTypeExt
-from emannotationschemas.schemas.braincircuits import BrainCircuitsBoundTagAnnotationUser
+from emannotationschemas.schemas.braincircuits import (
+    BrainCircuitsBoundTagAnnotationUser,
+)
 
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
@@ -82,6 +87,7 @@ type_mapping = {
     "proofreading_boolstatus_user": ProofreadingBoolStatusUser,
     "fly_neuropil": FlyNeuropil,
     "reference_point": FlatSegmentationReferenceSinglePoint,
+    "representative_point": RepresentativePoint,
     "reference_synapse_valid": ValidSynapse,
     "reference_simple_group": SimpleGroup,
     "fly_cell_type": FlyCellType,
