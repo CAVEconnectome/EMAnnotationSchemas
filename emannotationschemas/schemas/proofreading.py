@@ -72,22 +72,6 @@ class CompartmentProofreadStatusReference(ReferenceAnnotation):
         description=f"Proofread status of the axon only. {options_text}",
     )
 
-class CompartmentProofreadStatusReference(ReferenceAnnotation):
-    user_id = fields.Int(
-        required=False,
-        description="User who assessed the proofreading status.",
-    )
-    status_dendrite = fields.String(
-        required=True,
-        validate=validate.OneOf(proofread_choices),
-        description=f"Proofread status of the dendrite only. {options_text}",
-    )
-    status_axon = fields.String(
-        required=True,
-        validate=validate.OneOf(proofread_choices),
-        description=f"Proofread status of the axon only. {options_text}",
-    )
-
 class APLProofreadStatusReference(ReferenceAnnotation):
     user_id = fields.Int(
         required=False,
