@@ -6,8 +6,8 @@ from emannotationschemas.schemas.base import (
 )
 from marshmallow import fields, validate
 
-proofread_choices = ["non", "clean", "extended", "roughly clean", "roughly extended"]
-options_text = "Options are: 'non' to indicate no comprehensive proofreading, 'clean' to indicate comprehensive removal of false merges, 'roughly clean' to indicate partial removal of false merges, 'extended' to indicate comprehensive extension of neurite tips, and 'roughly extended' to indicate partial extension of neurite tips."
+proofread_choices = ["non", "clean", "extended"]
+options_text = "Options are: 'non' to indicate no comprehensive proofreading, 'clean' to indicate comprehensive removal of false merges, and 'extended' to mean comprehensive extension of neurite tips"
 
 
 class PointWithValid(AnnotationSchema):
@@ -70,4 +70,34 @@ class CompartmentProofreadStatusReference(ReferenceAnnotation):
         required=True,
         validate=validate.OneOf(proofread_choices),
         description=f"Proofread status of the axon only. {options_text}",
+    )
+
+class CompartmentProofreadStatusReference(ReferenceAnnotation):
+    user_id = fields.Int(
+        required=False,
+        description="User who assessed the proofreading status.",
+    )
+    status_dendrite = fields.String(
+        required=True,
+        validate=validate.OneOf(proofread_choices),
+        description=f"Proofread status of the dendrite only. {options_text}",
+    )
+    status_axon = fields.String(
+        required=True,
+        validate=validate.OneOf(proofread_choices),
+        description=f"Proofread status of the axon only. {options_text}",
+    )
+
+class APLProofreadStatusReference(ReferenceAnnotation):
+    user_id = fields.Int(
+        required=False,
+        description="User who assessed the proofreading status.",
+    )
+    status_dendrite = fields.String(
+        required=True,
+        description=f"Proofread status of the dendrite only.",
+    )
+    status_axon = fields.String(
+        required=True,
+        description=f"Proofread status of the axon only.",
     )
