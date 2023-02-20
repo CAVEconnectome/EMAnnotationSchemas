@@ -1,0 +1,15 @@
+Flask
+geoalchemy2>=0.11.1
+marshmallow
+marshmallow-jsonschema>=0.13
+pandas>=1.0.3
+psycopg2-binary
+python-dateutil
+SQLAlchemy
+flask_cors
+flask-admin
+flask-restx
+flask-accepts
+numpy>=1.18.4
+shapely
+jsonschema
