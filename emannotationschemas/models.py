@@ -365,7 +365,6 @@ def add_column(model_dict: dict, key: str, field: str) -> dict:
                 )
             )
         elif field_type == ReferenceTableField:
-            print(field_type)
             reference_table_name = model_dict.pop("reference_table_name")
             foreign_key_name = f"{reference_table_name}.id"
             model_dict[key] = Column(
