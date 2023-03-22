@@ -52,7 +52,7 @@ from emannotationschemas.schemas.braincircuits import (
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = "5.6.0"
+__version__ = "5.7.0"
 
 type_mapping = {
     "synapse": SynapseSchema,
