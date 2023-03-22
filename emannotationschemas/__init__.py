@@ -6,7 +6,7 @@ from emannotationschemas.schemas.synapse import BuhmannEcksteinSynapseSchema
 from emannotationschemas.schemas.synapse import NoCleftSynapse
 from emannotationschemas.schemas.bouton_shape import BoutonShape
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
-from emannotationschemas.schemas.base import ReferenceAnnotation
+from emannotationschemas.schemas.base import ReferenceAnnotation, ReferenceTagAnnotation
 from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
@@ -66,6 +66,7 @@ type_mapping = {
     "microns_func_unit_coreg": FunctionalUnitCoregistration,
     "func_unit_ext_coreg": FunctionalUnitCoregistrationExtended,
     "simple_reference": ReferenceAnnotation,
+    "reference_tag": ReferenceTagAnnotation,
     "cell_type_local": CellTypeLocal,
     "cell_type_reference": CellTypeReference,
     "nucleus_detection": NucleusDetection,
