@@ -284,7 +284,12 @@ def create_table_dict(
                     table_name, segmentation_source
                 ),
                 "id": Column(
-                    BigInteger, ForeignKey(f"{table_name}.id"), primary_key=True
+                    BigInteger,
+                    ForeignKey(
+                        f"{table_name}.id",
+                        ondelete="CASCADE",
+                    ),
+                    primary_key=True,
                 ),
                 "__mapper_args__": {
                     "polymorphic_identity": create_segmentation_table_name(
@@ -368,7 +373,12 @@ def add_column(model_dict: dict, key: str, field: str) -> dict:
             reference_table_name = model_dict.pop("reference_table_name")
             foreign_key_name = f"{reference_table_name}.id"
             model_dict[key] = Column(
-                BigInteger, ForeignKey(foreign_key_name), index=has_index
+                BigInteger,
+                ForeignKey(
+                    foreign_key_name,
+                    ondelete="CASCADE",
+                ),
+                index=has_index,
             )
         else:
             model_dict[key] = Column(field_column_map[field_type], index=has_index)
