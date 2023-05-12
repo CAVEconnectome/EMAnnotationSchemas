@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, Flask, jsonify, redirect, url_for
+from flask import Blueprint, Flask, jsonify, redirect
 from flask_restx import Api
 
 from emannotationschemas.blueprint_app import api_bp
