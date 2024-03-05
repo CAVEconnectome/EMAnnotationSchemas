@@ -24,3 +24,8 @@ def test_get_synapse_schema(app, client):
     assert "SynapseSchema" in schema["definitions"]
     assert "pre_pt" in schema["definitions"]["SynapseSchema"]["properties"]
     assert "post_pt" in schema["definitions"]["SynapseSchema"]["properties"]
+
+def test_all_types(client):
+    response = client.get("/schema/api/v2/types_all")
+    assert response.status_code == 200
+    assert isinstance(response.json, dict)
