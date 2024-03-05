@@ -1,4 +1,4 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.7
+FROM tiangolo/uwsgi-nginx-flask:python3.11
 
 ENV UWSGI_INI ./uwsgi.ini
 RUN python -m pip install --upgrade pip
