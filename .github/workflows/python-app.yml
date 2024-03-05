@@ -19,7 +19,7 @@ jobs:
     - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.11
 
     - uses: actions/cache@v2
       with:
@@ -39,7 +39,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        
+    
+    - name: Install service dependencies
+      run: |
+        if [ -f requirements_service.txt ]; then pip install -r requirements_service.txt; fi
+
     - name: Install test dependencies
       run: |
         python -m pip install --upgrade pip
