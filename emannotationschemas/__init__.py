@@ -48,6 +48,11 @@ from emannotationschemas.schemas.fly_cell_types import FlyCellType, FlyCellTypeE
 from emannotationschemas.schemas.braincircuits import (
     BrainCircuitsBoundTagAnnotationUser,
 )
+from emannotationschemas.schemas.bound_bool_tag import (
+    BoundBoolAnnotation,
+    BoundBoolWithValid,
+    BoundTagWithValid,
+)
 
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
@@ -94,8 +99,10 @@ type_mapping = {
     "fly_cell_type": FlyCellType,
     "fly_cell_type_ext": FlyCellTypeExt,
     "braincircuits_annotation_user": BrainCircuitsBoundTagAnnotationUser,
+    "bound_tag_bool": BoundBoolAnnotation,
+    "bound_tag_bool_valid": BoundBoolWithValid,
+    "bound_tag_valid": BoundTagWithValid,
 }
-
 
 def get_types():
     return [k for k in type_mapping.keys()]
