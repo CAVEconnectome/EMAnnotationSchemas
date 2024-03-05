@@ -5,4 +5,3 @@ jsonschema<4.0
 SQLAlchemy<1.4
 shapely==2.0.3
 geoalchemy2>=0.11.1, <0.12.0
-
