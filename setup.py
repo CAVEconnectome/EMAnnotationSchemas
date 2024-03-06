@@ -19,13 +19,14 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
-
 with open('requirements.txt', 'r') as f:
     required = f.read().splitlines()
 
 with open('test_requirements.txt', 'r') as f:
     test_required = f.read().splitlines()
 
+with open('requirements_service.txt', 'r') as f:
+    required_service = f.read().splitlines()
 
 setup(
     version=find_version("emannotationschemas", "__init__.py"),
@@ -35,9 +36,11 @@ setup(
     author='Forrest Collman',
     author_email='forrestc@alleninstitute.org',
     url='https://github.com/fcollman/EMAnnotationSchemas',
+    python_requires='>=3.8',
     packages=find_packages(),
     include_package_data=True,
     install_requires=required,
     setup_requires=['pytest-runner'],
-    tests_require=test_required
+    tests_require=test_required+required_service,
+    extras_require={'service': required_service},
 )
