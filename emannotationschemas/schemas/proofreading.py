@@ -2,6 +2,7 @@ from emannotationschemas.schemas.base import (
     AnnotationSchema,
     BoundSpatialPoint,
     NumericField,
+    ReferenceAnnotation
 )
 from marshmallow import fields, validate
 
@@ -53,4 +54,34 @@ class ProofreadingBoolStatusUser(ProofreadingBoolStatus):
     user_id = fields.Int(
         required=True,
         description="User who assessed the proofreading status.",
+    )
+
+class CompartmentProofreadStatusReference(ReferenceAnnotation):
+    user_id = fields.Int(
+        required=False,
+        description="User who assessed the proofreading status.",
+    )
+    status_dendrite = fields.String(
+        required=True,
+        validate=validate.OneOf(proofread_choices),
+        description=f"Proofread status of the dendrite only. {options_text}",
+    )
+    status_axon = fields.String(
+        required=True,
+        validate=validate.OneOf(proofread_choices),
+        description=f"Proofread status of the axon only. {options_text}",
+    )
+
+class GeneralProofreadStatusReference(ReferenceAnnotation):
+    user_id = fields.Int(
+        required=False,
+        description="User who assessed the proofreading status.",
+    )
+    status_dendrite = fields.String(
+        required=True,
+        description=f"Proofread status of the dendrite only. Can be any string.",
+    )
+    status_axon = fields.String(
+        required=True,
+        description=f"Proofread status of the axon only. Can be any string.",
     )

@@ -41,6 +41,8 @@ from emannotationschemas.schemas.proofreading import (
     CompartmentProofreadStatus,
     ProofreadStatus,
     ProofreadingBoolStatusUser,
+    CompartmentProofreadStatusReference,
+    GeneralProofreadStatusReference
 )
 from emannotationschemas.schemas.neuropil import FlyNeuropil
 from emannotationschemas.schemas.groups import SimpleGroup
@@ -90,6 +92,8 @@ type_mapping = {
     "derived_numeric_value": DerivedNumeric,
     "proofread_status": ProofreadStatus,
     "compartment_proofread_status": CompartmentProofreadStatus,
+    "compartment_proofread_status_reference": CompartmentProofreadStatusReference,
+    "general_proofread_status_reference": GeneralProofreadStatusReference,
     "proofreading_boolstatus_user": ProofreadingBoolStatusUser,
     "fly_neuropil": FlyNeuropil,
     "reference_point": FlatSegmentationReferenceSinglePoint,
