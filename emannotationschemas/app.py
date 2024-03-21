@@ -2,6 +2,7 @@ import logging
 
 from flask import Blueprint, Flask, jsonify, redirect, url_for
 from flask_restx import Api
+from flask_cors import CORS
 
 from emannotationschemas.blueprint_app import api_bp
 from emannotationschemas.config import configure_app
@@ -12,7 +13,6 @@ __version__ = "5.11.0"
 
 
 def create_app(test_config=None):
-
     # Define the Flask Object
     app = Flask(
         __name__,
@@ -20,6 +20,7 @@ def create_app(test_config=None):
         static_url_path="/schema/static",
         instance_relative_config=True,
     )
+    CORS(app, expose_headers="WWW-Authenticate")
 
     logging.basicConfig(level=logging.DEBUG)
 
