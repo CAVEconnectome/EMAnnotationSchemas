@@ -4,6 +4,7 @@ from emannotationschemas.schemas.synapse import ValidSynapse
 from emannotationschemas.schemas.synapse import BuhmannSynapseSchema
 from emannotationschemas.schemas.synapse import BuhmannEcksteinSynapseSchema
 from emannotationschemas.schemas.synapse import NoCleftSynapse
+from emannotationschemas.schemas.synapse import SynapseWithNeuron
 from emannotationschemas.schemas.bouton_shape import BoutonShape
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.schemas.base import ReferenceAnnotation, ReferenceTagAnnotation
@@ -102,6 +103,7 @@ type_mapping = {
     "bound_tag_bool": BoundBoolAnnotation,
     "bound_tag_bool_valid": BoundBoolWithValid,
     "bound_tag_valid": BoundTagWithValid,
+    "synapse_with_neuron": SynapseWithNeuron,
 }
 
 def get_types():

@@ -88,3 +88,32 @@ class ValidSynapse(ReferenceAnnotation):
         required=True,
         description="Valid annotation for synapses",
     )
+
+class SynapseWithNeuron(SynapseSchema):
+    pre_neuron_pt = mm.fields.Nested(
+        BoundSpatialPoint,
+        required=True,
+        description="a point of the sample voxel of the neuron where the presynaptic compartment of the synapse is located",
+        order=3,
+    )
+    post_neuron_pt = mm.fields.Nested(
+        BoundSpatialPoint,
+        required=True,
+        description="a point of the sample voxel of the neuron where the postsynaptic compartment of the synapse is located",
+        order=4,
+    )
+
+    @mm.post_load
+    def check_root_id(self, data, **kwargs):
+        pre_neuron_id = data["pre_neuron_pt"].get("root_id", None)
+        post_neuron_id = data["post_neuron_pt"].get("root_id", None)
+        # when the root_id is present
+        # we should set the valid flag depending up on this rule
+        # when the root_id is not present
+        # (i.e. when posting new annotations with no root_id's in mind)
+        # then the valid flag should be not present
+        if pre_neuron_id is not None:
+            data["valid"] = False if pre_neuron_id == post_neuron_id else True
+        else:
+            data.pop("valid", None)
+        return data
