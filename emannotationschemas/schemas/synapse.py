@@ -50,6 +50,10 @@ class SynapseSchema(BaseSynapseSchema):
     size = mm.fields.Float(description="size of synapse")
 
 
+class NoCenterSynapse(BaseSynapseSchema):
+    size = mm.fields.Float(description="size of synapse")
+
+
 class BuhmannSynapseSchema(BaseSynapseSchema):
     connection_score = mm.fields.Float(
         description="score assigned by Buhmann et al. 2019"

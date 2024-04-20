@@ -1,4 +1,5 @@
 from emannotationschemas.schemas.synapse import SynapseSchema
+from emannotationschemas.schemas.synapse import NoCenterSynapse
 from emannotationschemas.schemas.synapse import PlasticSynapse
 from emannotationschemas.schemas.synapse import ValidSynapse
 from emannotationschemas.schemas.synapse import BuhmannSynapseSchema
@@ -62,6 +63,7 @@ __version__ = "5.12.0"
 type_mapping = {
     "synapse": SynapseSchema,
     "nocleft_synapse": NoCleftSynapse,
+    "nocenter_synapse": NoCenterSynapse,
     "fly_synapse": BuhmannSynapseSchema,
     "fly_nt_synapse": BuhmannEcksteinSynapseSchema,
     "bouton_shape": BoutonShape,
