@@ -5,7 +5,7 @@ from marshmallow_jsonschema import JSONSchema
 from emannotationschemas import get_schema, get_types
 from emannotationschemas.errors import UnknownAnnotationTypeException
 
-__version__ = "5.12.0"
+__version__ = "5.13.0"
 
 authorizations = {
     "apikey": {"type": "apiKey", "in": "query", "name": "middle_auth_token"}
