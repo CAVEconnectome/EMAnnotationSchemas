@@ -13,6 +13,7 @@ from emannotationschemas.schemas.functional_coregistration import (
     FunctionalUnitCoregistration,
     FunctionalUnitCoregistrationExtended,
 )
+from emannotationschemas.schemas.functional_props import FunctionalPropertiesBCM
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
 from emannotationschemas.schemas.base import (
     FlatSegmentationReferenceSinglePoint,
@@ -72,6 +73,7 @@ type_mapping = {
     "microns_func_coreg": FunctionalCoregistration,
     "microns_func_unit_coreg": FunctionalUnitCoregistration,
     "func_unit_ext_coreg": FunctionalUnitCoregistrationExtended,
+    "func_properties_bcm": FunctionalPropertiesBCM,
     "simple_reference": ReferenceAnnotation,
     "reference_tag": ReferenceTagAnnotation,
     "cell_type_local": CellTypeLocal,
@@ -105,6 +107,7 @@ type_mapping = {
     "bound_tag_bool_valid": BoundBoolWithValid,
     "bound_tag_valid": BoundTagWithValid,
 }
+
 
 def get_types():
     return [k for k in type_mapping.keys()]
