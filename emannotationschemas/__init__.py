@@ -59,7 +59,7 @@ from emannotationschemas.schemas.bound_bool_tag import (
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = "5.13.0"
+__version__ = "5.14.0"
 
 type_mapping = {
     "synapse": SynapseSchema,
