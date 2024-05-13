@@ -9,6 +9,7 @@ from emannotationschemas.schemas.synapse import (
     NoCleftSynapse,
     PlasticSynapse,
     SynapseSchema,
+    SynapseWithNeuron,
 )
 
 good_base_synapse = {
@@ -80,6 +81,13 @@ good_plastic_synapse = {
     "plasticity": 1,
 }
 
+good_synapse_with_neuron = {
+    "pre_pt": {"position": [31, 31, 0]},
+    "ctr_pt": {"position": [32, 32, 0]},
+    "post_pt": {"position": [33, 33, 0]},
+    "pre_neuron_pt": {"position": [34, 34, 0]},
+    "post_neuron_pt": {"position": [35, 35, 0]},
+}
 # class PlasticSynapse(SynapseSchema):
 #     plasticity = mm.fields.Int(required=True,
 #                                validate=mm.validate.OneOf([0, 1, 2, 3, 4]),
@@ -203,3 +211,19 @@ def test_synapse_invalid():
     schema = SynapseSchema()
     with pytest.raises(mm.ValidationError):
         result = schema.load(supervoxel_rootId_invalid_synapse)
+
+def test_synapse_with_neuron():
+    schema = SynapseWithNeuron()
+    result = schema.load(good_synapse_with_neuron)
+    assert result["pre_pt"]["position"] == [31, 31, 0]
+    assert result["pre_neuron_pt"]["position"] == [34, 34, 0]
+    assert result["post_neuron_pt"]["position"] == [35, 35, 0]
+
+
+def test_synapse_with_neuron_postgis():
+    schema = SynapseWithNeuron(context={"postgis": True})
+    result = schema.load(good_synapse_with_neuron)
+    d = flatten_dict(result)
+    assert d["pre_pt_position"] == "POINTZ(31 31 0)"
+    assert d["pre_neuron_pt_position"] == "POINTZ(34 34 0)"
+    assert d["post_neuron_pt_position"] == "POINTZ(35 35 0)"
