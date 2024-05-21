@@ -7,7 +7,11 @@ from emannotationschemas.schemas.synapse import BuhmannEcksteinSynapseSchema
 from emannotationschemas.schemas.synapse import NoCleftSynapse
 from emannotationschemas.schemas.bouton_shape import BoutonShape
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
-from emannotationschemas.schemas.base import ReferenceAnnotation, ReferenceTagAnnotation
+from emannotationschemas.schemas.base import (
+    ReferenceAnnotation,
+    ReferenceTagAnnotation,
+    ReferenceInteger,
+)
 from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
@@ -106,6 +110,7 @@ type_mapping = {
     "bound_tag_bool": BoundBoolAnnotation,
     "bound_tag_bool_valid": BoundBoolWithValid,
     "bound_tag_valid": BoundTagWithValid,
+    "reference_integer": ReferenceInteger,
 }
 
 
