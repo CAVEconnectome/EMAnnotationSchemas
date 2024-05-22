@@ -134,9 +134,9 @@ class SpatialPoint(mm.Schema):
     @mm.post_load
     def transform_position(self, data, **kwargs):
         if self.context.get("postgis", False):
-            data[
-                "position"
-            ] = f'POINTZ({data["position"][0]} {data["position"][1]} {data["position"][2]})'
+            data["position"] = (
+                f'POINTZ({data["position"][0]} {data["position"][1]} {data["position"][2]})'
+            )
 
         return data
 
@@ -189,4 +189,13 @@ class RepresentativePoint(AnnotationSchema):
         BoundSpatialPoint,
         required=True,
         description="the point to be used for attaching objects to the dynamic segmentation",
+    )
+
+
+class ReferenceInteger(ReferenceAnnotation):
+    """Reference annotation with an integer value"""
+
+    value = mm.fields.Int(
+        required=True,
+        description="Integer value to be attached to the annotation",
     )
