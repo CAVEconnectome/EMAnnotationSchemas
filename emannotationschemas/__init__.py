@@ -59,6 +59,9 @@ from emannotationschemas.schemas.bound_bool_tag import (
     BoundBoolWithValid,
     BoundTagWithValid,
 )
+from emannotationschemas.schemas.reference_text_float import (
+    ReferenceTagFloat,
+)
 
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
@@ -111,6 +114,7 @@ type_mapping = {
     "bound_tag_bool_valid": BoundBoolWithValid,
     "bound_tag_valid": BoundTagWithValid,
     "reference_integer": ReferenceInteger,
+    "reference_tag_float": ReferenceTagFloat,
 }
 
 
