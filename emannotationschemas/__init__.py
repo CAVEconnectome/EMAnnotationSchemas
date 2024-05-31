@@ -58,6 +58,7 @@ from emannotationschemas.schemas.bound_bool_tag import (
     BoundBoolAnnotation,
     BoundBoolWithValid,
     BoundTagWithValid,
+    SpatialPointBoolWithValid,
 )
 from emannotationschemas.schemas.reference_text_float import (
     ReferenceTagFloat,
@@ -113,6 +114,7 @@ type_mapping = {
     "bound_tag_bool": BoundBoolAnnotation,
     "bound_tag_bool_valid": BoundBoolWithValid,
     "bound_tag_valid": BoundTagWithValid,
+    "pt_bool_valid": SpatialPointBoolWithValid,
     "reference_integer": ReferenceInteger,
     "reference_tag_float": ReferenceTagFloat,
 }
