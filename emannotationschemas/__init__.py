@@ -47,6 +47,7 @@ from emannotationschemas.schemas.proofreading import (
     CompartmentProofreadStatus,
     ProofreadStatus,
     ProofreadingBoolStatusUser,
+    CompartmentProofreadStatusStrategy,
 )
 from emannotationschemas.schemas.neuropil import FlyNeuropil
 from emannotationschemas.schemas.groups import SimpleGroup
@@ -117,6 +118,7 @@ type_mapping = {
     "pt_bool_valid": SpatialPointBoolWithValid,
     "reference_integer": ReferenceInteger,
     "reference_tag_float": ReferenceTagFloat,
+    "compartment_proofread_status_strategy": CompartmentProofreadStatusStrategy,
 }
 
 
