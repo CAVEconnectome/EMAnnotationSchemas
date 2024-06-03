@@ -54,3 +54,21 @@ class ProofreadingBoolStatusUser(ProofreadingBoolStatus):
         required=True,
         description="User who assessed the proofreading status.",
     )
+
+class CompartmentProofreadStatusStrategy(PointWithValid):
+    status_dendrite = fields.Bool(
+        required=True,
+        description=f"Proofread status of the dendrite only. True indicates dendrite is at least clean.",
+    )
+    status_axon = fields.Bool(
+        required=True,
+        description=f"Proofread status of the axon only. True indicates axon is at least clean.",
+    )
+    strategy_dendrite = fields.String(
+        required=True,
+        description=f"Strategy used when proofreading dendrite. See table description for more details.",
+    )
+    strategy_axon = fields.String(
+        required=True,
+        description=f"Strategy used when proofreading axon. See table description for more details.",
+    )
