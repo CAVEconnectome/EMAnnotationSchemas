@@ -92,3 +92,22 @@ class ValidSynapse(ReferenceAnnotation):
         required=True,
         description="Valid annotation for synapses",
     )
+
+# Adding classes from https://github.com/aplbrain/BENCHMARK-Metadata/blob/1.1-and-1.2-annotation-metadata-for-review/annotation-metadata/CAVE-implemented-annotation-metadata-version-1.2.plantuml
+# With explanations from here: https://github.com/aplbrain/BENCHMARK-Metadata/blob/1.1-and-1.2-annotation-metadata-for-review/annotation-metadata/required-field-names.md
+class Chemical(BaseSynapseSchema):
+        presynaptic = mm.fields.Float(
+        description="Specialized sites that transmit signals between presynaptic neurons and their respective postsynaptic targets"
+    )
+        postsynaptic = mm.fields.Float(
+        description="Specialized sites that transmit signals between presynaptic neurons and their respective postsynaptic targets"
+    )
+        
+class Electrical(BaseSynapseSchema):
+        gap_junction_location = mm.fields.Float(
+        description="The location where channels that allow for cell to cell transfers between ions and small molecules"
+    )
+        gap_junction_id = mm.fields.Float(
+        description="The identification tag for gap junctions"
+    )
+        
