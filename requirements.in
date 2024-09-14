@@ -1,6 +1,6 @@
 marshmallow
 marshmallow-jsonschema
-numpy
+numpy<2
 jsonschema
 SQLAlchemy
 shapely

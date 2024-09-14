@@ -34,7 +34,7 @@ marshmallow==3.22.0
     #   marshmallow-jsonschema
 marshmallow-jsonschema==0.13.0
     # via -r requirements.in
-numpy==2.1.1
+numpy==1.26.4
     # via
     #   -r requirements.in
     #   pandas
