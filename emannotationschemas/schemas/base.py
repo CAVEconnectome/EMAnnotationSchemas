@@ -3,7 +3,7 @@ from enum import Enum
 import marshmallow as mm
 import numpy as np
 from geoalchemy2.shape import to_shape
-from geoalchemy2.types import WKBElement, WKTElement
+from geoalchemy2.elements import WKBElement, WKTElement
 from marshmallow import INCLUDE
 from sqlalchemy.sql.sqltypes import Integer
 
