@@ -6,3 +6,4 @@ SQLAlchemy
 shapely
 geoalchemy2
 flask-cors
+pandas

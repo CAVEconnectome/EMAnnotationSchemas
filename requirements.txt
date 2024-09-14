@@ -10,11 +10,11 @@ click==8.1.7
     # via flask
 flask==3.0.3
     # via flask-cors
-flask-cors==4.0.1
+flask-cors==5.0.0
     # via -r requirements.in
 geoalchemy2==0.15.2
     # via -r requirements.in
-greenlet==3.0.3
+greenlet==3.1.0
     # via sqlalchemy
 itsdangerous==2.2.0
     # via flask
@@ -34,14 +34,21 @@ marshmallow==3.22.0
     #   marshmallow-jsonschema
 marshmallow-jsonschema==0.13.0
     # via -r requirements.in
-numpy==2.1.0
+numpy==2.1.1
     # via
     #   -r requirements.in
+    #   pandas
     #   shapely
 packaging==24.1
     # via
     #   geoalchemy2
     #   marshmallow
+pandas==2.2.2
+    # via -r requirements.in
+python-dateutil==2.9.0.post0
+    # via pandas
+pytz==2024.2
+    # via pandas
 referencing==0.35.1
     # via
     #   jsonschema
@@ -52,11 +59,15 @@ rpds-py==0.20.0
     #   referencing
 shapely==2.0.6
     # via -r requirements.in
-sqlalchemy==2.0.32
+six==1.16.0
+    # via python-dateutil
+sqlalchemy==2.0.34
     # via
     #   -r requirements.in
     #   geoalchemy2
 typing-extensions==4.12.2
     # via sqlalchemy
+tzdata==2024.1
+    # via pandas
 werkzeug==3.0.4
     # via flask
