@@ -18,6 +18,22 @@ class MetaDataTypes(Enum):
     SPATIAL_POINT = "spatial_point"
     SUPERVOXEL_ID = "supervoxel_id"
 
+class EMBaseSchema(mm.Schema):
+    """Base schema that enforces consistent handling of optional fields"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name, field in self.fields.items():
+            if not field.required:
+                field.allow_none = True
+                if isinstance(field, mm.fields.Nested):
+
+                    nested_schema = field.schema
+                    if isinstance(nested_schema, mm.Schema):
+                        for nested_field in nested_schema.fields.values():
+                            if not nested_field.required:
+                                nested_field.allow_none = True
+
 
 class NumericField(mm.fields.Int):
     def _jsonschema_type_mapping(self):
@@ -81,7 +97,7 @@ class IdSchema(mm.Schema):
     oid = mm.fields.Int(description="identifier for annotation, unique in type")
 
 
-class AnnotationSchema(mm.Schema):
+class AnnotationSchema(EMBaseSchema):
     class Meta:
         unknown = INCLUDE
 
@@ -120,7 +136,7 @@ class ReferenceTagAnnotation(ReferenceAnnotation, TagAnnotation):
     """A tag attached to another annotation"""
 
 
-class SpatialPoint(mm.Schema):
+class SpatialPoint(EMBaseSchema):
     """a position in the segmented volume"""
 
     position = PostGISField(
