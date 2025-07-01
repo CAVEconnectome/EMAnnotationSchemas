@@ -16,6 +16,7 @@ from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
     FunctionalUnitCoregistrationExtended,
+    V1DDFunctionalUnitCoregistration,
 )
 from emannotationschemas.schemas.functional_props import FunctionalPropertiesBCM
 from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
@@ -81,6 +82,7 @@ type_mapping = {
     "postsynaptic_compartment": PostsynapticCompartment,
     "microns_func_coreg": FunctionalCoregistration,
     "microns_func_unit_coreg": FunctionalUnitCoregistration,
+    "v1dd_func_unit_coreg": V1DDFunctionalUnitCoregistration,
     "func_unit_ext_coreg": FunctionalUnitCoregistrationExtended,
     "func_properties_bcm": FunctionalPropertiesBCM,
     "simple_reference": ReferenceAnnotation,

@@ -15,6 +15,8 @@ class FunctionalCoregistration(AnnotationSchema):
     func_id = mm.fields.Int(required=True, description="functional cell ID")
 
 
+
+
 class FunctionalUnitCoregistration(AnnotationSchema):
     pt = mm.fields.Nested(
         BoundSpatialPoint,
@@ -27,6 +29,30 @@ class FunctionalUnitCoregistration(AnnotationSchema):
     )
     unit_id = mm.fields.Int(
         required=True, description="unique functional cell ID within the scan"
+    )
+
+class V1DDFunctionalUnitCoregistration(AnnotationSchema):
+    pt = mm.fields.Nested(
+        BoundSpatialPoint,
+        required=True,
+        description="location of cell body of functional cell",
+    )
+    column = mm.fields.Int(required=True, description="The index of the column, a set of volumes that were vertically stacked")
+    volume = mm.fields.Int(
+        required=True, description="index of the volume within the column"
+    )
+    plane = mm.fields.Int(
+        required=False, description="index of imaging plane within the volume"
+    )
+    roi = mm.fields.Int(
+        required=True, description="index of the roi within the plane"
+    )
+    residual = mm.fields.Float(
+        required=False,
+        description="distance between nucleus centroid and functional centroid after transformation",
+    )
+    score = mm.fields.Float(
+        required=False, description="a confidence score associated with match"
     )
 
 
