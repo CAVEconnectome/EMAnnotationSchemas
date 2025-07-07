@@ -69,7 +69,7 @@ from emannotationschemas.schemas.reference_text_float import (
 from emannotationschemas.errors import UnknownAnnotationTypeException
 from emannotationschemas.flatten import create_flattened_schema
 
-__version__ = "5.19.0"
+__version__ = "5.20.0"
 
 type_mapping = {
     "synapse": SynapseSchema,
