@@ -11,6 +11,7 @@ from emannotationschemas.schemas.base import (
     ReferenceAnnotation,
     ReferenceTagAnnotation,
     ReferenceInteger,
+    ReferenceTagWithConfidence,
 )
 from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
