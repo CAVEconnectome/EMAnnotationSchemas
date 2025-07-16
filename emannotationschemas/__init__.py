@@ -1,60 +1,12 @@
-from emannotationschemas.schemas.synapse import SynapseSchema
-from emannotationschemas.schemas.synapse import NoCenterSynapse
-from emannotationschemas.schemas.synapse import PlasticSynapse
-from emannotationschemas.schemas.synapse import ValidSynapse
-from emannotationschemas.schemas.synapse import BuhmannSynapseSchema
-from emannotationschemas.schemas.synapse import BuhmannEcksteinSynapseSchema
-from emannotationschemas.schemas.synapse import NoCleftSynapse
-from emannotationschemas.schemas.bouton_shape import BoutonShape
-from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
-from emannotationschemas.schemas.base import (
-    ReferenceAnnotation,
-    ReferenceTagAnnotation,
-    ReferenceInteger,
-)
-from emannotationschemas.schemas.functional_coregistration import (
-    FunctionalCoregistration,
-    FunctionalUnitCoregistration,
-    FunctionalUnitCoregistrationExtended,
-    V1DDFunctionalUnitCoregistration,
-)
-from emannotationschemas.schemas.functional_props import FunctionalPropertiesBCM
-from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
+from emannotationschemas.errors import UnknownAnnotationTypeException
+from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.schemas.base import (
     FlatSegmentationReferenceSinglePoint,
+    ReferenceAnnotation,
+    ReferenceInteger,
+    ReferenceTagAnnotation,
+    ReferenceTagWithConfidence,
     RepresentativePoint,
-)
-from emannotationschemas.schemas.cell_type_local import CellTypeLocal, CellTypeReference
-from emannotationschemas.schemas.bound_text_tag import (
-    BoundTagAnnotation,
-    BoundDoubleTagAnnotation,
-    Bound2TagAnnotation,
-    BoundTagAnnotationUser,
-    BoundDoubleTagAnnotationUser,
-    Bound2TagAnnotationUser,
-)
-from emannotationschemas.schemas.glia_contact import GliaContact
-from emannotationschemas.schemas.contact import Contact
-from emannotationschemas.schemas.extended_classical_cell_type import (
-    ExtendedClassicalCellType,
-)
-from emannotationschemas.schemas.nucleus_detection import NucleusDetection
-from emannotationschemas.schemas.derived_spatial_point import (
-    DerivedSpatialPoint,
-    DerivedTag,
-    DerivedNumeric,
-)
-from emannotationschemas.schemas.proofreading import (
-    CompartmentProofreadStatus,
-    ProofreadStatus,
-    ProofreadingBoolStatusUser,
-    CompartmentProofreadStatusStrategy,
-)
-from emannotationschemas.schemas.neuropil import FlyNeuropil
-from emannotationschemas.schemas.groups import SimpleGroup
-from emannotationschemas.schemas.fly_cell_types import FlyCellType, FlyCellTypeExt
-from emannotationschemas.schemas.braincircuits import (
-    BrainCircuitsBoundTagAnnotationUser,
 )
 from emannotationschemas.schemas.bound_bool_tag import (
     BoundBoolAnnotation,
@@ -62,12 +14,60 @@ from emannotationschemas.schemas.bound_bool_tag import (
     BoundTagWithValid,
     SpatialPointBoolWithValid,
 )
+from emannotationschemas.schemas.bound_text_tag import (
+    Bound2TagAnnotation,
+    Bound2TagAnnotationUser,
+    BoundDoubleTagAnnotation,
+    BoundDoubleTagAnnotationUser,
+    BoundTagAnnotation,
+    BoundTagAnnotationUser,
+)
+from emannotationschemas.schemas.bouton_shape import BoutonShape
+from emannotationschemas.schemas.braincircuits import (
+    BrainCircuitsBoundTagAnnotationUser,
+)
+from emannotationschemas.schemas.cell_type_local import CellTypeLocal, CellTypeReference
+from emannotationschemas.schemas.contact import Contact
+from emannotationschemas.schemas.derived_spatial_point import (
+    DerivedNumeric,
+    DerivedSpatialPoint,
+    DerivedTag,
+)
+from emannotationschemas.schemas.extended_classical_cell_type import (
+    ExtendedClassicalCellType,
+)
+from emannotationschemas.schemas.fly_cell_types import FlyCellType, FlyCellTypeExt
+from emannotationschemas.schemas.functional_coregistration import (
+    FunctionalCoregistration,
+    FunctionalUnitCoregistration,
+    FunctionalUnitCoregistrationExtended,
+    V1DDFunctionalUnitCoregistration,
+)
+from emannotationschemas.schemas.functional_props import FunctionalPropertiesBCM
+from emannotationschemas.schemas.glia_contact import GliaContact
+from emannotationschemas.schemas.groups import SimpleGroup
+from emannotationschemas.schemas.neuropil import FlyNeuropil
+from emannotationschemas.schemas.nucleus_detection import NucleusDetection
+from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
+from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
+from emannotationschemas.schemas.proofreading import (
+    CompartmentProofreadStatus,
+    CompartmentProofreadStatusStrategy,
+    ProofreadingBoolStatusUser,
+    ProofreadStatus,
+)
 from emannotationschemas.schemas.reference_text_float import (
     ReferenceTagFloat,
 )
-
-from emannotationschemas.errors import UnknownAnnotationTypeException
-from emannotationschemas.flatten import create_flattened_schema
+from emannotationschemas.schemas.synapse import (
+    BuhmannEcksteinSynapseSchema,
+    BuhmannSynapseSchema,
+    NoCenterSynapse,
+    NoCleftSynapse,
+    PlasticSynapse,
+    SynapseSchema,
+    ValidSynapse,
+)
 
 __version__ = "5.20.0"
 
@@ -121,6 +121,7 @@ type_mapping = {
     "reference_integer": ReferenceInteger,
     "reference_tag_float": ReferenceTagFloat,
     "compartment_proofread_status_strategy": CompartmentProofreadStatusStrategy,
+    "reference_tag_with_confidence": ReferenceTagWithConfidence,
 }
 
 

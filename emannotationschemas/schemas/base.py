@@ -18,8 +18,10 @@ class MetaDataTypes(Enum):
     SPATIAL_POINT = "spatial_point"
     SUPERVOXEL_ID = "supervoxel_id"
 
+
 class EMBaseSchema(mm.Schema):
     """Base schema that enforces consistent handling of optional fields"""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -27,7 +29,6 @@ class EMBaseSchema(mm.Schema):
             if not field.required:
                 field.allow_none = True
                 if isinstance(field, mm.fields.Nested):
-
                     nested_schema = field.schema
                     if isinstance(nested_schema, mm.Schema):
                         for nested_field in nested_schema.fields.values():
@@ -151,7 +152,7 @@ class SpatialPoint(EMBaseSchema):
     def transform_position(self, data, **kwargs):
         if self.context.get("postgis", False):
             data["position"] = (
-                f'POINTZ({data["position"][0]} {data["position"][1]} {data["position"][2]})'
+                f"POINTZ({data['position'][0]} {data['position'][1]} {data['position'][2]})"
             )
 
         return data
@@ -214,4 +215,13 @@ class ReferenceInteger(ReferenceAnnotation):
     value = mm.fields.Int(
         required=True,
         description="Integer value to be attached to the annotation",
+    )
+
+
+class ReferenceTagWithConfidence(ReferenceAnnotation):
+    """Reference annotation with a float value describing confidence in the tag"""
+
+    confidence = mm.fields.Float(
+        required=True,
+        description="Confidence value to be attached to the annotation",
     )
