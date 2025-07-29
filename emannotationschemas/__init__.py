@@ -122,7 +122,7 @@ type_mapping = {
     "reference_tag_float": ReferenceTagFloat,
     "compartment_proofread_status_strategy": CompartmentProofreadStatusStrategy,
     "reference_tag_with_confidence": ReferenceTagWithConfidence,
-    "digital_twin_properties", DigitalTwinPropertiesBCM
+    "digital_twin_properties": DigitalTwinPropertiesBCM
 }
 
 
