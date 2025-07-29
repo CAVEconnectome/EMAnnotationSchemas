@@ -41,9 +41,9 @@ from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
     FunctionalUnitCoregistrationExtended,
-    V1DDFunctionalUnitCoregistration,
+    V1DDFunctionalUnitCoregistration
 )
-from emannotationschemas.schemas.functional_props import FunctionalPropertiesBCM
+from emannotationschemas.schemas.functional_props import FunctionalPropertiesBCM, DigitalTwinPropertiesBCM
 from emannotationschemas.schemas.glia_contact import GliaContact
 from emannotationschemas.schemas.groups import SimpleGroup
 from emannotationschemas.schemas.neuropil import FlyNeuropil
@@ -122,6 +122,7 @@ type_mapping = {
     "reference_tag_float": ReferenceTagFloat,
     "compartment_proofread_status_strategy": CompartmentProofreadStatusStrategy,
     "reference_tag_with_confidence": ReferenceTagWithConfidence,
+    "digital_twin_properties", DigitalTwinPropertiesBCM
 }
 
 
