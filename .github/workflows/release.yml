@@ -131,7 +131,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: CAVEconnectome/cave-helm-charts
-          token: ${{ secrets.HELM_CHART_UPDATE_TOKEN }}
+          token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
           path: helm-charts
           
       - name: Update Chart.yaml appVersion
