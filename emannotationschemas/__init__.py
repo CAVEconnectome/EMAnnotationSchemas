@@ -81,7 +81,7 @@ from emannotationschemas.schemas.synapse import (
     ValidSynapse,
 )
 
-__version__ = "5.24.10"
+__version__ = "5.24.11"
 
 type_mapping = {
     "synapse": SynapseSchema,
