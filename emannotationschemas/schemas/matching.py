@@ -22,6 +22,7 @@ class CellMatch(AnnotationSchema):
     match_id = mm.fields.Str(
         required=True,
         description="Unique identifier for cell from another dataset",
+        index=True,
     )
     score = mm.fields.Float(
         required=True,
@@ -71,6 +72,7 @@ class CellMatchReference(ReferenceAnnotation):
     match_id = mm.fields.Str(
         required=True,
         description="Unique identifier for cell from another dataset",
+        index=True,
     )
     score = mm.fields.Float(
         required=True,
