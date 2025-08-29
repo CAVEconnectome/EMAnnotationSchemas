@@ -15,7 +15,7 @@ on:
         description: "Dry run"
         type: boolean
         required: true
-        default: true
+        default: false
       skip-tests:
         description: "Skip tests"
         type: boolean
