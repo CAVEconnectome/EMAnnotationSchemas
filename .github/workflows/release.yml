@@ -189,7 +189,7 @@ jobs:
               workflow_id: 'update-dependency.yml',
               ref: 'master',
               inputs: {
-                dependency: 'EMAnnotationSchemas',
+                dependency: 'emannotationschemas',
                 version: '${{ needs.bump.outputs.VERSION }}',
                 bump_type: 'minor'
               }
@@ -207,7 +207,7 @@ jobs:
               workflow_id: 'update-dependency.yml',
               ref: 'master',
               inputs: {
-                dependency: 'EMAnnotationSchemas',
+                dependency: 'emannotationschemas',
                 version: '${{ needs.bump.outputs.VERSION }}',
                 bump_type: 'minor'
               }
