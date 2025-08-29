@@ -74,7 +74,7 @@ class CellMatchReference(ReferenceAnnotation):
     )
     score = mm.fields.Float(
         required=True,
-        description="Normalised NBLAST similarity score [for CAVE schema, could be any numeric score]",
+        description="Normalized NBLAST similarity score [for CAVE schema, could be any numeric score]",
     )
     validation = mm.fields.Bool(
         required=False,
