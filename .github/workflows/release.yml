@@ -178,10 +178,29 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - name: Wait for PyPI propagation
+      - name: Wait and verify PyPI availability
         run: |
-          echo "Waiting 15 seconds for PyPI package to propagate..."
-          sleep 15
+          echo "Checking if emannotationschemas==${{ needs.bump.outputs.VERSION }} is available on PyPI..."
+          
+          # Retry for up to 10 minutes (20 attempts * 30 seconds)
+          for i in {1..20}; do
+            echo "Attempt $i/20: Checking PyPI availability..."
+            if pip index versions emannotationschemas | grep -q "${{ needs.bump.outputs.VERSION }}"; then
+              echo "✅ Package version found on PyPI on attempt $i"
+              echo "emannotationschemas==${{ needs.bump.outputs.VERSION }} is now available"
+              break
+            else
+              echo "❌ Package version not found on PyPI on attempt $i"
+              if [ $i -lt 20 ]; then
+                echo "Waiting 30 seconds before retry..."
+                sleep 30
+              else
+                echo "❌ Package still not available after 10 minutes of retries"
+                echo "This indicates a serious issue with PyPI publishing - failing workflow"
+                exit 1
+              fi
+            fi
+          done
           
       - name: Update AnnotationEngine dependency
         uses: actions/github-script@v7
