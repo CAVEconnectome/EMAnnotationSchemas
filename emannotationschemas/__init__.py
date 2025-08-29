@@ -26,7 +26,11 @@ from emannotationschemas.schemas.bouton_shape import BoutonShape
 from emannotationschemas.schemas.braincircuits import (
     BrainCircuitsBoundTagAnnotationUser,
 )
-from emannotationschemas.schemas.cell_type_local import CellTypeLocal, CellTypeReference
+from emannotationschemas.schemas.cell_type_local import (
+    CellTypeLocal,
+    CellTypeReference,
+    CellTypeReferenceUser,
+)
 from emannotationschemas.schemas.contact import Contact
 from emannotationschemas.schemas.derived_spatial_point import (
     DerivedNumeric,
@@ -41,9 +45,12 @@ from emannotationschemas.schemas.functional_coregistration import (
     FunctionalCoregistration,
     FunctionalUnitCoregistration,
     FunctionalUnitCoregistrationExtended,
-    V1DDFunctionalUnitCoregistration
+    V1DDFunctionalUnitCoregistration,
 )
-from emannotationschemas.schemas.functional_props import FunctionalPropertiesBCM, DigitalTwinPropertiesBCM
+from emannotationschemas.schemas.functional_props import (
+    FunctionalPropertiesBCM,
+    DigitalTwinPropertiesBCM,
+)
 from emannotationschemas.schemas.glia_contact import GliaContact
 from emannotationschemas.schemas.groups import SimpleGroup
 from emannotationschemas.schemas.neuropil import FlyNeuropil
@@ -58,6 +65,11 @@ from emannotationschemas.schemas.proofreading import (
 )
 from emannotationschemas.schemas.reference_text_float import (
     ReferenceTagFloat,
+)
+from emannotationschemas.schemas.matching import (
+    CellMatch,
+    CellSimilarity,
+    CellMatchReference,
 )
 from emannotationschemas.schemas.synapse import (
     BuhmannEcksteinSynapseSchema,
@@ -89,6 +101,7 @@ type_mapping = {
     "reference_tag": ReferenceTagAnnotation,
     "cell_type_local": CellTypeLocal,
     "cell_type_reference": CellTypeReference,
+    "cell_type_reference_user": CellTypeReferenceUser,
     "nucleus_detection": NucleusDetection,
     "bound_tag": BoundTagAnnotation,
     "bound_double_tag": BoundDoubleTagAnnotation,
@@ -122,7 +135,10 @@ type_mapping = {
     "reference_tag_float": ReferenceTagFloat,
     "compartment_proofread_status_strategy": CompartmentProofreadStatusStrategy,
     "reference_tag_with_confidence": ReferenceTagWithConfidence,
-    "digital_twin_properties": DigitalTwinPropertiesBCM
+    "digital_twin_properties": DigitalTwinPropertiesBCM,
+    "cell_match": CellMatch,
+    "cell_similarity": CellSimilarity,
+    "cell_match_reference": CellMatchReference,
 }
 
 

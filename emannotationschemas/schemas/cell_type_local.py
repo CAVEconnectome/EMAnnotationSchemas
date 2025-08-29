@@ -1,5 +1,9 @@
 import marshmallow as mm
-from emannotationschemas.schemas.base import AnnotationSchema, BoundSpatialPoint, ReferenceAnnotation
+from emannotationschemas.schemas.base import (
+    AnnotationSchema,
+    BoundSpatialPoint,
+    ReferenceAnnotation,
+)
 
 allowed_types = dict(
     valence=["e", "i", "g", "uncertain"],
@@ -77,14 +81,12 @@ class CellTypeLocal(AnnotationSchema):
         return item
 
 
-
 class CellTypeReference(ReferenceAnnotation):
 
     classification_system = mm.fields.String(
         required=True, description="Classification system followed"
     )
     cell_type = mm.fields.String(required=True, description="Cell type name")
-
 
     @mm.post_load
     def validate_type(self, item, **kwargs):
@@ -99,3 +101,11 @@ class CellTypeReference(ReferenceAnnotation):
             item["valid"] = True
 
         return item
+
+
+class CellTypeReferenceUser(CellTypeReference):
+    """CellTypeReference schema with user tracking"""
+
+    user_id = mm.fields.Int(
+        required=True, description="User who created the cell type classification."
+    )
