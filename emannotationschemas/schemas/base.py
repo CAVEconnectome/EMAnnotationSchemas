@@ -216,12 +216,3 @@ class ReferenceInteger(ReferenceAnnotation):
         required=True,
         description="Integer value to be attached to the annotation",
     )
-
-
-class ReferenceTagWithConfidence(ReferenceAnnotation):
-    """Reference annotation with a float value describing confidence in the tag"""
-
-    confidence = mm.fields.Float(
-        required=True,
-        description="Confidence value to be attached to the annotation",
-    )
