@@ -1,0 +1,9 @@
+marshmallow
+marshmallow-jsonschema
+numpy<2
+jsonschema
+SQLAlchemy
+shapely
+geoalchemy2
+flask-cors
+pandas
