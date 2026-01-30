@@ -9,7 +9,7 @@ from emannotationschemas.config import configure_app
 from emannotationschemas.utils import get_instance_folder_path
 from emannotationschemas.views import views_bp
 
-__version__ = "5.24.12"
+__version__ = "5.24.13"
 
 
 def create_app(test_config=None):
