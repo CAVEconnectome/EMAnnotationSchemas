@@ -1,6 +1,7 @@
 import marshmallow as mm
-from emannotationschemas.schemas.base import ReferenceAnnotation
 from marshmallow.validate import OneOf
+
+from emannotationschemas.schemas.base import BoundSpatialPoint, ReferenceAnnotation
 
 allowed_compartments = [
     "soma",
@@ -12,7 +13,6 @@ allowed_dendrite_classes = ["basal", "apical"]
 
 
 class PostsynapticCompartment(ReferenceAnnotation):
-
     compartment = mm.fields.Str(
         required=True,
         validate=OneOf(allowed_compartments),
@@ -33,4 +33,6 @@ class PostsynapticCompartment(ReferenceAnnotation):
 
 
 class Spine(BoundSpatialPoint):
-    volume = mm.fields.Float(required=False, description="Estimated volume of the spine")
+    volume = mm.fields.Float(
+        required=False, description="Estimated volume of the spine"
+    )
