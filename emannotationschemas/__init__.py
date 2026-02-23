@@ -48,14 +48,22 @@ from emannotationschemas.schemas.functional_coregistration import (
     V1DDFunctionalUnitCoregistration,
 )
 from emannotationschemas.schemas.functional_props import (
-    FunctionalPropertiesBCM,
     DigitalTwinPropertiesBCM,
+    FunctionalPropertiesBCM,
 )
 from emannotationschemas.schemas.glia_contact import GliaContact
 from emannotationschemas.schemas.groups import SimpleGroup, SimpleGroupIndexed
+from emannotationschemas.schemas.matching import (
+    CellMatch,
+    CellMatchReference,
+    CellSimilarity,
+)
 from emannotationschemas.schemas.neuropil import FlyNeuropil
 from emannotationschemas.schemas.nucleus_detection import NucleusDetection
-from emannotationschemas.schemas.postsynaptic_compartment import PostsynapticCompartment
+from emannotationschemas.schemas.postsynaptic_compartment import (
+    PostsynapticCompartment,
+    SpineWithInfo,
+)
 from emannotationschemas.schemas.presynaptic_bouton_type import PresynapticBoutonType
 from emannotationschemas.schemas.proofreading import (
     CompartmentProofreadStatus,
@@ -65,11 +73,6 @@ from emannotationschemas.schemas.proofreading import (
 )
 from emannotationschemas.schemas.reference_text_float import (
     ReferenceTagFloat,
-)
-from emannotationschemas.schemas.matching import (
-    CellMatch,
-    CellSimilarity,
-    CellMatchReference,
 )
 from emannotationschemas.schemas.synapse import (
     BuhmannEcksteinSynapseSchema,
@@ -92,6 +95,7 @@ type_mapping = {
     "bouton_shape": BoutonShape,
     "presynaptic_bouton_type": PresynapticBoutonType,
     "postsynaptic_compartment": PostsynapticCompartment,
+    "spine_with_info": SpineWithInfo,
     "microns_func_coreg": FunctionalCoregistration,
     "microns_func_unit_coreg": FunctionalUnitCoregistration,
     "v1dd_func_unit_coreg": V1DDFunctionalUnitCoregistration,
