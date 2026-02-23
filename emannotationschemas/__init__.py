@@ -52,7 +52,7 @@ from emannotationschemas.schemas.functional_props import (
     FunctionalPropertiesBCM,
 )
 from emannotationschemas.schemas.glia_contact import GliaContact
-from emannotationschemas.schemas.groups import SimpleGroup
+from emannotationschemas.schemas.groups import SimpleGroup, SimpleGroupIndexed
 from emannotationschemas.schemas.matching import (
     CellMatch,
     CellMatchReference,
@@ -128,6 +128,7 @@ type_mapping = {
     "representative_point": RepresentativePoint,
     "reference_synapse_valid": ValidSynapse,
     "reference_simple_group": SimpleGroup,
+    "reference_simple_group_indexed": SimpleGroupIndexed,
     "fly_cell_type": FlyCellType,
     "fly_cell_type_ext": FlyCellTypeExt,
     "braincircuits_annotation_user": BrainCircuitsBoundTagAnnotationUser,

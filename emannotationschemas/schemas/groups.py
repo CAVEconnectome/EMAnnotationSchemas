@@ -7,3 +7,10 @@ class SimpleGroup(ReferenceAnnotation):
         required=True,
         description="group id",
     )
+
+class SimpleGroupIndexed(ReferenceAnnotation):
+    group_id = mm.fields.Int(
+        required=True,
+        description="group id",
+        index=True,
+    )
