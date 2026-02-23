@@ -32,7 +32,7 @@ class PostsynapticCompartment(ReferenceAnnotation):
     )
 
 
-class Spine(BoundSpatialPoint):
+class SpineWithInfo(BoundSpatialPoint):
     volume = mm.fields.Float(
         required=False, description="Estimated volume of the spine"
     )
