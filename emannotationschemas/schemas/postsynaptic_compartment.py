@@ -36,3 +36,8 @@ class Spine(BoundSpatialPoint):
     volume = mm.fields.Float(
         required=False, description="Estimated volume of the spine"
     )
+
+    n_inputs = mm.fields.Int(
+        required=False,
+        description="Number of synaptic inputs (unique root IDs) onto the spine",
+    )
