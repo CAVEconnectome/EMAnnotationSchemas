@@ -3,11 +3,13 @@ from emannotationschemas.schemas.groups import SimpleGroup, SimpleGroupIndexed
 good_simple_group = {
     "pt": {"position": [31, 32, 33]},
     "group_id": 42,
+    "target_id": 456,
 }
 
 good_simple_group_indexed = {
     "pt": {"position": [10, 20, 30]},
     "group_id": 123,
+    "target_id": 456,
 }
 
 
