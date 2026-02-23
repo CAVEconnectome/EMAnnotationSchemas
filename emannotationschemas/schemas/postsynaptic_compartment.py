@@ -30,3 +30,7 @@ class PostsynapticCompartment(ReferenceAnnotation):
         validate=OneOf(allowed_dendrite_classes),
         description="Type of dendritic branch, e.g. basal or apical",
     )
+
+
+class Spine(BoundSpatialPoint):
+    volume = mm.fields.Float(required=False, description="Estimated volume of the spine")
