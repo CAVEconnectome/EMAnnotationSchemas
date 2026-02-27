@@ -42,7 +42,7 @@ class SpineWithInfo(AnnotationSchema):
         required=True,
         description="Spatial point representing the location of the spine",
     )
-    
+
     volume = mm.fields.Float(
         required=False, description="Estimated volume of the spine"
     )
@@ -51,5 +51,3 @@ class SpineWithInfo(AnnotationSchema):
         required=False,
         description="Number of synaptic inputs (unique root IDs) onto the spine",
     )
-
-   
