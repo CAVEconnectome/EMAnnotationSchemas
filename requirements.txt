@@ -1,6 +1,6 @@
 marshmallow==3.5.1
 marshmallow-jsonschema==0.10.0
-numpy>=1.18.4
+numpy>=1.18.4,<2
 jsonschema<4.0
 SQLAlchemy>=1.4,<2
 shapely>=2.0.3
