@@ -1,6 +1,7 @@
 import marshmallow as mm
 from emannotationschemas.schemas.base import (
     AnnotationSchema,
+    AutoUserIdField,
     BoundSpatialPoint,
     ReferenceAnnotation,
 )
@@ -106,6 +107,6 @@ class CellTypeReference(ReferenceAnnotation):
 class CellTypeReferenceUser(CellTypeReference):
     """CellTypeReference schema with user tracking"""
 
-    user_id = mm.fields.Int(
-        required=True, description="User who created the cell type classification."
+    user_id = AutoUserIdField(
+        required=False, description="User who created the cell type classification, auto-populated from auth."
     )

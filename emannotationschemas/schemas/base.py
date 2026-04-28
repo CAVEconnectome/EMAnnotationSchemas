@@ -92,6 +92,18 @@ class ReferenceTableField(mm.fields.Field):
         return int(value)
 
 
+class AutoUserIdField(mm.fields.Int):
+    """Int field automatically populated with the authenticated user's ID by AnnotationEngine.
+
+    Mark a schema field with this type to have AnnotationEngine inject the
+    requesting user's ID on every insert and update. Clients do not need to
+    (and cannot) supply this value — the server always overrides it from auth
+    context, preventing spoofing.
+    """
+
+    pass
+
+
 class IdSchema(mm.Schema):
     """schema with a unique identifier"""
 

@@ -1,5 +1,6 @@
 from emannotationschemas.schemas.base import (
     AnnotationSchema,
+    AutoUserIdField,
     BoundSpatialPoint,
     NumericField,
 )
@@ -50,9 +51,9 @@ class ProofreadingBoolStatus(PointWithValid):
 
 
 class ProofreadingBoolStatusUser(ProofreadingBoolStatus):
-    user_id = fields.Int(
-        required=True,
-        description="User who assessed the proofreading status.",
+    user_id = AutoUserIdField(
+        required=False,
+        description="User who assessed the proofreading status, auto-populated from auth.",
     )
 
 class CompartmentProofreadStatusStrategy(PointWithValid):

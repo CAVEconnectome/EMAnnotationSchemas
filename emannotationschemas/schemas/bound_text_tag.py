@@ -1,5 +1,5 @@
 import marshmallow as mm
-from emannotationschemas.schemas.base import AnnotationSchema, BoundSpatialPoint
+from emannotationschemas.schemas.base import AnnotationSchema, AutoUserIdField, BoundSpatialPoint
 
 
 class BoundTagAnnotation(AnnotationSchema):
@@ -21,15 +21,15 @@ class Bound2TagAnnotation(BoundTagAnnotation):
 
 
 class BoundTagAnnotationUser(BoundTagAnnotation):
-    user_id = mm.fields.Int(required=True, description="User who created the tag.")
+    user_id = AutoUserIdField(required=False, description="User who created the tag, auto-populated from auth.")
 
 
 class BoundDoubleTagAnnotationUser(BoundDoubleTagAnnotation):
-    user_id = mm.fields.Int(
-        required=True,
-        description=f"User who created the tag.",
+    user_id = AutoUserIdField(
+        required=False,
+        description="User who created the tag, auto-populated from auth.",
     )
 
 
 class Bound2TagAnnotationUser(Bound2TagAnnotation):
-    user_id = mm.fields.Int(required=True, description="User who created the tag.")
+    user_id = AutoUserIdField(required=False, description="User who created the tag, auto-populated from auth.")
