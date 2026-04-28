@@ -55,13 +55,13 @@ def test_schema_rejects_missing_user_id():
 
 
 def test_model_creation_with_auto_user_id_field():
-    model = make_model_from_schema("test_auto_user_id_table", _UserSchema, reset_cache=True)
+    model = make_model_from_schema("test_auto_user_id_table", "bound_tag_user", reset_cache=True)
     col_names = [col.name for col in model.__table__.columns]
     assert "user_id" in col_names
 
 
 def test_auto_user_id_column_is_biginteger():
-    model = make_model_from_schema("test_auto_user_id_col_type", _UserSchema, reset_cache=True)
+    model = make_model_from_schema("test_auto_user_id_col_type", "bound_tag_user", reset_cache=True)
     user_id_col = next(col for col in model.__table__.columns if col.name == "user_id")
     assert isinstance(user_id_col.type, BigInteger)
 
