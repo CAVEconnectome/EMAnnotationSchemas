@@ -8,6 +8,6 @@ class BrainCircuitsBoundTagAnnotationUser(AnnotationSchema):
     )
     tag = mm.fields.String(required=True, description="Arbitrary text tag")
     user_id = AutoUserIdField(
-        required=False,
+        required=True,
         description="User who created the tag, auto-populated from auth.",
     )

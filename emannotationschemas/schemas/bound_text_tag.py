@@ -21,7 +21,7 @@ class Bound2TagAnnotation(BoundTagAnnotation):
 
 
 class BoundTagAnnotationUser(BoundTagAnnotation):
-    user_id = AutoUserIdField(required=False, description="User who created the tag, auto-populated from auth.")
+    user_id = AutoUserIdField(required=True, description="User who created the tag, auto-populated from auth.")
 
 
 class BoundDoubleTagAnnotationUser(BoundDoubleTagAnnotation):
@@ -32,4 +32,4 @@ class BoundDoubleTagAnnotationUser(BoundDoubleTagAnnotation):
 
 
 class Bound2TagAnnotationUser(Bound2TagAnnotation):
-    user_id = AutoUserIdField(required=False, description="User who created the tag, auto-populated from auth.")
+    user_id = AutoUserIdField(required=True, description="User who created the tag, auto-populated from auth.")

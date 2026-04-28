@@ -52,7 +52,7 @@ class ProofreadingBoolStatus(PointWithValid):
 
 class ProofreadingBoolStatusUser(ProofreadingBoolStatus):
     user_id = AutoUserIdField(
-        required=False,
+        required=True,
         description="User who assessed the proofreading status, auto-populated from auth.",
     )
 

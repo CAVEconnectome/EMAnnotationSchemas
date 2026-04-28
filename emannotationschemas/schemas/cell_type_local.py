@@ -108,5 +108,5 @@ class CellTypeReferenceUser(CellTypeReference):
     """CellTypeReference schema with user tracking"""
 
     user_id = AutoUserIdField(
-        required=False, description="User who created the cell type classification, auto-populated from auth."
+        required=True, description="User who created the cell type classification, auto-populated from auth."
     )
