@@ -24,6 +24,7 @@ from emannotationschemas.errors import (
 )
 from emannotationschemas.flatten import create_flattened_schema
 from emannotationschemas.schemas.base import (
+    AutoUserIdField,
     MetaDataTypes,
     NumericField,
     SegmentationField,
@@ -47,6 +48,7 @@ FlatBase = declarative_base(cls=ClassBase)
 
 field_column_map = {
     ReferenceTableField: BigInteger,
+    AutoUserIdField: BigInteger,
     NumericField: BigInteger,
     SegmentationField: BigInteger,
     PostGISField: Geometry,
