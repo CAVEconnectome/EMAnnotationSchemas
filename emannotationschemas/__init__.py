@@ -71,6 +71,10 @@ from emannotationschemas.schemas.proofreading import (
     ProofreadingBoolStatusUser,
     ProofreadStatus,
 )
+from emannotationschemas.schemas.reference_float import (
+    ReferenceDoubleFloat,
+    ReferenceTripleFloat,
+)
 from emannotationschemas.schemas.reference_text_float import (
     ReferenceTagFloat,
 )
@@ -138,6 +142,8 @@ type_mapping = {
     "pt_bool_valid": SpatialPointBoolWithValid,
     "reference_integer": ReferenceInteger,
     "reference_tag_float": ReferenceTagFloat,
+    "reference_double_float": ReferenceDoubleFloat,
+    "reference_triple_float": ReferenceTripleFloat,
     "compartment_proofread_status_strategy": CompartmentProofreadStatusStrategy,
     "reference_tag_with_confidence": ReferenceTagWithConfidence,
     "digital_twin_properties": DigitalTwinPropertiesBCM,
